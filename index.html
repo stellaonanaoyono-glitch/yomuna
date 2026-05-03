@@ -626,12 +626,17 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 <div id="s-dashboard" class="screen">
 <div class="dash">
   <div class="dh">
-    <div><div class="dgreet">Bonsoir, <em id="dname">Marie</em> 🌙</div><div class="ddate" id="ddate"></div></div>
+    <div>
+      <div class="dgreet">Bonsoir, <em id="dname">Marie</em> 🌙</div>
+      <div class="ddate" id="ddate"></div>
+      <div id="days-counter" style="font-size:0.85rem;font-weight:700;margin-top:0.3rem;color:var(--text-soft)"></div>
+    </div>
     <button class="bsm" onclick="logoutUser()">Déconnexion</button>
   </div>
   <div class="dtabs">
     <button class="dtab on" onclick="swTab('today',this)">✨ Aujourd'hui</button>
     <button class="dtab" onclick="swTab('history',this)">📚 Historique</button>
+    <button class="dtab" onclick="swTab('report',this)">📊 Bilan</button>
     <button class="dtab" onclick="swTab('account',this)">👤 Mon compte</button>
   </div>
   <div id="dt-today">
@@ -667,10 +672,36 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
         <div><div style="font-weight:800;font-size:1rem" id="plan-name">—</div><div style="font-size:0.85rem;color:var(--text-soft);font-weight:700" id="plan-detail">—</div></div>
         <span class="planchip">✓ Actif</span>
       </div>
-      <button class="bsm" onclick="toast('Gestion abonnement disponible prochainement')">Gérer l'abonnement</button>
+      <button class="bsm" onclick="renewSubscription()">🔄 Renouveler mon abonnement</button>
     </div>
   </div>
-</div>
+
+  <!-- REPORT TAB -->
+  <div id="dt-report" class="hidden">
+    <div id="weekly-report-content">
+      <p style="color:var(--text-soft);font-weight:700;text-align:center;padding:2rem;">Chargement du bilan...</p>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="dt-history" class="hidden">
+    <div class="hlist" id="history-list">
+      <p style="font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-bottom:0.5rem">Chargement...</p>
+    </div>
+  </div>
+
+</div><!-- end dash -->
+</div><!-- end s-dashboard -->
+
+<!-- EXPIRED MODAL -->
+<div class="modal-overlay hidden" id="expired-modal">
+  <div class="modal-box" style="text-align:center;">
+    <div style="font-size:3rem;margin-bottom:1rem;">⏰</div>
+    <div class="modal-title">Votre abonnement a expiré</div>
+    <p style="color:var(--text-mid);margin-bottom:1.5rem;line-height:1.7;">Pour continuer à accéder à YoMuna et générer des contenus pour vos enfants, renouvelez votre abonnement.</p>
+    <button class="modal-close" onclick="renewSubscription()">🚀 Renouveler mon abonnement</button>
+    <button onclick="logoutUser()" style="width:100%;padding:0.7rem;border-radius:50px;border:2px solid var(--border);background:white;color:var(--text-soft);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:0.75rem;">Se déconnecter</button>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -775,6 +806,19 @@ async function registerUser() {
       email: em, whatsapp: wa,
       country: co, language: lg
     }, currentToken).catch(e => console.log('Profile insert:', e));
+    // Envoyer email de bienvenue
+    await fetch('/.netlify/functions/send-confirmation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: em,
+        firstName: fn,
+        plan: 'welcome',
+        amount: 0,
+        type: 'welcome'
+      })
+    }).catch(e => console.log('Welcome email error:', e));
+
     goStep(2);
   } catch(e) {
     showErr('err-signup','Erreur de connexion. Vérifiez votre internet.');
@@ -959,15 +1003,54 @@ async function loadDashboard() {
   document.getElementById('child-count').textContent = `${currentChildren.length} / 4`;
   renderChildPills();
   renderAccountChildren();
-  // Charger abonnement
+
+  // Charger abonnement et calculer jours restants
   const subs = await sb.select('subscriptions', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken);
   if (subs && subs[0]) {
+    const sub = subs[0];
     const planNames = {solo:'Plan Solo',fam:'Plan Famille',ann:'Plan Annuel'};
-    document.getElementById('plan-name').textContent = planNames[subs[0].plan] || 'Plan actif';
-    document.getElementById('plan-detail').textContent = `${subs[0].amount} FCFA • Statut: ${subs[0].status}`;
+    const planName = planNames[sub.plan] || 'Plan actif';
+
+    // Calculer la date d'expiration
+    const startDate = new Date(sub.created_at);
+    const durationDays = sub.plan === 'ann' ? 365 : 30;
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + durationDays);
+    const today = new Date();
+    const daysLeft = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)));
+    const isActive = daysLeft > 0 && sub.status !== 'expired';
+
+    // Afficher les infos d'abonnement
+    document.getElementById('plan-name').textContent = planName;
+    document.getElementById('plan-detail').innerHTML = `
+      ${sub.amount} FCFA • Expire le ${endDate.toLocaleDateString('fr-FR')}
+      <br><span style="color:${daysLeft <= 5 ? '#E06840' : '#06D6A0'};font-weight:800;">
+        ${daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}` : '❌ Abonnement expiré'}
+      </span>`;
+
+    // Afficher compteur dans le dashboard
+    const counter = document.getElementById('days-counter');
+    if (counter) {
+      counter.textContent = daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} d'abonnement restant${daysLeft > 1 ? 's' : ''}` : '❌ Abonnement expiré — Renouveler';
+      counter.style.color = daysLeft <= 5 ? 'var(--peach-dark)' : 'var(--text-soft)';
+      counter.onclick = daysLeft === 0 ? () => showS('signup') : null;
+      counter.style.cursor = daysLeft === 0 ? 'pointer' : 'default';
+    }
+
+    // Bloquer l'accès si abonnement expiré
+    if (!isActive) {
+      showExpiredModal();
+      return;
+    }
+  } else {
+    // Pas d'abonnement — bloquer
+    showExpiredModal();
+    return;
   }
-  // Charger historique
+
+  // Charger historique et rapport hebdomadaire
   loadHistory();
+  loadWeeklyReport();
 }
 
 function renderChildPills() {
@@ -1086,28 +1169,40 @@ async function generateContent(childIndex, type) {
 
     const data = await res.json();
     let text = data.text || '';
-    console.log('Gemini text received:', text.substring(0, 200));
+    console.log('Raw text received:', text.substring(0, 300));
 
-    // Nettoyer le JSON
+    // Nettoyer le texte
     text = text.replace(/```json/g,'').replace(/```/g,'').trim();
 
     // Extraire le JSON si entouré de texte
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) text = jsonMatch[0];
 
-    // Si vide, mettre un contenu par défaut
-    if (!text) {
-      text = '{"title":"Contenu en cours de génération","content":"Cliquez sur Régénérer pour obtenir votre contenu personnalisé."}';
-    }
-
     let parsed;
     try {
       parsed = JSON.parse(text);
     } catch(e) {
-      parsed = {
-        title: 'Contenu personnalisé',
-        content: text.substring(0, 300)
-      };
+      // Si le JSON ne parse pas, essayer de nettoyer davantage
+      try {
+        // Remplacer les sauts de ligne dans les valeurs JSON
+        const cleaned = text
+          .replace(/:\s*"([^"]*(?:"[^"]*"[^"]*)*)"/, (m, p1) => ': "' + p1.replace(/\n/g, '\\n').replace(/"/g, '\\"') + '"')
+          .replace(/\n/g, ' ');
+        parsed = JSON.parse(cleaned);
+      } catch(e2) {
+        // Extraction manuelle du titre et contenu
+        const titleMatch = text.match(/"title"\s*:\s*"([^"]+)"/);
+        const contentMatch = text.match(/"content"\s*:\s*"([\s\S]+?)(?:"\s*[,}]|"$)/);
+        parsed = {
+          title: titleMatch ? titleMatch[1] : 'Contenu généré',
+          content: contentMatch ? contentMatch[1].replace(/\\n/g, '\n') : text.replace(/[{}"\[\]]/g, '').trim()
+        };
+      }
+    }
+
+    // Vérifier que parsed a bien title et content
+    if (!parsed || !parsed.content) {
+      parsed = { title: 'Contenu généré', content: text.replace(/[{}"]/g, '').replace(/title:|content:|duration:/g, '').trim() };
     }
 
     if (titleEl) titleEl.textContent = parsed.title || 'Contenu généré';
@@ -1286,12 +1381,83 @@ function goStep(n) {
   window.scrollTo(0,0);
 }
 
+function showExpiredModal() {
+  document.getElementById('expired-modal').classList.remove('hidden');
+}
+
+function renewSubscription() {
+  document.getElementById('expired-modal').classList.add('hidden');
+  // Aller à l'étape 3 du signup (paiement uniquement)
+  goStep(3);
+  showS('signup');
+}
+
+async function loadWeeklyReport() {
+  const container = document.getElementById('weekly-report-content');
+  if (!container) return;
+  try {
+    // Récupérer les contenus des 7 derniers jours
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const history = await sb.select('history',
+      `user_id=eq.${currentUser.id}&created_at=gte.${sevenDaysAgo.toISOString()}&order=created_at.desc`,
+      currentToken
+    );
+    if (!history || history.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-soft);font-weight:700;">📭 Aucun contenu généré cette semaine.<br><br>Revenez après avoir utilisé YoMuna !</div>';
+      return;
+    }
+    // Grouper par enfant
+    const byChild = {};
+    history.forEach(h => {
+      if (!byChild[h.child_name]) byChild[h.child_name] = {stories:[], activities:[], advices:[]};
+      if (h.type === 'story') byChild[h.child_name].stories.push(h);
+      if (h.type === 'activity') byChild[h.child_name].activities.push(h);
+      if (h.type === 'advice') byChild[h.child_name].advices.push(h);
+    });
+    let html = `
+      <div style="margin-bottom:1.5rem;">
+        <h2 style="font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:0.5rem;">📊 Bilan de la semaine</h2>
+        <p style="color:var(--text-soft);font-weight:600;font-size:0.9rem;">${history.length} contenus générés du ${sevenDaysAgo.toLocaleDateString('fr-FR')} au ${new Date().toLocaleDateString('fr-FR')}</p>
+      </div>`;
+    Object.entries(byChild).forEach(([childName, data]) => {
+      html += `
+        <div class="asec" style="margin-bottom:1.25rem;">
+          <div class="astitle">👶 ${childName}</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;">
+            <div style="text-align:center;background:var(--yellow-light);border-radius:12px;padding:1rem;">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--text);">${data.stories.length}</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--text-soft);">📖 Histoires</div>
+            </div>
+            <div style="text-align:center;background:var(--mint-light);border-radius:12px;padding:1rem;">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--text);">${data.activities.length}</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--text-soft);">🎮 Activités</div>
+            </div>
+            <div style="text-align:center;background:rgba(255,140,105,0.15);border-radius:12px;padding:1rem;">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--text);">${data.advices.length}</div>
+              <div style="font-size:0.78rem;font-weight:700;color:var(--text-soft);">💡 Conseils</div>
+            </div>
+          </div>
+          ${data.stories.length > 0 ? `<div style="font-size:0.85rem;font-weight:700;color:var(--text-mid);margin-bottom:0.5rem;">Dernière histoire : <em>${data.stories[0].title}</em></div>` : ''}
+          ${data.activities.length > 0 ? `<div style="font-size:0.85rem;font-weight:700;color:var(--text-mid);margin-bottom:0.5rem;">Dernière activité : <em>${data.activities[0].title}</em></div>` : ''}
+        </div>`;
+    });
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = '<p style="color:var(--text-soft);font-weight:700">Erreur de chargement du bilan.</p>';
+  }
+}
+
 function swTab(t, btn) {
-  ['today','history','account'].forEach(x => document.getElementById('dt-'+x).classList.add('hidden'));
+  ['today','history','report','account'].forEach(x => {
+    const el = document.getElementById('dt-'+x);
+    if (el) el.classList.add('hidden');
+  });
   document.querySelectorAll('.dtab').forEach(b => b.classList.remove('on'));
   document.getElementById('dt-'+t).classList.remove('hidden');
   btn.classList.add('on');
   if (t === 'history') loadHistory();
+  if (t === 'report') loadWeeklyReport();
 }
 
 function faqT(el) { el.closest('.fi').classList.toggle('open'); }
