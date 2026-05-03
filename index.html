@@ -604,7 +604,26 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 </div>
 </div>
 
-<!-- ADMIN -->
+<!-- ADMIN LOGIN -->
+<div id="s-admin-login" class="screen">
+<div class="fscr" style="background:linear-gradient(135deg,#2D1B00,#6B4226);">
+<div class="fbox" style="border-color:var(--peach);">
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🔐</div>
+    <div class="flogosm" style="justify-content:center;">Yo<span>●</span>Muna</div>
+    <div class="ftitle">Accès Admin</div>
+    <div class="fsub">Réservé à l'équipe YoMuna</div>
+  </div>
+  <div class="error-msg" id="err-admin"></div>
+  <div class="fg"><label>Email admin</label><input type="email" id="admin-em" placeholder="yomuna237@gmail.com" /></div>
+  <div class="fg"><label>Mot de passe</label><input type="password" id="admin-pw" placeholder="••••••••" /></div>
+  <button class="bfull bpm" onclick="adminLogin()">Accéder au dashboard →</button>
+  <div class="flink" style="margin-top:1rem;"><a onclick="showS('home')">← Retour au site</a></div>
+</div>
+</div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
 <div id="s-admin" class="screen">
 <div class="dash">
   <div class="dh">
@@ -1102,6 +1121,15 @@ async function loadDashboard() {
   renderChildPills();
   renderAccountChildren();
 
+  // Bypass abonnement pour l'admin
+  if (currentUser.email === ADMIN_EMAIL) {
+    currentPlan = 'ann';
+    renderChildPills();
+    renderAccountChildren();
+    loadHistory();
+    return;
+  }
+
   // Charger abonnement et calculer jours restants
   const subs = await sb.select('subscriptions', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken);
   if (subs && subs[0]) {
@@ -1504,6 +1532,34 @@ async function resetPassword() {
   } finally { hideLoading(); }
 }
 
+async function adminLogin() {
+  const em = document.getElementById('admin-em').value.trim();
+  const pw = document.getElementById('admin-pw').value;
+
+  if (em !== ADMIN_EMAIL) {
+    showErr('err-admin', 'Accès refusé. Email non autorisé.');
+    return;
+  }
+
+  if (!em || !pw) { showErr('err-admin', 'Remplissez tous les champs.'); return; }
+
+  showLoading('Connexion admin...');
+  try {
+    const res = await sb.signIn(em, pw);
+    if (res.error) { showErr('err-admin', 'Email ou mot de passe incorrect.'); return; }
+    currentToken = res.access_token;
+    currentUser = res.user;
+    localStorage.setItem('yomuna_token', currentToken);
+    localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
+    // Aller directement au dashboard admin sans vérification abonnement
+    showS('admin');
+    loadAdminData();
+    toast('Bienvenue Admin 🔐');
+  } catch(e) {
+    showErr('err-admin', 'Erreur de connexion.');
+  } finally { hideLoading(); }
+}
+
 // ===== ADMIN =====
 const ADMIN_EMAIL = 'yomuna237@gmail.com';
 
@@ -1740,6 +1796,13 @@ window.addEventListener('load', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const paymentStatus = urlParams.get('status');
   const reference = urlParams.get('reference');
+  const hash = window.location.hash;
+
+  // Si URL admin
+  if (hash === '#admin') {
+    showS('admin-login');
+    return;
+  }
 
   // Si retour de paiement NotchPay
   if (paymentStatus === 'complete' && reference) {
