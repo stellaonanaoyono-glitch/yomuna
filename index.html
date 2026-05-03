@@ -606,7 +606,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   <div class="fg"><label>Email</label><input type="email" id="lem" placeholder="marie@email.com" /></div>
   <div class="fg"><label>Mot de passe</label><input type="password" id="lpw" placeholder="••••••••" /></div>
   <button class="bfull bpm" onclick="loginUser()">Se connecter</button>
-  <div class="flink" style="margin-top:0.75rem"><a href="#">Mot de passe oublié ?</a></div>
+  <div class="flink" style="margin-top:0.75rem"><a onclick="resetPassword()">Mot de passe oublié ?</a></div>
   <div style="border-top:2px solid var(--border);margin:1.5rem 0"></div>
   <div class="flink">Pas encore de compte ? <a onclick="showS('signup')">Créer mon compte gratuitement</a></div>
 </div>
@@ -748,6 +748,8 @@ async function registerUser() {
     if (!res.user) { showErr('err-signup', 'Compte non créé. Vérifiez vos informations.'); return; }
     currentToken = res.access_token;
     currentUser = res.user;
+    localStorage.setItem('yomuna_token', currentToken);
+    localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
     // Sauvegarder profil dans table profiles
     await sb.insert('profiles', {
       id: res.user.id,
@@ -772,6 +774,8 @@ async function loginUser() {
     if (res.error) { showErr('err-login','Email ou mot de passe incorrect.'); return; }
     currentToken = res.access_token;
     currentUser = res.user;
+    localStorage.setItem('yomuna_token', currentToken);
+    localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
     await loadDashboard();
     showS('dashboard');
   } catch(e) {
@@ -782,6 +786,8 @@ async function loginUser() {
 async function logoutUser() {
   if (currentToken) await sb.signOut(currentToken);
   currentUser = null; currentToken = null; currentChildren = [];
+  localStorage.removeItem('yomuna_token');
+  localStorage.removeItem('yomuna_user');
   showS('home');
 }
 
@@ -868,8 +874,35 @@ async function initiatePayment() {
         status: 'pending',
         notchpay_ref: payData.transaction?.reference || ''
       }, currentToken);
-      // Rediriger vers la page de paiement NotchPay
-      window.location.href = authUrl;
+      // Ouvrir la page de paiement NotchPay
+      const win = window.open(authUrl, '_blank');
+
+      // Envoyer email de confirmation
+      const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken).catch(() => []);
+      const firstName = profile && profile[0] ? profile[0].first_name : 'Client';
+      await fetch('/.netlify/functions/send-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: currentUser.email,
+          firstName: firstName,
+          plan: selectedPlan,
+          amount: selectedAmount
+        })
+      }).catch(e => console.log('Email error:', e));
+
+      if (!win) {
+        // Si le navigateur bloque le popup, afficher un bouton
+        const btn = document.createElement('a');
+        btn.href = authUrl;
+        btn.target = '_blank';
+        btn.style.cssText = 'display:block;text-align:center;background:#FF8C69;color:white;padding:1rem 2rem;border-radius:50px;font-weight:800;text-decoration:none;margin-top:1rem;font-family:Nunito,sans-serif';
+        btn.textContent = '💳 Cliquer ici pour payer';
+        document.getElementById('ss3').appendChild(btn);
+        toast('Cliquez sur le bouton pour accéder au paiement');
+      } else {
+        toast('Redirection vers le paiement en cours... ✓');
+      }
     } else {
       console.log('No auth URL found:', JSON.stringify(payData));
       toast('Erreur lors de l\'initialisation du paiement. Réessayez.');
@@ -1024,9 +1057,26 @@ async function generateContent(childIndex, type) {
 
     const data = await res.json();
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    console.log('Gemini text received:', text.substring(0, 200));
+
     // Nettoyer le JSON
     text = text.replace(/```json/g,'').replace(/```/g,'').trim();
-    const parsed = JSON.parse(text);
+
+    // Si vide, mettre un contenu par défaut
+    if (!text) {
+      text = '{"title":"Contenu en cours de génération","content":"Cliquez sur Régénérer pour obtenir votre contenu personnalisé."}';
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch(e) {
+      // Si le JSON est invalide, extraire manuellement
+      parsed = {
+        title: 'Contenu personnalisé',
+        content: text.substring(0, 300)
+      };
+    }
 
     if (titleEl) titleEl.textContent = parsed.title || 'Contenu généré';
     if (textEl) textEl.textContent = parsed.content || '';
@@ -1089,6 +1139,22 @@ async function updateProfile() {
 }
 
 // ===== UI HELPERS =====
+async function resetPassword() {
+  const em = document.getElementById('lem').value.trim();
+  if (!em) { showErr('err-login', 'Entrez votre email pour réinitialiser votre mot de passe.'); return; }
+  showLoading('Envoi de l\'email de réinitialisation...');
+  try {
+    await fetch('/.netlify/functions/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: em })
+    });
+    toast('Email de réinitialisation envoyé ! Vérifiez votre boîte mail. ✓');
+  } catch(e) {
+    toast('Erreur. Vérifiez votre connexion.');
+  } finally { hideLoading(); }
+}
+
 function showS(n) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('s-'+n).classList.add('active');
@@ -1141,8 +1207,39 @@ function toast(msg) {
   setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-// Vérifier si déjà connecté au chargement
+// Vérifier si retour de paiement NotchPay
 window.addEventListener('load', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentStatus = urlParams.get('status');
+  const reference = urlParams.get('reference');
+
+  // Si retour de paiement NotchPay
+  if (paymentStatus === 'complete' && reference) {
+    // Nettoyer l'URL
+    window.history.replaceState({}, document.title, '/');
+    // Vérifier session
+    const token = localStorage.getItem('yomuna_token');
+    const user = localStorage.getItem('yomuna_user');
+    if (token && user) {
+      currentToken = token;
+      currentUser = JSON.parse(user);
+      // Mettre à jour statut abonnement
+      await sb.update('subscriptions',
+        `user_id=eq.${currentUser.id}&status=eq.pending`,
+        { status: 'complete' },
+        currentToken
+      ).catch(() => {});
+      await loadDashboard();
+      showS('dashboard');
+      toast('🎉 Paiement confirmé ! Bienvenue sur YoMuna !');
+    } else {
+      showS('login');
+      toast('Paiement reçu ! Connectez-vous pour accéder à votre espace.');
+    }
+    return;
+  }
+
+  // Connexion normale
   const token = localStorage.getItem('yomuna_token');
   const user = localStorage.getItem('yomuna_user');
   if (token && user) {
