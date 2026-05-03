@@ -251,7 +251,13 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 .bsm{padding:0.6rem 1.3rem;border-radius:50px;font-size:0.85rem;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;border:2.5px solid var(--peach);background:white;color:var(--peach-dark);transition:all 0.2s;}
 .bsm:hover{background:var(--peach);color:white;}
 
-/* LOADING */
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:2rem;}
+.modal-overlay.hidden{display:none!important;}
+.modal-box{background:white;border-radius:24px;padding:2rem;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.2);}
+.modal-title{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:1rem;line-height:1.3;}
+.modal-content{font-size:0.95rem;color:var(--text-mid);line-height:1.8;font-weight:600;white-space:pre-wrap;}
+.modal-close{width:100%;padding:0.85rem;border-radius:50px;background:var(--peach);color:white;border:none;font-size:1rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:1.5rem;}
 .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,248,240,0.9);display:flex;align-items:center;justify-content:center;z-index:500;flex-direction:column;gap:1rem;}
 .loading-overlay.hidden{display:none!important;}
 .spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--peach);border-radius:50%;animation:spin 0.8s linear infinite;}
@@ -664,6 +670,15 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 </div>
 </div>
 
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-content" id="modal-content"></div>
+    <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.add('hidden')">Fermer</button>
+  </div>
+</div>
+
 <div class="toast" id="toastEl"></div>
 
 <script>
@@ -784,7 +799,11 @@ async function loginUser() {
 }
 
 async function logoutUser() {
-  if (currentToken) await sb.signOut(currentToken);
+  try {
+    if (currentToken) await sb.signOut(currentToken);
+  } catch(e) {
+    console.log('Logout error ignored:', e.message);
+  }
   currentUser = null; currentToken = null; currentChildren = [];
   localStorage.removeItem('yomuna_token');
   localStorage.removeItem('yomuna_user');
@@ -1041,11 +1060,11 @@ async function generateContent(childIndex, type) {
 
   let prompt = '';
   if (type === 'story') {
-    prompt = `Tu es un conteur africain. Écris une courte histoire du soir en ${lang === 'en' ? 'anglais' : 'français'} pour un enfant prénommé ${child.name}, âgé de ${child.age}, du ${countryName}. L'histoire doit mentionner des lieux ou traditions du ${countryName}. L'enfant aime : ${child.interests || 'les aventures'}. Longueur : 100 mots maximum. Réponds UNIQUEMENT avec un objet JSON valide, sans markdown, sans explication : {"title": "titre ici", "content": "histoire ici"}`;
+    prompt = `Tu es un conteur africain talentueux. Écris une belle histoire du soir en ${lang === 'en' ? 'anglais' : 'français'} pour un enfant prénommé ${child.name}, âgé de ${child.age}, du ${countryName}. L'histoire doit mentionner des lieux, personnages ou traditions du ${countryName}. L'enfant aime : ${child.interests || 'les aventures et la nature'}. L'histoire doit faire 200 à 250 mots, avoir un début, un milieu et une fin avec une morale. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "titre de l'histoire", "content": "texte complet de l'histoire ici"}`;
   } else if (type === 'activity') {
-    prompt = `Tu es un expert en activités pour enfants. Propose une activité créative en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${child.age}, réalisable à la maison avec des objets simples. L'enfant aime : ${child.interests || 'jouer'}. Longueur : 80 mots maximum. Réponds UNIQUEMENT avec un objet JSON valide, sans markdown : {"title": "titre ici", "content": "description ici", "duration": "durée ici"}`;
+    prompt = `Tu es un expert en activités éducatives pour enfants. Propose une activité créative détaillée en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${child.age}, réalisable à la maison avec des objets simples du quotidien. L'enfant aime : ${child.interests || 'jouer et créer'}. Décris étape par étape comment faire l'activité (au moins 5 étapes détaillées), le matériel nécessaire et les bénéfices pour l'enfant. Longueur : 150 à 200 mots. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "nom de l'activité", "content": "description détaillée avec les étapes", "duration": "durée estimée"}`;
   } else {
-    prompt = `Tu es un expert en parentalité bienveillante. Donne un conseil parental pratique en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant'}". Enfant : ${child.name}, ${child.age}. Longueur : 100 mots maximum. Réponds UNIQUEMENT avec un objet JSON valide, sans markdown : {"title": "titre ici", "content": "conseil ici"}`;
+    prompt = `Tu es un expert en parentalité bienveillante et psychologie de l'enfant. Donne un conseil parental complet et pratique en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant dans son développement'}". Enfant : ${child.name}, ${child.age}, au ${countryName}. Le conseil doit expliquer pourquoi ce comportement existe, donner 3 à 4 stratégies concrètes à appliquer, et encourager le parent. Longueur : 200 à 250 mots. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "titre du conseil", "content": "conseil complet et détaillé ici"}`;
   }
 
   try {
@@ -1082,7 +1101,25 @@ async function generateContent(childIndex, type) {
     }
 
     if (titleEl) titleEl.textContent = parsed.title || 'Contenu généré';
-    if (textEl) textEl.textContent = parsed.content || '';
+    if (textEl) {
+      // Afficher un aperçu + bouton lire la suite
+      const fullContent = parsed.content || '';
+      const preview = fullContent.length > 200 ? fullContent.substring(0, 200) + '...' : fullContent;
+      textEl.textContent = preview;
+      
+      // Ajouter bouton "Lire la suite" si contenu long
+      const existingBtn = card.querySelector('.btn-read-more');
+      if (existingBtn) existingBtn.remove();
+      
+      if (fullContent.length > 200) {
+        const readMoreBtn = document.createElement('button');
+        readMoreBtn.className = 'btn-read-more';
+        readMoreBtn.textContent = '📖 Lire la suite';
+        readMoreBtn.style.cssText = 'background:none;border:2px solid var(--peach);border-radius:50px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:800;color:var(--peach-dark);cursor:pointer;font-family:Nunito,sans-serif;margin-top:0.75rem;transition:all 0.2s;display:block;';
+        readMoreBtn.onclick = () => showModal(parsed.title, fullContent);
+        textEl.parentNode.insertBefore(readMoreBtn, textEl.nextSibling);
+      }
+    }
     if (type === 'activity' && parsed.duration) {
       const badge = card.querySelector('.ccb');
       if (badge) badge.textContent = `${child.age} • ${parsed.duration}`;
@@ -1142,6 +1179,18 @@ async function updateProfile() {
 }
 
 // ===== UI HELPERS =====
+function showModal(title, content) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-content').textContent = content;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal(event) {
+  if (event.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.add('hidden');
+  }
+}
+
 async function resetPassword() {
   const em = document.getElementById('lem').value.trim();
   if (!em) { showErr('err-login', 'Entrez votre email pour réinitialiser votre mot de passe.'); return; }
