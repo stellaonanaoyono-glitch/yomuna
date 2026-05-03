@@ -1041,11 +1041,11 @@ async function generateContent(childIndex, type) {
 
   let prompt = '';
   if (type === 'story') {
-    prompt = `Génère une histoire du soir ${langInstr} pour un enfant prénommé ${child.name}, âgé de ${child.age}, originaire du ${countryName}. L'histoire doit être culturellement ancrée dans le ${countryName} (lieux, personnages, traditions locales). L'enfant s'intéresse à : ${child.interests || 'tout'}. Longueur : 150 mots maximum. Format JSON : {"title": "...", "content": "..."}`;
+    prompt = `Tu es un conteur africain. Écris une courte histoire du soir en ${lang === 'en' ? 'anglais' : 'français'} pour un enfant prénommé ${child.name}, âgé de ${child.age}, du ${countryName}. L'histoire doit mentionner des lieux ou traditions du ${countryName}. L'enfant aime : ${child.interests || 'les aventures'}. Longueur : 100 mots maximum. Réponds UNIQUEMENT avec un objet JSON valide, sans markdown, sans explication : {"title": "titre ici", "content": "histoire ici"}`;
   } else if (type === 'activity') {
-    prompt = `Génère une idée d'activité créative ${langInstr} pour ${child.name}, ${child.age}, réalisable à la maison avec des objets du quotidien. Adapte à ses intérêts : ${child.interests || 'tout'}. Longueur : 100 mots maximum. Format JSON : {"title": "...", "content": "...", "duration": "..."}`;
+    prompt = `Tu es un expert en activités pour enfants. Propose une activité créative en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${child.age}, réalisable à la maison avec des objets simples. L'enfant aime : ${child.interests || 'jouer'}. Longueur : 80 mots maximum. Réponds UNIQUEMENT avec un objet JSON valide, sans markdown : {"title": "titre ici", "content": "description ici", "duration": "durée ici"}`;
   } else {
-    prompt = `Génère un conseil parental ${langInstr} concret et bienveillant pour aider avec ce défi : "${child.challenge || 'développement de l\'enfant'}". Enfant : ${child.name}, ${child.age}, au ${countryName}. Longueur : 120 mots maximum. Format JSON : {"title": "...", "content": "..."}`;
+    prompt = `Tu es un expert en parentalité bienveillante. Donne un conseil parental pratique en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant'}". Enfant : ${child.name}, ${child.age}. Longueur : 100 mots maximum. Réponds UNIQUEMENT avec un objet JSON valide, sans markdown : {"title": "titre ici", "content": "conseil ici"}`;
   }
 
   try {
@@ -1056,11 +1056,15 @@ async function generateContent(childIndex, type) {
     });
 
     const data = await res.json();
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    let text = data.text || '';
     console.log('Gemini text received:', text.substring(0, 200));
 
     // Nettoyer le JSON
     text = text.replace(/```json/g,'').replace(/```/g,'').trim();
+
+    // Extraire le JSON si entouré de texte
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) text = jsonMatch[0];
 
     // Si vide, mettre un contenu par défaut
     if (!text) {
@@ -1071,7 +1075,6 @@ async function generateContent(childIndex, type) {
     try {
       parsed = JSON.parse(text);
     } catch(e) {
-      // Si le JSON est invalide, extraire manuellement
       parsed = {
         title: 'Contenu personnalisé',
         content: text.substring(0, 300)
