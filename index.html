@@ -673,7 +673,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 const CONFIG = {
   SUPABASE_URL: 'https://cszvvbqyttsxjlrnrizi.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenZ2YnF5dHRzeGpscm5yaXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MDM5NzgsImV4cCI6MjA5MzM3OTk3OH0.t1L-JpsDDcxpx4z31TIzJPJDmln5dnlsRRIfqolG4Ww',
-  NOTCHPAY_PUBLIC_KEY: 'pk.Cei0CJa69pzjoSQIlkjBQETH68jQEtHTSuljcsWj4IXXH51wkDKHdHu7d067DPHva3FeEgE0K8ELG4fGfcBgw3IL2ZsUdayqE7x0NqIoaVDt8fN1aDSo7X9mtU9jY'
+  NOTCHPAY_PUBLIC_KEY: ''
 };
 // ============================================================
 
@@ -691,7 +691,7 @@ const sb = {
     return r.json();
   },
   async signUp(email, password, meta) {
-    return this.req('/auth/v1/signup', 'POST', { email, password });
+    return this.req('/auth/v1/signup', 'POST', { email, password, options: { data: meta } });
   },
   async signIn(email, password) {
     return this.req('/auth/v1/token?grant_type=password', 'POST', { email, password });
@@ -855,18 +855,23 @@ async function initiatePayment() {
     });
 
     const payData = await payRes.json();
-    if (payData.transaction?.authorization_url) {
+    console.log('PayData received:', JSON.stringify(payData));
+    
+    const authUrl = payData.authorization_url || payData.transaction?.authorization_url;
+    
+    if (authUrl) {
       // Sauvegarder l'abonnement
       await sb.insert('subscriptions', {
         user_id: currentUser.id,
         plan: selectedPlan,
         amount: parseInt(selectedAmount),
         status: 'pending',
-        notchpay_ref: payData.transaction.reference
+        notchpay_ref: payData.transaction?.reference || ''
       }, currentToken);
       // Rediriger vers la page de paiement NotchPay
-      window.location.href = payData.transaction.authorization_url;
+      window.location.href = authUrl;
     } else {
+      console.log('No auth URL found:', JSON.stringify(payData));
       toast('Erreur lors de l\'initialisation du paiement. Réessayez.');
     }
   } catch(e) {
