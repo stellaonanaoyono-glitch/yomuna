@@ -7,10 +7,9 @@ exports.handler = async (event) => {
 
   try {
     const { prompt } = JSON.parse(event.body);
-    console.log('Prompt received, length:', prompt?.length);
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -18,50 +17,23 @@ exports.handler = async (event) => {
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.9,
-            maxOutputTokens: 800,
-            responseMimeType: 'application/json'
+            maxOutputTokens: 1000
           }
         })
       }
     );
 
-    const responseText = await response.text();
+    const data = await response.json();
     console.log('Gemini status:', response.status);
-    console.log('Gemini response length:', responseText.length);
-    console.log('Gemini response:', responseText.substring(0, 500));
+    console.log('Gemini data keys:', Object.keys(data));
 
-    if (!responseText || responseText.trim() === '') {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          candidates: [{
-            content: {
-              parts: [{ text: '{"title":"Contenu temporairement indisponible","content":"Veuillez régénérer le contenu."}' }]
-            }
-          }]
-        })
-      };
-    }
-
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch(e) {
-      console.log('Parse error:', e.message);
-      data = {
-        candidates: [{
-          content: {
-            parts: [{ text: '{"title":"Erreur de génération","content":"Cliquez sur Régénérer pour réessayer."}' }]
-          }
-        }]
-      };
-    }
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    console.log('Text extracted:', text.substring(0, 300));
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ text: text })
     };
 
   } catch (error) {
@@ -69,13 +41,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        candidates: [{
-          content: {
-            parts: [{ text: '{"title":"Erreur de connexion","content":"Vérifiez votre connexion et cliquez sur Régénérer."}' }]
-          }
-        }]
-      })
+      body: JSON.stringify({ text: '' })
     };
   }
 };
