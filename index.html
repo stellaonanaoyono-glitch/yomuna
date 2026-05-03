@@ -919,13 +919,15 @@ async function registerUser() {
       email: em, whatsapp: wa,
       country: co, language: lg
     }, currentToken).catch(e => console.log('Profile insert:', e));
-    // Envoyer email de bienvenue
+    // Envoyer email de bienvenue + notif admin
     await fetch('/.netlify/functions/send-confirmation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: em,
         firstName: fn,
+        lastName: document.getElementById('rln').value.trim(),
+        country: document.getElementById('rco').value,
         plan: 'welcome',
         amount: 0,
         type: 'welcome'
@@ -1570,20 +1572,11 @@ async function loadAdminData() {
   }
 
   try {
-    // Tous les profils
-    const profiles = await sb.select('profiles', 'select=*&order=created_at.desc', currentToken);
-    const users = profiles || [];
-    document.getElementById('stat-users').textContent = users.length;
-
-    // Pays uniques
-    const countries = [...new Set(users.map(u => u.country).filter(Boolean))];
-    document.getElementById('stat-countries').textContent = countries.length;
-
     // Tous les abonnements
     const subs = await sb.select('subscriptions', 'select=*&order=created_at.desc', currentToken);
     const allSubs = subs || [];
 
-    // Actifs (30 jours pour mensuel, 365 pour annuel)
+    // Abonnements actifs uniquement (payés et non expirés)
     const activeSubs = allSubs.filter(s => {
       const start = new Date(s.created_at);
       const days = s.plan === 'ann' ? 365 : 30;
@@ -1591,58 +1584,86 @@ async function loadAdminData() {
       end.setDate(end.getDate() + days);
       return new Date() < end && s.status !== 'expired';
     });
+
+    // IDs des utilisateurs avec abonnement actif
+    const activeUserIds = new Set(activeSubs.map(s => s.user_id));
+
+    // Profils des utilisateurs actifs uniquement
+    const profiles = await sb.select('profiles', 'select=*&order=created_at.desc', currentToken);
+    const allUsers = profiles || [];
+    const activeUsers = allUsers.filter(u => activeUserIds.has(u.id));
+
+    // Stats basées uniquement sur les payants actifs
+    document.getElementById('stat-users').textContent = activeUsers.length;
+
+    // Pays uniques des actifs
+    const countries = [...new Set(activeUsers.map(u => u.country).filter(Boolean))];
+    document.getElementById('stat-countries').textContent = countries.length;
+
+    // Abonnements actifs
     document.getElementById('stat-subs').textContent = activeSubs.length;
 
-    // Revenus total
+    // Revenus total (tous les paiements confondus)
     const revenue = allSubs.reduce((sum, s) => sum + (s.amount || 0), 0);
     document.getElementById('stat-revenue').textContent = revenue.toLocaleString('fr-FR');
 
-    // Plans breakdown
-    document.getElementById('plan-solo-count').textContent = allSubs.filter(s => s.plan === 'solo').length;
-    document.getElementById('plan-fam-count').textContent = allSubs.filter(s => s.plan === 'fam').length;
-    document.getElementById('plan-ann-count').textContent = allSubs.filter(s => s.plan === 'ann').length;
+    // Plans breakdown (actifs uniquement)
+    document.getElementById('plan-solo-count').textContent = activeSubs.filter(s => s.plan === 'solo').length;
+    document.getElementById('plan-fam-count').textContent = activeSubs.filter(s => s.plan === 'fam').length;
+    document.getElementById('plan-ann-count').textContent = activeSubs.filter(s => s.plan === 'ann').length;
 
-    // Enfants
+    // Enfants des utilisateurs actifs uniquement
     const children = await sb.select('children', 'select=*', currentToken);
-    document.getElementById('stat-children').textContent = (children || []).length;
+    const activeChildren = (children || []).filter(c => activeUserIds.has(c.user_id));
+    document.getElementById('stat-children').textContent = activeChildren.length;
 
-    // Historique total
-    const history = await sb.select('history', 'select=id', currentToken);
-    document.getElementById('stat-history').textContent = (history || []).length;
+    // Historique des utilisateurs actifs uniquement
+    const history = await sb.select('history', 'select=id,user_id', currentToken);
+    const activeHistory = (history || []).filter(h => activeUserIds.has(h.user_id));
+    document.getElementById('stat-history').textContent = activeHistory.length;
 
-    // Générations aujourd'hui
+    // Générations aujourd'hui (actifs uniquement)
     const todayUsages = await sb.select('daily_usage', `date=eq.${today}`, currentToken);
-    const totalToday = (todayUsages || []).reduce((sum, u) => sum + (u.count || 0), 0);
+    const totalToday = (todayUsages || [])
+      .filter(u => activeUserIds.has(u.user_id))
+      .reduce((sum, u) => sum + (u.count || 0), 0);
     document.getElementById('stat-today-gen').textContent = totalToday;
 
-    // Table utilisateurs
+    // Table — uniquement les utilisateurs avec abonnement actif
     const subsMap = {};
-    allSubs.forEach(s => { if (!subsMap[s.user_id]) subsMap[s.user_id] = s; });
+    activeSubs.forEach(s => { if (!subsMap[s.user_id]) subsMap[s.user_id] = s; });
 
     const planNames = {solo:'Solo',fam:'Famille',ann:'Annuel'};
     const countryNames = {CM:'🇨🇲 CM',FR:'🇫🇷 FR',CA:'🇨🇦 CA',GB:'🇬🇧 UK',US:'🇺🇸 US',GA:'🇬🇦 GA',CG:'🇨🇬 CG',CI:'🇨🇮 CI',SN:'🇸🇳 SN',NG:'🇳🇬 NG'};
 
     const tbody = document.getElementById('admin-users-body');
-    if (users.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-soft);">Aucun utilisateur</td></tr>';
+    if (activeUsers.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-soft);">Aucun abonné actif pour le moment</td></tr>';
     } else {
-      tbody.innerHTML = users.map(u => {
+      tbody.innerHTML = activeUsers.map(u => {
         const sub = subsMap[u.id];
-        const planName = sub ? planNames[sub.plan] || sub.plan : '—';
-        const isActive = sub ? (() => {
-          const start = new Date(sub.created_at);
-          const days = sub.plan === 'ann' ? 365 : 30;
-          const end = new Date(start);
-          end.setDate(end.getDate() + days);
-          return new Date() < end;
-        })() : false;
+        const start = new Date(sub.created_at);
+        const days = sub.plan === 'ann' ? 365 : 30;
+        const end = new Date(start);
+        end.setDate(end.getDate() + days);
+        const daysLeft = Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24));
         return `<tr style="border-bottom:1px solid var(--border);">
           <td style="padding:0.75rem 0.5rem;font-weight:700;">${u.first_name || ''} ${u.last_name || ''}</td>
           <td style="padding:0.75rem 0.5rem;color:var(--text-soft);font-size:0.82rem;">${u.email || '—'}</td>
           <td style="padding:0.75rem 0.5rem;">${countryNames[u.country] || u.country || '—'}</td>
-          <td style="padding:0.75rem 0.5rem;"><span style="background:var(--yellow-light);color:var(--text-mid);padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:800;">${planName}</span></td>
-          <td style="padding:0.75rem 0.5rem;"><span style="background:${isActive ? 'var(--mint-light)' : 'rgba(255,140,105,0.15)'};color:${isActive ? '#03A97A' : 'var(--peach-dark)'};padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:800;">${sub ? (isActive ? '✓ Actif' : '✗ Expiré') : 'Sans abonnement'}</span></td>
-          <td style="padding:0.75rem 0.5rem;color:var(--text-soft);font-size:0.82rem;">${u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—'}</td>
+          <td style="padding:0.75rem 0.5rem;">
+            <span style="background:var(--yellow-light);color:var(--text-mid);padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:800;">
+              ${planNames[sub.plan] || sub.plan}
+            </span>
+          </td>
+          <td style="padding:0.75rem 0.5rem;">
+            <span style="background:var(--mint-light);color:#03A97A;padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:800;">
+              ✓ Actif • ${daysLeft}j restants
+            </span>
+          </td>
+          <td style="padding:0.75rem 0.5rem;color:var(--text-soft);font-size:0.82rem;">
+            ${u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—'}
+          </td>
         </tr>`;
       }).join('');
     }
