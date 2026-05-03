@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YoMuna — Chaque soir, une magie pour ton enfant</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --peach:#FF8C69;--peach-light:#FFB49A;--peach-dark:#E06840;
+  --yellow:#FFD166;--yellow-light:#FFF0B3;--mint:#06D6A0;--mint-light:#CFFAEA;
+  --purple:#7B5EA7;--purple-light:#EDE7F6;--sky:#4FC3F7;
+  --cream:#FFF8F0;--warm:#FFF3E8;--white:#FFFFFF;
+  --text:#2D1B00;--text-mid:#6B4226;--text-soft:#A0714F;
+  --border:#F0DCCC;--shadow-warm:rgba(255,140,105,0.2);--shadow-soft:rgba(45,27,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,248,240,0.96);backdrop-filter:blur(16px);border-bottom:2px solid var(--border);height:70px;display:flex;align-items:center;padding:0 3rem;justify-content:space-between;}
+.nav-logo{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--peach-dark);display:flex;align-items:center;}
+.nav-logo span{color:var(--yellow);}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text-mid);font-weight:700;font-size:0.95rem;transition:color 0.2s;cursor:pointer;}
+.nav-links a:hover{color:var(--peach);}
+.btn-nav{background:var(--peach)!important;color:white!important;padding:0.55rem 1.5rem;border-radius:50px;font-weight:800!important;box-shadow:0 4px 15px var(--shadow-warm);transition:all 0.2s!important;}
+.btn-nav:hover{background:var(--peach-dark)!important;transform:translateY(-1px);}
+.screen{display:none;min-height:100vh;padding-top:70px;}
+.screen.active{display:block;}
+.hidden{display:none!important;}
+
+/* HERO */
+.hero-wrap{background:linear-gradient(160deg,#FFF3E8 0%,#FFF8F0 40%,#F0F7FF 100%);position:relative;overflow:visible;padding:5rem 3rem 4rem;}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.35;pointer-events:none;}
+.b1{width:400px;height:400px;background:var(--peach-light);top:-100px;right:-100px;}
+.b2{width:300px;height:300px;background:var(--yellow);bottom:-50px;left:-80px;}
+.b3{width:200px;height:200px;background:var(--mint-light);top:50%;right:20%;}
+.floaties{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden;}
+.fl{position:absolute;font-size:2rem;opacity:0.12;animation:flt 6s ease-in-out infinite;}
+.fl:nth-child(1){top:15%;left:5%;animation-delay:0s;font-size:2.5rem}
+.fl:nth-child(2){top:25%;right:8%;animation-delay:1s;font-size:1.8rem}
+.fl:nth-child(3){top:65%;left:8%;animation-delay:2s;font-size:2.2rem}
+.fl:nth-child(4){top:10%;left:30%;animation-delay:3s;font-size:1.5rem}
+.fl:nth-child(5){top:75%;right:10%;animation-delay:1.5s;font-size:2rem}
+.fl:nth-child(6){top:45%;left:2%;animation-delay:4s;font-size:1.6rem}
+@keyframes flt{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-15px) rotate(5deg)}}
+.hero-in{max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1.1fr 0.9fr;gap:4rem;align-items:center;position:relative;z-index:1;}
+.eyebrow{display:inline-flex;align-items:center;gap:0.5rem;background:var(--yellow-light);border:2px solid var(--yellow);color:var(--peach-dark);padding:0.4rem 1.1rem;border-radius:50px;font-size:0.85rem;font-weight:800;margin-bottom:1.5rem;}
+.hero h1{font-family:'Baloo 2',cursive;font-size:3.4rem;font-weight:800;line-height:1.15;color:var(--text);margin-bottom:1.2rem;}
+.hero h1 .ac{color:var(--peach);position:relative;}
+.hero h1 .ac::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:4px;background:var(--yellow);border-radius:4px;}
+.hero-promise{font-size:1.1rem;font-weight:700;color:var(--text-mid);line-height:1.7;margin-bottom:0.75rem;}
+.hero-promise strong{color:var(--peach-dark);}
+.hero-sub{font-size:0.95rem;color:var(--text-soft);line-height:1.7;margin-bottom:2rem;font-weight:600;}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}
+.btn-cta{background:linear-gradient(135deg,var(--peach),var(--peach-dark));color:white;padding:1rem 2.2rem;border-radius:50px;font-size:1.05rem;font-weight:800;border:none;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 6px 25px var(--shadow-warm);transition:all 0.25s;}
+.btn-cta:hover{transform:translateY(-2px);}
+.btn-ghost{background:white;color:var(--peach-dark);border:2.5px solid var(--peach);padding:1rem 2rem;border-radius:50px;font-size:1rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{background:var(--peach);color:white;}
+.trust{display:flex;gap:1.5rem;margin-top:1.75rem;flex-wrap:wrap;}
+.trust-i{display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;font-weight:700;color:var(--text-soft);}
+.phone-mock{background:white;border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,0.15);overflow:hidden;border:3px solid var(--border);max-width:340px;margin:0 auto;position:relative;}
+.phone-top{background:var(--peach);padding:0.75rem 1.5rem;display:flex;justify-content:space-between;align-items:center;}
+.phone-top-t{color:white;font-weight:800;font-size:0.9rem;}
+.phone-top-s{color:rgba(255,255,255,0.8);font-size:0.8rem;}
+.phone-body{padding:1.25rem;}
+.notif{background:var(--cream);border-radius:16px;padding:1rem;margin-bottom:0.75rem;border-left:4px solid;}
+.n1{border-color:var(--yellow)}.n2{border-color:var(--mint)}.n3{border-color:var(--peach)}
+.ntype{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.35rem;}
+.n1 .ntype{color:#C49A00}.n2 .ntype{color:#03A97A}.n3 .ntype{color:var(--peach-dark)}
+.ntitle{font-weight:800;font-size:0.88rem;color:var(--text);margin-bottom:0.3rem;line-height:1.3;}
+.nprev{font-size:0.78rem;color:var(--text-soft);line-height:1.4;font-weight:600;}
+.phone-ft{text-align:center;padding:0.75rem 1.25rem 1.25rem;font-size:0.78rem;color:var(--text-soft);font-weight:700;}
+.sticker{background:white;border-radius:20px;padding:0.6rem 1rem;font-size:0.82rem;font-weight:800;box-shadow:0 8px 25px rgba(0,0,0,0.12);display:inline-flex;align-items:center;gap:0.4rem;white-space:nowrap;margin-bottom:0.75rem;}
+.st1{color:var(--peach-dark);border:2px solid var(--peach-light);}
+.st2{color:var(--purple);border:2px solid var(--purple-light);}
+
+/* SECTIONS */
+.sec{padding:5rem 3rem;}.sec-in{max-width:1150px;margin:0 auto;}
+.stag{display:inline-flex;background:var(--yellow-light);border:2px solid var(--yellow);color:var(--peach-dark);padding:0.3rem 1rem;border-radius:50px;font-size:0.8rem;font-weight:800;margin-bottom:1rem;}
+.sh{font-family:'Baloo 2',cursive;font-size:2.6rem;font-weight:800;color:var(--text);margin-bottom:0.75rem;line-height:1.2;}
+.sp{font-size:1rem;color:var(--text-soft);max-width:560px;line-height:1.7;margin-bottom:3rem;font-weight:600;}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;position:relative;}
+.step{background:white;border-radius:24px;padding:1.75rem 1.5rem;text-align:center;border:2px solid var(--border);transition:all 0.3s;}
+.step:hover{border-color:var(--peach-light);transform:translateY(-5px);box-shadow:0 15px 40px var(--shadow-warm);}
+.snum{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--peach),var(--yellow));color:white;font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 4px 15px var(--shadow-warm);}
+.sico{font-size:2.2rem;margin-bottom:0.75rem;display:block;}
+.stitle{font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.5rem;}
+.sdesc{font-size:0.85rem;color:var(--text-soft);line-height:1.6;font-weight:600;}
+.rcv{background:linear-gradient(135deg,#FFF0E8 0%,#F0F7FF 100%);}
+.rcv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.rc{background:white;border-radius:28px;padding:2rem;border:2.5px solid var(--border);transition:all 0.3s;position:relative;overflow:hidden;}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;}
+.rc-s::before{background:linear-gradient(90deg,var(--yellow),var(--peach-light))}
+.rc-a::before{background:linear-gradient(90deg,var(--mint),var(--sky))}
+.rc-c::before{background:linear-gradient(90deg,var(--peach),var(--purple-light))}
+.rc:hover{transform:translateY(-6px);box-shadow:0 20px 50px var(--shadow-soft);}
+.rc-em{font-size:3rem;margin-bottom:1rem;display:block;}
+.rc-t{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:0.6rem;}
+.rc-d{font-size:0.9rem;color:var(--text-soft);line-height:1.7;font-weight:600;}
+.rc-ex{margin-top:1.25rem;background:var(--cream);border-radius:14px;padding:1rem;font-size:0.82rem;color:var(--text-mid);font-style:italic;line-height:1.6;font-weight:600;border-left:3px solid var(--peach-light);}
+.cult-in{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.flags{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;}
+.flag{background:white;border-radius:16px;padding:1rem;text-align:center;border:2px solid var(--border);transition:all 0.2s;}
+.flag:hover{border-color:var(--peach-light);transform:scale(1.05);}
+.fem{font-size:2rem;display:block;margin-bottom:0.3rem;}
+.fn{font-size:0.72rem;font-weight:800;color:var(--text-soft);}
+.cf{display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:1.25rem;}
+.cf-i{width:42px;height:42px;border-radius:12px;background:var(--yellow-light);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.cf-t{font-weight:800;font-size:0.95rem;color:var(--text);margin-bottom:0.2rem;}
+.cf-d{font-size:0.85rem;color:var(--text-soft);line-height:1.5;font-weight:600;}
+.testi-bg{background:var(--warm);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
+.tc{background:white;border-radius:24px;padding:1.75rem;border:2px solid var(--border);}
+.tq{font-size:3rem;color:var(--peach-light);line-height:1;margin-bottom:0.5rem;font-family:Georgia,serif;}
+.tt{font-size:0.9rem;color:var(--text-mid);line-height:1.7;font-weight:600;margin-bottom:1.25rem;}
+.ta{display:flex;align-items:center;gap:0.75rem;}
+.tav{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--peach-light),var(--yellow));display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.tn{font-weight:800;font-size:0.9rem;}
+.td{font-size:0.78rem;color:var(--text-soft);font-weight:600;}
+.ts{color:var(--yellow);font-size:0.85rem;margin-bottom:0.75rem;}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
+.pc{background:white;border-radius:28px;padding:2rem;border:2.5px solid var(--border);position:relative;transition:all 0.3s;}
+.pc.feat{border-color:var(--peach);box-shadow:0 20px 60px var(--shadow-warm);transform:scale(1.03);}
+.pc:hover:not(.feat){border-color:var(--peach-light);box-shadow:0 12px 35px var(--shadow-soft);}
+.pbadge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--peach),var(--peach-dark));color:white;padding:0.3rem 1.2rem;border-radius:50px;font-size:0.78rem;font-weight:800;white-space:nowrap;box-shadow:0 4px 12px var(--shadow-warm);}
+.pname{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:700;color:var(--text-soft);margin-bottom:0.5rem;}
+.pamt{font-family:'Baloo 2',cursive;font-size:2.8rem;font-weight:800;color:var(--text);line-height:1;}
+.pcur{font-size:1.2rem;}
+.pper{font-size:0.85rem;color:var(--text-soft);font-weight:700;margin-bottom:0.5rem;}
+.psave{display:inline-flex;background:var(--mint-light);color:#03A97A;padding:0.2rem 0.7rem;border-radius:50px;font-size:0.75rem;font-weight:800;margin-bottom:1.25rem;}
+.pf{list-style:none;margin-bottom:1.75rem;}
+.pf li{font-size:0.88rem;color:var(--text-mid);font-weight:700;padding:0.45rem 0;display:flex;align-items:flex-start;gap:0.5rem;border-bottom:1px solid var(--border);}
+.pf li:last-child{border-bottom:none;}
+.pf li::before{content:'✓';color:var(--mint);font-weight:900;flex-shrink:0;}
+.btn-p{width:100%;padding:0.9rem;border-radius:50px;font-size:1rem;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-pm{background:linear-gradient(135deg,var(--peach),var(--peach-dark));color:white;box-shadow:0 4px 15px var(--shadow-warm);}
+.btn-pm:hover{transform:translateY(-2px);}
+.btn-po{background:white;color:var(--peach-dark);border:2.5px solid var(--peach)!important;}
+.btn-po:hover{background:var(--peach);color:white;}
+.faq-bg{background:var(--warm);}
+.faq-in{max-width:750px;margin:0 auto;}
+.fi{background:white;border-radius:16px;border:2px solid var(--border);margin-bottom:0.75rem;overflow:hidden;}
+.fq{padding:1.2rem 1.5rem;font-weight:800;font-size:0.95rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text);user-select:none;}
+.fq:hover{color:var(--peach-dark);}
+.ftog{font-size:1.3rem;color:var(--peach);transition:transform 0.2s;font-weight:400;}
+.fi.open .ftog{transform:rotate(45deg);}
+.fa{display:none;padding:0 1.5rem 1.2rem;font-size:0.9rem;color:var(--text-mid);line-height:1.7;font-weight:600;}
+.fi.open .fa{display:block;}
+
+/* FOOTER */
+footer{background:var(--text);color:rgba(255,255,255,0.85);padding:4rem 3rem 2rem;}
+.ft-in{max-width:1150px;margin:0 auto;}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1.5fr;gap:3rem;margin-bottom:3rem;}
+.flogo{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:white;margin-bottom:0.75rem;}
+.flogo span{color:var(--yellow);}
+.ftag{font-size:0.9rem;line-height:1.7;font-weight:600;margin-bottom:1.5rem;color:rgba(255,255,255,0.6);}
+.fsoc{display:flex;gap:0.75rem;}
+.sb{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;transition:all 0.2s;text-decoration:none;border:1px solid rgba(255,255,255,0.15);}
+.sb:hover{background:var(--peach);border-color:var(--peach);transform:translateY(-2px);}
+.fct{font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:white;margin-bottom:1.25rem;}
+.flinks{list-style:none;display:flex;flex-direction:column;gap:0.6rem;}
+.flinks a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;transition:color 0.2s;cursor:pointer;}
+.flinks a:hover{color:var(--peach-light);}
+.fci{display:flex;align-items:center;gap:0.5rem;font-size:0.88rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:0.6rem;}
+.ft-bot{border-top:1px solid rgba(255,255,255,0.1);padding-top:1.75rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.fcp{font-size:0.82rem;color:rgba(255,255,255,0.4);font-weight:600;}
+.flegal{display:flex;gap:1.5rem;}
+.flegal a{font-size:0.82rem;color:rgba(255,255,255,0.4);text-decoration:none;font-weight:600;cursor:pointer;transition:color 0.2s;}
+.flegal a:hover{color:var(--peach-light);}
+.ftech{font-size:0.75rem;color:rgba(255,255,255,0.25);text-align:center;margin-top:1.5rem;font-weight:600;}
+
+/* FORMS */
+.fscr{min-height:calc(100vh - 70px);display:flex;align-items:center;justify-content:center;padding:3rem 2rem;background:linear-gradient(160deg,#FFF3E8,#F0F7FF);}
+.fbox{background:white;border-radius:32px;padding:3rem;width:100%;max-width:520px;border:2.5px solid var(--border);box-shadow:0 25px 70px rgba(0,0,0,0.1);}
+.flogosm{font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:var(--peach-dark);margin-bottom:1rem;}
+.flogosm span{color:var(--yellow);}
+.ftitle{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--text);margin-bottom:0.3rem;}
+.fsub{font-size:0.9rem;color:var(--text-soft);font-weight:600;margin-bottom:2rem;}
+.sdots{display:flex;gap:0.4rem;margin-bottom:2rem;}
+.sd{height:6px;border-radius:3px;background:var(--border);transition:all 0.3s;width:24px;}
+.sd.on{background:var(--peach);width:40px;}
+label{display:block;font-size:0.85rem;font-weight:800;color:var(--text-mid);margin-bottom:0.4rem;}
+input,select,textarea{width:100%;padding:0.8rem 1.1rem;border:2px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:600;color:var(--text);background:var(--cream);outline:none;transition:border-color 0.2s;}
+input:focus,select:focus{border-color:var(--peach);background:white;}
+.fg{margin-bottom:1.1rem;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.bfull{width:100%;padding:1rem;border-radius:50px;font-size:1rem;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;border:none;margin-top:0.5rem;transition:all 0.2s;}
+.bpm{background:linear-gradient(135deg,var(--peach),var(--peach-dark));color:white;box-shadow:0 4px 15px var(--shadow-warm);}
+.bpm:hover{transform:translateY(-2px);}
+.bback{background:white;color:var(--text-soft);border:2px solid var(--border)!important;margin-top:0.5rem;}
+.bback:hover{border-color:var(--peach)!important;color:var(--peach);}
+.flink{text-align:center;font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-top:1.25rem;}
+.flink a{color:var(--peach-dark);cursor:pointer;font-weight:800;}
+.kcard{background:var(--cream);border-radius:18px;padding:1.25rem;margin-bottom:0.75rem;border:2px solid var(--border);}
+.khead{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;}
+.klbl{font-weight:800;font-size:0.9rem;}
+.brm{background:none;border:none;color:var(--text-soft);cursor:pointer;font-size:1rem;padding:0.2rem;transition:color 0.2s;}
+.brm:hover{color:var(--peach);}
+.badd{width:100%;background:none;border:2.5px dashed var(--border);border-radius:14px;padding:0.9rem;color:var(--text-soft);font-size:0.9rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:1rem;transition:all 0.2s;}
+.badd:hover{border-color:var(--peach);color:var(--peach);}
+.pmopts{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1.1rem;}
+.pmo{border:2px solid var(--border);border-radius:12px;padding:0.9rem;text-align:center;cursor:pointer;transition:all 0.2s;}
+.pmo.sel{border-color:var(--peach);background:rgba(255,140,105,0.07);}
+.pmico{font-size:1.4rem;display:block;margin-bottom:0.2rem;}
+.pmn{font-size:0.78rem;font-weight:800;color:var(--text-mid);}
+.planopts{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1.1rem;}
+.plano{border:2px solid var(--border);border-radius:14px;padding:1rem 0.75rem;cursor:pointer;transition:all 0.2s;position:relative;}
+.plano.sel{border-color:var(--peach);background:rgba(255,140,105,0.05);}
+.pln{font-weight:800;font-size:0.82rem;color:var(--text);margin-bottom:0.2rem;}
+.plp{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;color:var(--peach-dark);}
+.plper{font-size:0.68rem;color:var(--text-soft);font-weight:700;}
+.plbest{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--peach);color:white;font-size:0.65rem;font-weight:800;padding:0.15rem 0.6rem;border-radius:50px;white-space:nowrap;}
+
+/* DASHBOARD */
+.dash{max-width:1100px;margin:0 auto;padding:2.5rem 2rem;}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;}
+.dgreet{font-family:'Baloo 2',cursive;font-size:2.2rem;font-weight:800;color:var(--text);}
+.dgreet em{color:var(--peach);font-style:normal;}
+.ddate{font-size:0.88rem;color:var(--text-soft);font-weight:700;}
+.dtabs{display:flex;gap:0.4rem;background:white;border-radius:16px;padding:0.4rem;border:2px solid var(--border);width:fit-content;margin-bottom:2rem;}
+.dtab{padding:0.55rem 1.3rem;border-radius:12px;font-size:0.88rem;font-weight:800;cursor:pointer;color:var(--text-soft);border:none;background:none;font-family:'Nunito',sans-serif;transition:all 0.2s;}
+.dtab.on{background:var(--peach);color:white;box-shadow:0 3px 10px var(--shadow-warm);}
+.cpills{display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:2rem;}
+.cpill{display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1.2rem;border-radius:50px;border:2.5px solid var(--border);background:white;font-size:0.88rem;font-weight:800;color:var(--text-mid);cursor:pointer;transition:all 0.2s;font-family:'Nunito',sans-serif;}
+.cpill.on{border-color:var(--peach);background:var(--peach);color:white;}
+.cav{width:28px;height:28px;border-radius:50%;background:var(--yellow-light);display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+.cgf{grid-column:1/-1;}
+.cc{background:white;border-radius:22px;padding:1.6rem;border:2.5px solid var(--border);position:relative;overflow:hidden;transition:all 0.3s;}
+.cc:hover{transform:translateY(-3px);box-shadow:0 12px 35px var(--shadow-soft);}
+.cc-s{border-top:4px solid var(--yellow)}.cc-a{border-top:4px solid var(--mint)}.cc-c{border-top:4px solid var(--peach)}
+.cct{font-size:0.7rem;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:0.7rem;display:flex;align-items:center;gap:0.4rem;}
+.cc-s .cct{color:#B8860B}.cc-a .cct{color:#03A97A}.cc-c .cct{color:var(--peach-dark)}
+.ccti{font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:0.65rem;line-height:1.3;}
+.cctx{font-size:0.88rem;color:var(--text-mid);line-height:1.7;font-weight:600;}
+.ccf{display:flex;justify-content:space-between;align-items:center;margin-top:1.1rem;padding-top:0.9rem;border-top:1.5px solid var(--border);}
+.ccb{background:var(--cream);color:var(--text-soft);padding:0.25rem 0.75rem;border-radius:50px;font-size:0.72rem;font-weight:800;}
+.bregen{display:flex;align-items:center;gap:0.35rem;background:none;border:2px solid var(--border);border-radius:50px;padding:0.35rem 0.9rem;font-size:0.78rem;font-weight:800;color:var(--text-soft);cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;}
+.bregen:hover{border-color:var(--peach);color:var(--peach);}
+.bregen:disabled{opacity:0.5;cursor:wait;}
+.hlist{display:flex;flex-direction:column;gap:0.75rem;}
+.hi{background:white;border-radius:16px;padding:1.1rem 1.4rem;border:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:1rem;transition:all 0.2s;}
+.hi:hover{border-color:var(--peach-light);}
+.hiti{font-weight:800;font-size:0.9rem;margin-bottom:0.2rem;}
+.hifo{font-size:0.78rem;color:var(--text-soft);font-weight:700;}
+.hibadge{font-size:0.72rem;font-weight:800;padding:0.2rem 0.7rem;border-radius:50px;background:var(--cream);color:var(--peach-dark);white-space:nowrap;}
+.hidt{font-size:0.75rem;color:var(--text-soft);font-weight:700;}
+.asec{background:white;border-radius:22px;padding:1.75rem;border:2.5px solid var(--border);margin-bottom:1.25rem;}
+.astitle{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem;}
+.planchip{background:var(--peach);color:white;padding:0.2rem 0.7rem;border-radius:50px;font-size:0.75rem;font-weight:800;}
+.bsm{padding:0.6rem 1.3rem;border-radius:50px;font-size:0.85rem;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;border:2.5px solid var(--peach);background:white;color:var(--peach-dark);transition:all 0.2s;}
+.bsm:hover{background:var(--peach);color:white;}
+
+/* LOADING */
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,248,240,0.9);display:flex;align-items:center;justify-content:center;z-index:500;flex-direction:column;gap:1rem;}
+.loading-overlay.hidden{display:none!important;}
+.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--peach);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:700;color:var(--peach-dark);}
+
+/* ERROR */
+.error-msg{background:#FFF0F0;border:2px solid #FFB3B3;color:#CC0000;border-radius:12px;padding:0.85rem 1rem;font-size:0.88rem;font-weight:700;margin-bottom:1rem;display:none;}
+.error-msg.show{display:block;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--text);color:white;padding:0.9rem 1.6rem;border-radius:16px;font-size:0.9rem;font-weight:800;box-shadow:0 8px 30px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:999;border-left:4px solid var(--peach);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:900px){
+  nav{padding:0 1.5rem}.nav-links{display:none}
+  .hero-in{grid-template-columns:1fr}.phone-mock{display:none}
+  .hero h1{font-size:2.5rem}.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}
+  .rcv-grid,.testi-grid,.price-grid{grid-template-columns:1fr}.pc.feat{transform:none}
+  .cult-in{grid-template-columns:1fr}.ft-top{grid-template-columns:1fr 1fr}
+  .cg{grid-template-columns:1fr}.planopts{grid-template-columns:1fr}.frow{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .sec,.hero-wrap,.faq-bg,.testi-bg{padding:3rem 1.5rem}
+  footer{padding:3rem 1.5rem 1.5rem}.ft-top{grid-template-columns:1fr;gap:2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay hidden" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Génération en cours...</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Yo<span>●</span>Muna</div>
+  <ul class="nav-links">
+    <li><a onclick="showS('home')">Accueil</a></li>
+    <li><a href="#features">Comment ça marche</a></li>
+    <li><a href="#pricing">Tarifs</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a class="btn-nav" onclick="showS('signup')">Commencer gratuitement</a></li>
+  </ul>
+</nav>
+
+<!-- HOME -->
+<div id="s-home" class="screen active">
+<section class="hero-wrap">
+  <div class="floaties">
+    <span class="fl">🌙</span><span class="fl">⭐</span><span class="fl">📖</span>
+    <span class="fl">🎨</span><span class="fl">🌈</span><span class="fl">🦋</span>
+  </div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="hero-in">
+    <div>
+      <div class="eyebrow">🌍 Pour toutes les mamans du monde</div>
+      <h1>Chaque soir,<br><span class="ac">une magie</span><br>pour ton enfant</h1>
+      <p class="hero-promise">Fini les soirs où tu ne sais pas quoi raconter, quoi proposer, comment réagir.<br><strong>YoMuna génère pour toi, chaque jour, une histoire personnalisée, une activité adaptée et un conseil parental</strong> — le tout ancré dans la culture et la langue de chez toi.</p>
+      <p class="hero-sub">Tu remplis un formulaire une seule fois. YoMuna s'occupe du reste, automatiquement, tous les jours — pour chaque enfant, à chaque âge.</p>
+      <div class="hero-cta">
+        <button class="btn-cta" onclick="showS('signup')">✨ Commencer gratuitement</button>
+        <button class="btn-ghost" onclick="showS('login')">Se connecter</button>
+      </div>
+      <div class="trust">
+        <div class="trust-i">✅ Sans engagement</div>
+        <div class="trust-i">📱 Mobile Money accepté</div>
+        <div class="trust-i">🌍 Disponible partout</div>
+        <div class="trust-i">👶 0 à 17 ans</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+      <div class="sticker st1">🎉 Contenu généré par IA</div>
+      <div class="phone-mock">
+        <div class="phone-top">
+          <span class="phone-top-t">YoMuna · Ce soir pour Amina</span>
+          <span class="phone-top-s">19:00</span>
+        </div>
+        <div class="phone-body">
+          <div class="notif n1"><div class="ntype">📖 Histoire du soir</div><div class="ntitle">Amina et le génie du Mont Cameroun</div><div class="nprev">Il était une fois une petite fille courageuse qui trouva une lampe dorée...</div></div>
+          <div class="notif n2"><div class="ntype">🎮 Activité demain</div><div class="ntitle">L'orchestre de la cuisine</div><div class="nprev">Canettes, casserole et riz — crée des instruments de musique !</div></div>
+          <div class="notif n3"><div class="ntype">💡 Conseil du jour</div><div class="ntitle">Gérer les caprices au coucher</div><div class="nprev">Un rituel fixe de 20 min aide ton enfant à anticiper...</div></div>
+        </div>
+        <div class="phone-ft">🔄 Régénérer si ça ne convient pas</div>
+      </div>
+      <div class="sticker st2">🌍 Adapté à votre culture</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="features">
+  <div class="sec-in">
+    <div class="stag">✨ Simple comme bonjour</div>
+    <h2 class="sh">Comment ça fonctionne ?</h2>
+    <p class="sp">4 étapes. Une seule fois. Ensuite, YoMuna travaille pour toi chaque jour.</p>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><span class="sico">📝</span><div class="stitle">Tu crées ton profil</div><div class="sdesc">Ton pays, ta langue (FR ou EN), ton WhatsApp. 2 minutes.</div></div>
+      <div class="step"><div class="snum">2</div><span class="sico">👶</span><div class="stitle">Tu présentes tes enfants</div><div class="sdesc">Prénom, âge, centres d'intérêt, défi du moment. Jusqu'à 4 enfants.</div></div>
+      <div class="step"><div class="snum">3</div><span class="sico">✅</span><div class="stitle">Tu choisis ton plan</div><div class="sdesc">Mensuel ou annuel. Mobile Money, Wave ou carte. Résiliable à tout moment.</div></div>
+      <div class="step"><div class="snum">4</div><span class="sico">🎁</span><div class="stitle">YoMuna génère chaque jour</div><div class="sdesc">Histoire, activité, conseil — personnalisés et culturellement adaptés.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec rcv">
+  <div class="sec-in">
+    <div class="stag">🎁 Ce que tu reçois</div>
+    <h2 class="sh">3 cadeaux quotidiens pour toi et ton enfant</h2>
+    <p class="sp">Chaque jour, un contenu nouveau, jamais répété, généré spécialement pour chaque enfant.</p>
+    <div class="rcv-grid">
+      <div class="rc rc-s"><span class="rc-em">📖</span><div class="rc-t">L'histoire du soir</div><div class="rc-d">Une histoire inédite chaque soir avec le prénom de ton enfant comme héros. Les décors sont tirés de ton pays — forêts, marchés, lacs, villages.</div><div class="rc-ex">"Amina et le génie du Mont Cameroun. Il était une fois une petite fille courageuse qui trouva une lampe dorée au pied du grand volcan..."</div></div>
+      <div class="rc rc-a"><span class="rc-em">🎮</span><div class="rc-t">L'activité du lendemain</div><div class="rc-d">Une idée de jeu créative faisable à la maison avec ce que tu as déjà. Adaptée à l'âge et aux centres d'intérêt de ton enfant.</div><div class="rc-ex">"L'orchestre de la cuisine : canettes, casserole, riz. Amina crée ses propres instruments et apprend le rythme en jouant !"</div></div>
+      <div class="rc rc-c"><span class="rc-em">💡</span><div class="rc-t">Le conseil parental du jour</div><div class="rc-d">Une réponse concrète au défi que tu vis — crises, sommeil, devoirs, jalousie, écrans. Adapté à votre réalité culturelle.</div><div class="rc-ex">"Pour les caprices au coucher : un rituel fixe de 20 min aide l'enfant à anticiper et accepter la transition vers le sommeil..."</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-in">
+    <div class="cult-in">
+      <div>
+        <div class="flags">
+          <div class="flag"><span class="fem">🇨🇲</span><div class="fn">Cameroun</div></div>
+          <div class="flag"><span class="fem">🇫🇷</span><div class="fn">France</div></div>
+          <div class="flag"><span class="fem">🇨🇦</span><div class="fn">Canada</div></div>
+          <div class="flag"><span class="fem">🇬🇧</span><div class="fn">UK</div></div>
+          <div class="flag"><span class="fem">🇬🇦</span><div class="fn">Gabon</div></div>
+          <div class="flag"><span class="fem">🇨🇬</span><div class="fn">Congo</div></div>
+          <div class="flag"><span class="fem">🇨🇮</span><div class="fn">Côte d'Ivoire</div></div>
+          <div class="flag"><span class="fem">🌍</span><div class="fn">& Plus</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="stag">🌍 Un monde adapté à VOUS</div>
+        <h2 class="sh">YoMuna parle votre langue et connaît votre culture</h2>
+        <div class="cf"><div class="cf-i">🗺️</div><div><div class="cf-t">Histoires ancrées localement</div><div class="cf-d">Les lieux, les noms, les traditions de ton pays apparaissent dans les histoires.</div></div></div>
+        <div class="cf"><div class="cf-i">🗣️</div><div><div class="cf-t">Français & Anglais</div><div class="cf-d">Choisis la langue ou les deux. Parfait pour les familles bilingues.</div></div></div>
+        <div class="cf"><div class="cf-i">🌏</div><div><div class="cf-t">Tu vis en France mais veux l'univers africain ?</div><div class="cf-d">Tu personnalises l'ancrage culturel de ton choix, peu importe où tu es.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec testi-bg">
+  <div class="sec-in">
+    <div class="stag">❤️ Elles l'adorent</div>
+    <h2 class="sh">Des mamans qui ont retrouvé la magie du soir</h2>
+    <div class="testi-grid">
+      <div class="tc"><div class="ts">★★★★★</div><div class="tq">"</div><div class="tt">Avant YoMuna, je répétais les mêmes 3 histoires depuis des mois. Maintenant ma fille attend le soir avec impatience ! Le fait que ça soit ancré dans notre culture camerounaise, c'est ce qui fait toute la différence.</div><div class="ta"><div class="tav">👩🏾</div><div><div class="tn">Christelle N.</div><div class="td">Maman de 2 enfants · Douala</div></div></div></div>
+      <div class="tc"><div class="ts">★★★★★</div><div class="tq">"</div><div class="tt">Je vis en France mais je voulais que mon fils grandisse avec des références africaines. YoMuna est exactement ça. Les personnages ont des noms africains, les histoires se passent au Cameroun. Mon fils est fier de ses racines.</div><div class="ta"><div class="tav">👩🏾‍💼</div><div><div class="tn">Sandra M.</div><div class="td">Maman de 1 enfant · Paris, France</div></div></div></div>
+      <div class="tc"><div class="ts">★★★★★</div><div class="tq">"</div><div class="tt">Le conseil parental m'a sauvé la vie avec les crises de mon fils de 4 ans. Des vraies solutions pratiques, pas des théories impossibles. C'est comme avoir une experte disponible chaque jour pour 2 500 FCFA.</div><div class="ta"><div class="tav">👩🏿</div><div><div class="tn">Laure B.</div><div class="td">Maman de 3 enfants · Yaoundé</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="pricing">
+  <div class="sec-in">
+    <div class="stag">💳 Tarifs simples</div>
+    <h2 class="sh">Investis dans les moments magiques</h2>
+    <p class="sp">Moins cher qu'un livre pour enfant. Mobile Money, Wave ou carte bancaire. Sans engagement.</p>
+    <div class="price-grid">
+      <div class="pc">
+        <div class="pname">Solo</div>
+        <div class="pamt"><span class="pcur">FCFA </span>2 500</div>
+        <div class="pper">par mois</div>
+        <ul class="pf"><li>1 enfant</li><li>Histoire du soir personnalisée</li><li>Activité quotidienne adaptée</li><li>Conseil parental ciblé</li><li>Régénération illimitée</li><li>Historique complet</li></ul>
+        <button class="btn-p btn-po" onclick="showS('signup')">Commencer</button>
+      </div>
+      <div class="pc feat">
+        <div class="pbadge">⭐ Meilleur rapport qualité/prix</div>
+        <div class="pname">Famille</div>
+        <div class="pamt"><span class="pcur">FCFA </span>4 000</div>
+        <div class="pper">par mois</div>
+        <ul class="pf"><li>Jusqu'à 4 enfants</li><li>Tout le plan Solo</li><li>Profil unique par enfant</li><li>Contenu adapté par âge</li><li>Bilan hebdomadaire famille</li><li>Accès prioritaire nouveautés</li></ul>
+        <button class="btn-p btn-pm" onclick="showS('signup')">Choisir ce plan</button>
+      </div>
+      <div class="pc">
+        <div class="pname">Annuel 🎊</div>
+        <div class="pamt"><span class="pcur">FCFA </span>20 000</div>
+        <div class="pper">pour 12 mois complets</div>
+        <div class="psave">🎉 Économise jusqu'à 28 000 FCFA/an</div>
+        <ul class="pf"><li>Jusqu'à 4 enfants inclus</li><li>12 mois d'accès complet</li><li>Tout le plan Famille</li><li>Badge "Maman YoMuna" exclusif</li><li>Support prioritaire</li><li>Avant-première sur les nouveautés</li></ul>
+        <button class="btn-p btn-po" onclick="showS('signup')">Prendre l'annuel</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec faq-bg" id="faq">
+  <div class="faq-in">
+    <div class="stag">❓ Questions fréquentes</div>
+    <h2 class="sh" style="margin-bottom:2rem">Tout ce que tu veux savoir</h2>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Comment YoMuna personnalise le contenu pour mon enfant ?<span class="ftog">+</span></div><div class="fa">Tu remplis le profil de ton enfant une seule fois : prénom, âge, centres d'intérêt, défi parental et ton pays. Notre IA utilise ces informations pour générer un contenu unique chaque jour — les histoires mentionnent le prénom de ton enfant, les lieux de ton pays, et les activités sont calibrées pour son stade de développement exact.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Est-ce que ça marche si je vis en France mais veux l'univers camerounais ?<span class="ftog">+</span></div><div class="fa">Absolument. Tu choisis ton pays de résidence ET l'ancrage culturel de ton choix pour les histoires. Beaucoup de mamans de la diaspora africaine vivent en Europe ou en Amérique et veulent que leurs enfants grandissent avec les références culturelles africaines. YoMuna est fait exactement pour ça.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">YoMuna convient pour quel âge d'enfant ?<span class="ftog">+</span></div><div class="fa">YoMuna s'adapte de 0 à 17 ans. Pour les bébés : stimulations sensorielles et comptines. Pour les 3-6 ans : histoires courtes et jeux d'éveil. Pour les 7-12 ans : aventures et activités créatives. Pour les ados : nouvelles inspirantes et conseils communication parent-ado.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Comment se passe le paiement ? Je n'ai pas de carte bancaire.<span class="ftog">+</span></div><div class="fa">Aucun problème ! YoMuna accepte MTN Mobile Money, Orange Money, Wave et toutes les cartes bancaires. Le prélèvement est automatique chaque mois — tu n'as rien à faire.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Puis-je résilier à tout moment ?<span class="ftog">+</span></div><div class="fa">Oui, sans justification et sans frais. Tu peux résilier depuis ton espace membre en un clic. Tu continues à avoir accès à YoMuna jusqu'à la fin de ta période payée.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Le plan annuel à 20 000 FCFA — pour combien d'enfants ?<span class="ftog">+</span></div><div class="fa">Le plan annuel inclut jusqu'à 4 enfants pendant 12 mois complets. Que tu aies 1 ou 4 enfants, tu paies le même prix. Comparé au plan Famille mensuel (4 000 FCFA × 12 = 48 000 FCFA), tu économises 28 000 FCFA sur l'année.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Que se passe-t-il si le contenu généré ne me convient pas ?<span class="ftog">+</span></div><div class="fa">Tu cliques sur "Régénérer" et YoMuna crée immédiatement un nouveau contenu via l'IA. La régénération est illimitée et incluse dans tous les plans.</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft-in">
+    <div class="ft-top">
+      <div>
+        <div class="flogo">Yo<span>●</span>Muna</div>
+        <div class="ftag">YoMuna est l'assistant parental intelligent qui génère chaque jour des histoires personnalisées, des activités adaptées et des conseils parentaux — ancrés dans la culture de chez vous. Pour toutes les mamans du monde, où qu'elles soient.</div>
+        <div class="fsoc">
+          <a class="sb" href="https://instagram.com/yomuna.africa" target="_blank" title="Instagram">📸</a>
+        </div>
+      </div>
+      <div>
+        <div class="fct">Navigation</div>
+        <ul class="flinks">
+          <li><a onclick="showS('home')">Accueil</a></li>
+          <li><a href="#features">Comment ça marche</a></li>
+          <li><a href="#pricing">Tarifs</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a onclick="showS('login')">Se connecter</a></li>
+          <li><a onclick="showS('signup')">Créer un compte</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="fct">À propos</div>
+        <ul class="flinks">
+          <li><a href="#">Notre mission</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="fct">Nous contacter</div>
+        <div class="fci">📧 yo-muna237@gmail.com</div>
+        <div class="fci">💬 WhatsApp : +237 698 493 159</div>
+        <div class="fci">📍 Yaoundé, Cameroun</div>
+        <div class="fci">🕐 Lun–Ven, 8h–18h WAT</div>
+        <br>
+        <div class="fct">Nos réseaux</div>
+        <ul class="flinks">
+          <li><a href="https://instagram.com/yomuna.africa" target="_blank">📸 @yomuna.africa (Instagram)</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <div class="fcp">© 2025 YoMuna. Tous droits réservés.</div>
+      <div class="flegal">
+        <a href="#">Confidentialité</a>
+        <a href="#">Conditions d'utilisation</a>
+        <a href="#">Mentions légales</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+    <div class="ftech">✨ Propulsé par l'Intelligence Artificielle • Paiements sécurisés via NotchPay</div>
+  </div>
+</footer>
+</div>
+
+<!-- SIGNUP -->
+<div id="s-signup" class="screen">
+<div class="fscr">
+<div class="fbox">
+  <div class="sdots"><div class="sd on" id="sd1"></div><div class="sd" id="sd2"></div><div class="sd" id="sd3"></div></div>
+  <div id="ss1">
+    <div class="flogosm">Yo<span>●</span>Muna</div>
+    <div class="ftitle">Créer mon compte 👋</div>
+    <div class="fsub">Étape 1/3 — Vos informations</div>
+    <div class="error-msg" id="err-signup"></div>
+    <div class="frow">
+      <div class="fg"><label>Prénom</label><input type="text" id="rfn" placeholder="Marie" /></div>
+      <div class="fg"><label>Nom</label><input type="text" id="rln" placeholder="Ngo" /></div>
+    </div>
+    <div class="fg"><label>Email</label><input type="email" id="rem" placeholder="marie@email.com" /></div>
+    <div class="fg"><label>WhatsApp (avec indicatif)</label><input type="tel" id="rwa" placeholder="+237 6XX XXX XXX" /></div>
+    <div class="frow">
+      <div class="fg"><label>Pays de résidence</label>
+        <select id="rco">
+          <option value="">Choisir...</option>
+          <option value="CM">🇨🇲 Cameroun</option><option value="FR">🇫🇷 France</option>
+          <option value="CA">🇨🇦 Canada</option><option value="GB">🇬🇧 Royaume-Uni</option>
+          <option value="US">🇺🇸 États-Unis</option><option value="BE">🇧🇪 Belgique</option>
+          <option value="CH">🇨🇭 Suisse</option><option value="GA">🇬🇦 Gabon</option>
+          <option value="CG">🇨🇬 Congo</option><option value="CI">🇨🇮 Côte d'Ivoire</option>
+          <option value="SN">🇸🇳 Sénégal</option><option value="NG">🇳🇬 Nigeria</option>
+          <option value="other">🌍 Autre</option>
+        </select>
+      </div>
+      <div class="fg"><label>Langue préférée</label>
+        <select id="rlg">
+          <option value="fr">🇫🇷 Français</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="both">🌐 Les deux</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Mot de passe</label><input type="password" id="rpw" placeholder="••••••••" /></div>
+    <button class="bfull bpm" onclick="registerUser()">Continuer → Mes enfants</button>
+    <div class="flink">Déjà un compte ? <a onclick="showS('login')">Se connecter</a></div>
+  </div>
+  <div id="ss2" class="hidden">
+    <div class="flogosm">Yo<span>●</span>Muna</div>
+    <div class="ftitle">Mes enfants 👶</div>
+    <div class="fsub">Étape 2/3 — Jusqu'à 4 enfants</div>
+    <div id="klist">
+      <div class="kcard" id="k0">
+        <div class="khead"><div class="klbl">👶 Enfant 1</div></div>
+        <div class="frow">
+          <div class="fg"><label>Prénom</label><input type="text" class="kn" placeholder="Amina" /></div>
+          <div class="fg"><label>Âge</label><select class="ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div>
+        </div>
+        <div class="fg"><label>Centres d'intérêt (optionnel)</label><input type="text" class="ki" placeholder="danse, foot, dessin..." /></div>
+        <div class="fg"><label>Défi parental du moment (optionnel)</label><input type="text" class="kc" placeholder="caprices, sommeil, devoirs..." /></div>
+      </div>
+    </div>
+    <button class="badd" id="btnaddkid" onclick="addKid()">+ Ajouter un autre enfant (max. 4)</button>
+    <button class="bfull bpm" onclick="saveChildren()">Continuer → Mon abonnement</button>
+    <button class="bfull bback" onclick="goStep(1)">← Retour</button>
+  </div>
+  <div id="ss3" class="hidden">
+    <div class="flogosm">Yo<span>●</span>Muna</div>
+    <div class="ftitle">Mon abonnement ✨</div>
+    <div class="fsub">Étape 3/3 — Choisir votre plan</div>
+    <div class="planopts">
+      <div class="plano sel" id="po-solo" onclick="selPlan('solo','2500')"><div class="pln">Solo</div><div class="plp">2 500</div><div class="plper">FCFA/mois • 1 enfant</div></div>
+      <div class="plano" id="po-fam" onclick="selPlan('fam','4000')"><div class="pln">Famille</div><div class="plp">4 000</div><div class="plper">FCFA/mois • 4 enfants</div></div>
+      <div class="plano" id="po-ann" onclick="selPlan('ann','20000')"><div class="plbest">🎉 Meilleur deal</div><div class="pln">Annuel</div><div class="plp">20 000</div><div class="plper">FCFA/an • 4 enfants</div></div>
+    </div>
+    <label style="margin-bottom:0.6rem">Mode de paiement</label>
+    <div class="pmopts">
+      <div class="pmo sel" id="pm-mtn" onclick="selPay('mtn')"><span class="pmico">📱</span><div class="pmn">MTN MoMo</div></div>
+      <div class="pmo" id="pm-or" onclick="selPay('or')"><span class="pmico">🟠</span><div class="pmn">Orange Money</div></div>
+      <div class="pmo" id="pm-wave" onclick="selPay('wave')"><span class="pmico">🌊</span><div class="pmn">Wave</div></div>
+      <div class="pmo" id="pm-card" onclick="selPay('card')"><span class="pmico">💳</span><div class="pmn">Carte bancaire</div></div>
+    </div>
+    <div class="fg"><label id="plbl">Numéro MTN MoMo</label><input type="tel" id="pnum" placeholder="+237 6XX XXX XXX" /></div>
+    <button class="bfull bpm" onclick="initiatePayment()">🚀 Activer mon abonnement YoMuna</button>
+    <button class="bfull bback" onclick="goStep(2)">← Retour</button>
+    <div style="text-align:center;margin-top:1rem;font-size:0.78rem;color:var(--text-soft);font-weight:700">🔒 Paiement 100% sécurisé via NotchPay • Résiliation en 1 clic</div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- LOGIN -->
+<div id="s-login" class="screen">
+<div class="fscr">
+<div class="fbox">
+  <div class="flogosm">Yo<span>●</span>Muna</div>
+  <div class="ftitle">Bon retour 🌙</div>
+  <div class="fsub">Contente de te revoir ! Connecte-toi à ton espace YoMuna.</div>
+  <div class="error-msg" id="err-login"></div>
+  <div class="fg"><label>Email</label><input type="email" id="lem" placeholder="marie@email.com" /></div>
+  <div class="fg"><label>Mot de passe</label><input type="password" id="lpw" placeholder="••••••••" /></div>
+  <button class="bfull bpm" onclick="loginUser()">Se connecter</button>
+  <div class="flink" style="margin-top:0.75rem"><a href="#">Mot de passe oublié ?</a></div>
+  <div style="border-top:2px solid var(--border);margin:1.5rem 0"></div>
+  <div class="flink">Pas encore de compte ? <a onclick="showS('signup')">Créer mon compte gratuitement</a></div>
+</div>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="s-dashboard" class="screen">
+<div class="dash">
+  <div class="dh">
+    <div><div class="dgreet">Bonsoir, <em id="dname">Marie</em> 🌙</div><div class="ddate" id="ddate"></div></div>
+    <button class="bsm" onclick="logoutUser()">Déconnexion</button>
+  </div>
+  <div class="dtabs">
+    <button class="dtab on" onclick="swTab('today',this)">✨ Aujourd'hui</button>
+    <button class="dtab" onclick="swTab('history',this)">📚 Historique</button>
+    <button class="dtab" onclick="swTab('account',this)">👤 Mon compte</button>
+  </div>
+  <div id="dt-today">
+    <div class="cpills" id="child-pills"></div>
+    <div id="child-contents"></div>
+  </div>
+  <div id="dt-history" class="hidden">
+    <div class="hlist" id="history-list">
+      <p style="font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-bottom:0.5rem">Chargement de l'historique...</p>
+    </div>
+  </div>
+  <div id="dt-account" class="hidden">
+    <div class="asec">
+      <div class="astitle">👤 Mon profil</div>
+      <div class="frow"><div class="fg"><label>Prénom</label><input type="text" id="acc-fn" /></div><div class="fg"><label>Nom</label><input type="text" id="acc-ln" /></div></div>
+      <div class="fg"><label>Email</label><input type="email" id="acc-em" /></div>
+      <div class="fg"><label>WhatsApp</label><input type="tel" id="acc-wa" /></div>
+      <div class="frow">
+        <div class="fg"><label>Pays</label><select id="acc-co"><option value="CM">🇨🇲 Cameroun</option><option value="FR">🇫🇷 France</option><option value="other">🌍 Autre</option></select></div>
+        <div class="fg"><label>Langue</label><select id="acc-lg"><option value="fr">🇫🇷 Français</option><option value="en">🇬🇧 English</option><option value="both">🌐 Les deux</option></select></div>
+      </div>
+      <button class="bsm" onclick="updateProfile()">Sauvegarder</button>
+    </div>
+    <div class="asec">
+      <div class="astitle">👶 Mes enfants <span style="margin-left:auto;font-size:0.78rem;color:var(--text-soft);font-weight:700" id="child-count">0 / 4</span></div>
+      <div id="acc-children"></div>
+      <button class="badd" onclick="toast('Ajout d\'enfant disponible prochainement')">+ Ajouter un enfant</button>
+      <button class="bsm" onclick="toast('Profils mis à jour ✓')">Sauvegarder les profils</button>
+    </div>
+    <div class="asec">
+      <div class="astitle">💳 Mon abonnement</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div><div style="font-weight:800;font-size:1rem" id="plan-name">—</div><div style="font-size:0.85rem;color:var(--text-soft);font-weight:700" id="plan-detail">—</div></div>
+        <span class="planchip">✓ Actif</span>
+      </div>
+      <button class="bsm" onclick="toast('Gestion abonnement disponible prochainement')">Gérer l'abonnement</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+// ============================================================
+// CONFIGURATION — REMPLACE CES VALEURS PAR LES TIENNES
+// ============================================================
+const CONFIG = {
+  SUPABASE_URL: 'https://cszvvbqyttsxjlrnrizi.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenZ2YnF5dHRzeGpscm5yaXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MDM5NzgsImV4cCI6MjA5MzM3OTk3OH0.t1L-JpsDDcxpx4z31TIzJPJDmln5dnlsRRIfqolG4Ww',
+  NOTCHPAY_PUBLIC_KEY: 'pk.Cei0CJa69pzjoSQIlkjBQETH68jQEtHTSuljcsWj4IXXH51wkDKHdHu7d067DPHva3FeEgE0K8ELG4fGfcBgw3IL2ZsUdayqE7x0NqIoaVDt8fN1aDSo7X9mtU9jY'
+};
+// ============================================================
+
+// Supabase client léger (sans SDK)
+const sb = {
+  async req(path, method='GET', body=null, token=null) {
+    const h = {
+      'apikey': CONFIG.SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json'
+    };
+    if (token) h['Authorization'] = `Bearer ${token}`;
+    const opts = { method, headers: h };
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch(CONFIG.SUPABASE_URL + path, opts);
+    return r.json();
+  },
+  async signUp(email, password, meta) {
+    return this.req('/auth/v1/signup', 'POST', { email, password });
+  },
+  async signIn(email, password) {
+    return this.req('/auth/v1/token?grant_type=password', 'POST', { email, password });
+  },
+  async signOut(token) {
+    return this.req('/auth/v1/logout', 'POST', null, token);
+  },
+  async insert(table, data, token) {
+    const h = {
+      'apikey': CONFIG.SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    };
+    if (token) h['Authorization'] = `Bearer ${token}`;
+    const r = await fetch(CONFIG.SUPABASE_URL + `/rest/v1/${table}`, {
+      method: 'POST', headers: h, body: JSON.stringify(data)
+    });
+    if (r.status === 201 || r.status === 204) return { success: true };
+    return r.json();
+  },
+  async select(table, query, token) {
+    return this.req(`/rest/v1/${table}?${query}`, 'GET', null, token);
+  },
+  async update(table, query, data, token) {
+    return this.req(`/rest/v1/${table}?${query}`, 'PATCH', data, token);
+  }
+};
+
+// State
+let currentUser = null;
+let currentToken = null;
+let currentChildren = [];
+let selectedPlan = 'solo';
+let selectedAmount = '2500';
+let selectedPay = 'mtn';
+
+// ===== AUTH =====
+async function registerUser() {
+  const fn = document.getElementById('rfn').value.trim();
+  const ln = document.getElementById('rln').value.trim();
+  const em = document.getElementById('rem').value.trim();
+  const wa = document.getElementById('rwa').value.trim();
+  const co = document.getElementById('rco').value;
+  const lg = document.getElementById('rlg').value;
+  const pw = document.getElementById('rpw').value;
+
+  if (!fn||!em||!pw||!co) { showErr('err-signup','Veuillez remplir tous les champs obligatoires.'); return; }
+  if (pw.length < 6) { showErr('err-signup','Le mot de passe doit faire au moins 6 caractères.'); return; }
+
+  showLoading('Création de votre compte...');
+  try {
+    const res = await sb.signUp(em, pw, { first_name:fn, last_name:ln, whatsapp:wa, country:co, language:lg });
+    if (res.error) { showErr('err-signup', res.error.message || 'Erreur lors de la création du compte.'); return; }
+    if (!res.user) { showErr('err-signup', 'Compte non créé. Vérifiez vos informations.'); return; }
+    currentToken = res.access_token;
+    currentUser = res.user;
+    // Sauvegarder profil dans table profiles
+    await sb.insert('profiles', {
+      id: res.user.id,
+      first_name: fn, last_name: ln,
+      email: em, whatsapp: wa,
+      country: co, language: lg
+    }, currentToken).catch(e => console.log('Profile insert:', e));
+    goStep(2);
+  } catch(e) {
+    showErr('err-signup','Erreur de connexion. Vérifiez votre internet.');
+  } finally { hideLoading(); }
+}
+
+async function loginUser() {
+  const em = document.getElementById('lem').value.trim();
+  const pw = document.getElementById('lpw').value;
+  if (!em||!pw) { showErr('err-login','Veuillez remplir email et mot de passe.'); return; }
+
+  showLoading('Connexion en cours...');
+  try {
+    const res = await sb.signIn(em, pw);
+    if (res.error) { showErr('err-login','Email ou mot de passe incorrect.'); return; }
+    currentToken = res.access_token;
+    currentUser = res.user;
+    await loadDashboard();
+    showS('dashboard');
+  } catch(e) {
+    showErr('err-login','Erreur de connexion. Vérifiez votre internet.');
+  } finally { hideLoading(); }
+}
+
+async function logoutUser() {
+  if (currentToken) await sb.signOut(currentToken);
+  currentUser = null; currentToken = null; currentChildren = [];
+  showS('home');
+}
+
+// ===== CHILDREN =====
+let kidCount = 1;
+function addKid() {
+  if (kidCount >= 4) { toast('Maximum 4 enfants avec le plan Famille / Annuel'); return; }
+  kidCount++;
+  const icons = ['','👶','👧','👦','🧒'];
+  const d = document.createElement('div');
+  d.className = 'kcard';
+  d.innerHTML = `<div class="khead"><div class="klbl">${icons[kidCount]||'👶'} Enfant ${kidCount}</div><button class="brm" onclick="this.closest('.kcard').remove();kidCount--">✕</button></div><div class="frow"><div class="fg"><label>Prénom</label><input type="text" class="kn" placeholder="Prénom"/></div><div class="fg"><label>Âge</label><select class="ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div></div><div class="fg"><label>Centres d'intérêt</label><input type="text" class="ki" placeholder="foot, dessin..."/></div><div class="fg"><label>Défi parental</label><input type="text" class="kc" placeholder="caprices, sommeil..."/></div>`;
+  document.getElementById('klist').appendChild(d);
+  if (kidCount >= 4) document.getElementById('btnaddkid').style.display = 'none';
+}
+
+async function saveChildren() {
+  const cards = document.querySelectorAll('#klist .kcard');
+  const children = [];
+  cards.forEach(card => {
+    const name = card.querySelector('.kn')?.value?.trim();
+    const age = card.querySelector('.ka')?.value;
+    const interests = card.querySelector('.ki')?.value?.trim();
+    const challenge = card.querySelector('.kc')?.value?.trim();
+    if (name) children.push({ user_id: currentUser.id, name, age, interests, challenge });
+  });
+  if (children.length === 0) { toast('Ajoutez au moins un enfant.'); return; }
+  currentChildren = children;
+  goStep(3);
+}
+
+// ===== PAYMENT =====
+function selPlan(p, amount) {
+  selectedPlan = p; selectedAmount = amount;
+  ['solo','fam','ann'].forEach(x => document.getElementById('po-'+x).classList.remove('sel'));
+  document.getElementById('po-'+p).classList.add('sel');
+}
+
+function selPay(p) {
+  selectedPay = p;
+  ['mtn','or','wave','card'].forEach(x => document.getElementById('pm-'+x).classList.remove('sel'));
+  document.getElementById('pm-'+p).classList.add('sel');
+  const L = {mtn:'Numéro MTN MoMo',or:'Numéro Orange Money',wave:'Numéro Wave',card:'Numéro de carte bancaire'};
+  document.getElementById('plbl').textContent = L[p];
+}
+
+async function initiatePayment() {
+  const phone = document.getElementById('pnum').value.trim();
+  if (!phone) { toast('Veuillez entrer votre numéro de paiement.'); return; }
+
+  showLoading('Initialisation du paiement...');
+  try {
+    // Sauvegarder les enfants dans Supabase
+    for (const child of currentChildren) {
+      await sb.insert('children', child, currentToken);
+    }
+
+    // Lancer paiement NotchPay via Netlify Function
+    const payRes = await fetch('/.netlify/functions/initiate-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        currency: 'XAF',
+        amount: parseInt(selectedAmount),
+        phone: phone,
+        email: currentUser.email,
+        description: `YoMuna - Plan ${selectedPlan}`,
+        reference: `yomuna_${currentUser.id}_${Date.now()}`,
+        callback: window.location.origin + '/payment-success'
+      })
+    });
+
+    const payData = await payRes.json();
+    if (payData.transaction?.authorization_url) {
+      // Sauvegarder l'abonnement
+      await sb.insert('subscriptions', {
+        user_id: currentUser.id,
+        plan: selectedPlan,
+        amount: parseInt(selectedAmount),
+        status: 'pending',
+        notchpay_ref: payData.transaction.reference
+      }, currentToken);
+      // Rediriger vers la page de paiement NotchPay
+      window.location.href = payData.transaction.authorization_url;
+    } else {
+      toast('Erreur lors de l\'initialisation du paiement. Réessayez.');
+    }
+  } catch(e) {
+    console.error(e);
+    toast('Erreur de connexion. Vérifiez votre internet.');
+  } finally { hideLoading(); }
+}
+
+// ===== DASHBOARD =====
+async function loadDashboard() {
+  setDate();
+  // Charger profil
+  const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken);
+  if (profile && profile[0]) {
+    const p = profile[0];
+    document.getElementById('dname').textContent = p.first_name || 'Marie';
+    document.getElementById('acc-fn').value = p.first_name || '';
+    document.getElementById('acc-ln').value = p.last_name || '';
+    document.getElementById('acc-em').value = p.email || '';
+    document.getElementById('acc-wa').value = p.whatsapp || '';
+    document.getElementById('acc-co').value = p.country || 'CM';
+    document.getElementById('acc-lg').value = p.language || 'fr';
+  }
+  // Charger enfants
+  const children = await sb.select('children', `user_id=eq.${currentUser.id}`, currentToken);
+  currentChildren = children || [];
+  document.getElementById('child-count').textContent = `${currentChildren.length} / 4`;
+  renderChildPills();
+  renderAccountChildren();
+  // Charger abonnement
+  const subs = await sb.select('subscriptions', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken);
+  if (subs && subs[0]) {
+    const planNames = {solo:'Plan Solo',fam:'Plan Famille',ann:'Plan Annuel'};
+    document.getElementById('plan-name').textContent = planNames[subs[0].plan] || 'Plan actif';
+    document.getElementById('plan-detail').textContent = `${subs[0].amount} FCFA • Statut: ${subs[0].status}`;
+  }
+  // Charger historique
+  loadHistory();
+}
+
+function renderChildPills() {
+  const pills = document.getElementById('child-pills');
+  const contents = document.getElementById('child-contents');
+  pills.innerHTML = '';
+  contents.innerHTML = '';
+  if (currentChildren.length === 0) {
+    contents.innerHTML = '<p style="color:var(--text-soft);font-weight:700">Aucun enfant enregistré. Allez dans "Mon compte" pour en ajouter.</p>';
+    return;
+  }
+  currentChildren.forEach((child, i) => {
+    const pill = document.createElement('button');
+    pill.className = 'cpill' + (i === 0 ? ' on' : '');
+    pill.innerHTML = `<div class="cav">👶</div>${child.name}`;
+    pill.onclick = () => {
+      document.querySelectorAll('.cpill').forEach(p => p.classList.remove('on'));
+      pill.classList.add('on');
+      document.querySelectorAll('.child-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`cc-${i}`).classList.remove('hidden');
+    };
+    pills.appendChild(pill);
+
+    const div = document.createElement('div');
+    div.className = 'child-content' + (i === 0 ? '' : ' hidden');
+    div.id = `cc-${i}`;
+    div.innerHTML = `
+      <div class="cg">
+        <div class="cc cc-s" id="story-card-${i}">
+          <div class="cct">📖 Histoire du soir</div>
+          <div class="ccti">Génération en cours...</div>
+          <div class="cctx">L'IA prépare une histoire unique pour ${child.name}...</div>
+          <div class="ccf"><span class="ccb">${child.age}</span><button class="bregen" onclick="generateContent(${i},'story')">🔄 Régénérer</button></div>
+        </div>
+        <div class="cc cc-a" id="activity-card-${i}">
+          <div class="cct">🎮 Activité demain</div>
+          <div class="ccti">Génération en cours...</div>
+          <div class="cctx">L'IA prépare une activité pour ${child.name}...</div>
+          <div class="ccf"><span class="ccb">${child.age}</span><button class="bregen" onclick="generateContent(${i},'activity')">🔄 Régénérer</button></div>
+        </div>
+        <div class="cc cc-c cgf" id="advice-card-${i}">
+          <div class="cct">💡 Conseil parental du jour</div>
+          <div class="ccti">Génération en cours...</div>
+          <div class="cctx">L'IA prépare un conseil personnalisé...</div>
+          <div class="ccf"><span class="ccb">Conseil du jour</span><button class="bregen" onclick="generateContent(${i},'advice')">🔄 Régénérer</button></div>
+        </div>
+      </div>`;
+    contents.appendChild(div);
+    // Auto-générer le contenu
+    generateContent(i, 'story');
+    generateContent(i, 'activity');
+    generateContent(i, 'advice');
+  });
+}
+
+function renderAccountChildren() {
+  const container = document.getElementById('acc-children');
+  container.innerHTML = '';
+  currentChildren.forEach((child, i) => {
+    container.innerHTML += `
+      <div class="kcard">
+        <div class="khead"><div class="klbl">👶 ${child.name}</div></div>
+        <div class="frow">
+          <div class="fg"><label>Prénom</label><input type="text" value="${child.name}" /></div>
+          <div class="fg"><label>Âge</label><select><option>${child.age}</option></select></div>
+        </div>
+        <div class="fg"><label>Centres d'intérêt</label><input type="text" value="${child.interests||''}" /></div>
+        <div class="fg"><label>Défi parental</label><input type="text" value="${child.challenge||''}" /></div>
+      </div>`;
+  });
+}
+
+// ===== GEMINI AI GENERATION =====
+async function generateContent(childIndex, type) {
+  const child = currentChildren[childIndex];
+  if (!child) return;
+
+  const cardId = `${type === 'story' ? 'story' : type === 'activity' ? 'activity' : 'advice'}-card-${childIndex}`;
+  const card = document.getElementById(cardId);
+  if (!card) return;
+
+  const titleEl = card.querySelector('.ccti');
+  const textEl = card.querySelector('.cctx');
+  const btn = card.querySelector('.bregen');
+
+  if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+
+  // Récupérer la langue et le pays du profil
+  const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken);
+  const lang = profile && profile[0] ? profile[0].language : 'fr';
+  const country = profile && profile[0] ? profile[0].country : 'CM';
+
+  const countryNames = {CM:'Cameroun',FR:'France',CA:'Canada',GB:'Royaume-Uni',US:'États-Unis',GA:'Gabon',CG:'Congo',CI:"Côte d'Ivoire",SN:'Sénégal',NG:'Nigeria'};
+  const countryName = countryNames[country] || country;
+  const langInstr = lang === 'en' ? 'in English' : lang === 'both' ? 'en français et en anglais' : 'en français';
+
+  let prompt = '';
+  if (type === 'story') {
+    prompt = `Génère une histoire du soir ${langInstr} pour un enfant prénommé ${child.name}, âgé de ${child.age}, originaire du ${countryName}. L'histoire doit être culturellement ancrée dans le ${countryName} (lieux, personnages, traditions locales). L'enfant s'intéresse à : ${child.interests || 'tout'}. Longueur : 150 mots maximum. Format JSON : {"title": "...", "content": "..."}`;
+  } else if (type === 'activity') {
+    prompt = `Génère une idée d'activité créative ${langInstr} pour ${child.name}, ${child.age}, réalisable à la maison avec des objets du quotidien. Adapte à ses intérêts : ${child.interests || 'tout'}. Longueur : 100 mots maximum. Format JSON : {"title": "...", "content": "...", "duration": "..."}`;
+  } else {
+    prompt = `Génère un conseil parental ${langInstr} concret et bienveillant pour aider avec ce défi : "${child.challenge || 'développement de l\'enfant'}". Enfant : ${child.name}, ${child.age}, au ${countryName}. Longueur : 120 mots maximum. Format JSON : {"title": "...", "content": "..."}`;
+  }
+
+  try {
+    const res = await fetch('/.netlify/functions/generate-content', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await res.json();
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    // Nettoyer le JSON
+    text = text.replace(/```json/g,'').replace(/```/g,'').trim();
+    const parsed = JSON.parse(text);
+
+    if (titleEl) titleEl.textContent = parsed.title || 'Contenu généré';
+    if (textEl) textEl.textContent = parsed.content || '';
+    if (type === 'activity' && parsed.duration) {
+      const badge = card.querySelector('.ccb');
+      if (badge) badge.textContent = `${child.age} • ${parsed.duration}`;
+    }
+
+    // Sauvegarder dans l'historique
+    await sb.insert('history', {
+      user_id: currentUser.id,
+      child_name: child.name,
+      type: type,
+      title: parsed.title,
+      content: parsed.content
+    }, currentToken).catch(() => {});
+
+  } catch(e) {
+    console.error('Erreur Gemini:', e);
+    if (titleEl) titleEl.textContent = 'Erreur de génération';
+    if (textEl) textEl.textContent = 'Vérifiez votre connexion et réessayez.';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🔄 Régénérer'; }
+  }
+}
+
+async function loadHistory() {
+  const list = document.getElementById('history-list');
+  try {
+    const history = await sb.select('history', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=20`, currentToken);
+    if (!history || history.length === 0) {
+      list.innerHTML = '<p style="color:var(--text-soft);font-weight:700">Aucun contenu généré pour l\'instant.</p>';
+      return;
+    }
+    const typeLabels = {story:'📖 Histoire',activity:'🎮 Activité',advice:'💡 Conseil'};
+    list.innerHTML = `<p style="font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-bottom:0.5rem">${history.length} contenus générés</p>` +
+      history.map(h => `
+        <div class="hi">
+          <div><div class="hiti">${h.title || 'Sans titre'}</div><div class="hifo">Pour ${h.child_name}</div></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem">
+            <span class="hibadge">${typeLabels[h.type] || h.type}</span>
+            <span class="hidt">${new Date(h.created_at).toLocaleDateString('fr-FR')}</span>
+          </div>
+        </div>`).join('');
+  } catch(e) {
+    list.innerHTML = '<p style="color:var(--text-soft);font-weight:700">Erreur de chargement.</p>';
+  }
+}
+
+async function updateProfile() {
+  const data = {
+    first_name: document.getElementById('acc-fn').value,
+    last_name: document.getElementById('acc-ln').value,
+    whatsapp: document.getElementById('acc-wa').value,
+    country: document.getElementById('acc-co').value,
+    language: document.getElementById('acc-lg').value
+  };
+  await sb.update('profiles', `id=eq.${currentUser.id}`, data, currentToken);
+  toast('Profil mis à jour ✓');
+}
+
+// ===== UI HELPERS =====
+function showS(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-'+n).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function setDate() {
+  const d = new Date();
+  const s = d.toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const el = document.getElementById('ddate');
+  if (el) el.textContent = s.charAt(0).toUpperCase()+s.slice(1);
+}
+
+function goStep(n) {
+  ['ss1','ss2','ss3'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  ['sd1','sd2','sd3'].forEach((id,i) => document.getElementById(id).classList.toggle('on', i<n));
+  document.getElementById('ss'+n).classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function swTab(t, btn) {
+  ['today','history','account'].forEach(x => document.getElementById('dt-'+x).classList.add('hidden'));
+  document.querySelectorAll('.dtab').forEach(b => b.classList.remove('on'));
+  document.getElementById('dt-'+t).classList.remove('hidden');
+  btn.classList.add('on');
+  if (t === 'history') loadHistory();
+}
+
+function faqT(el) { el.closest('.fi').classList.toggle('open'); }
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.classList.add('show'); }
+  hideLoading();
+}
+
+function showLoading(msg) {
+  document.getElementById('loading-text').textContent = msg || 'Chargement...';
+  document.getElementById('loading').classList.remove('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loading').classList.add('hidden');
+}
+
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Vérifier si déjà connecté au chargement
+window.addEventListener('load', async () => {
+  const token = localStorage.getItem('yomuna_token');
+  const user = localStorage.getItem('yomuna_user');
+  if (token && user) {
+    currentToken = token;
+    currentUser = JSON.parse(user);
+    await loadDashboard();
+    showS('dashboard');
+  }
+});
+
+// Sauvegarder token à la connexion
+const origLogin = loginUser;
+</script>
+</body>
+</html>
