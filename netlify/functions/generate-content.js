@@ -3,63 +3,45 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-  // Liste de modèles à essayer dans l'ordre
-  const models = [
-    'gemini-2.0-flash-lite',
-    'gemini-2.0-flash',
-    'gemini-1.5-flash-latest',
-    'gemini-pro'
-  ];
+  const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
   try {
     const { prompt } = JSON.parse(event.body);
     console.log('Prompt length:', prompt?.length);
 
-    let text = '';
-    let lastError = '';
-
-    for (const model of models) {
-      try {
-        console.log('Trying model:', model);
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
           {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: {
-                temperature: 0.9,
-                maxOutputTokens: 800
-              }
-            })
+            role: 'system',
+            content: 'Tu es un assistant parental expert. Tu réponds UNIQUEMENT avec du JSON valide, sans markdown, sans explication, sans texte avant ou après le JSON.'
+          },
+          {
+            role: 'user',
+            content: prompt
           }
-        );
+        ],
+        temperature: 0.9,
+        max_tokens: 800
+      })
+    });
 
-        const data = await response.json();
-        console.log('Model:', model, 'Status:', response.status);
+    const data = await response.json();
+    console.log('Groq status:', response.status);
 
-        if (response.status === 200) {
-          text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          console.log('Success with model:', model);
-          console.log('Text:', text.substring(0, 200));
-          break;
-        } else {
-          lastError = JSON.stringify(data.error || data);
-          console.log('Error with model:', model, lastError.substring(0, 100));
-        }
-      } catch(e) {
-        console.log('Exception with model:', model, e.message);
-        lastError = e.message;
-      }
-    }
+    const text = data.choices?.[0]?.message?.content || '';
+    console.log('Text extracted:', text.substring(0, 300));
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: text, error: text ? null : lastError })
+      body: JSON.stringify({ text: text })
     };
 
   } catch (error) {
@@ -67,7 +49,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: '', error: error.message })
+      body: JSON.stringify({ text: '' })
     };
   }
 };
