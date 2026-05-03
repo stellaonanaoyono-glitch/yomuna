@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YoMuna — Chaque soir, une magie pour ton enfant</title>
+<title>YoMuna — La magie parentale, quand tu veux</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -302,7 +302,8 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <li><a href="#features">Comment ça marche</a></li>
     <li><a href="#pricing">Tarifs</a></li>
     <li><a href="#faq">FAQ</a></li>
-    <li><a class="btn-nav" onclick="showS('signup')">Commencer gratuitement</a></li>
+    <li id="nav-signup-btn"><a class="btn-nav" onclick="showS('signup')">Commencer gratuitement</a></li>
+    <li id="nav-dashboard-btn" style="display:none"><a class="btn-nav" onclick="showS('dashboard')">Mon espace</a></li>
   </ul>
 </nav>
 
@@ -317,9 +318,9 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   <div class="hero-in">
     <div>
       <div class="eyebrow">🌍 Pour toutes les mamans du monde</div>
-      <h1>Chaque soir,<br><span class="ac">une magie</span><br>pour ton enfant</h1>
-      <p class="hero-promise">Fini les soirs où tu ne sais pas quoi raconter, quoi proposer, comment réagir.<br><strong>YoMuna génère pour toi, chaque jour, une histoire personnalisée, une activité adaptée et un conseil parental</strong> — le tout ancré dans la culture et la langue de chez toi.</p>
-      <p class="hero-sub">Tu remplis un formulaire une seule fois. YoMuna s'occupe du reste, automatiquement, tous les jours — pour chaque enfant, à chaque âge.</p>
+      <h1>À tout moment,<br><span class="ac">une magie</span><br>pour ton enfant</h1>
+      <p class="hero-promise">Fini les moments où tu ne sais pas quoi raconter, quoi proposer, comment réagir.<br><strong>YoMuna génère pour toi, à la demande, une histoire personnalisée, une activité adaptée et un conseil parental</strong> — le tout ancré dans la culture et la langue de chez toi.</p>
+      <p class="hero-sub">Tu remplis un formulaire une seule fois. YoMuna s'occupe du reste, automatiquement — pour chaque enfant, à chaque âge, à chaque instant.</p>
       <div class="hero-cta">
         <button class="btn-cta" onclick="showS('signup')">✨ Commencer gratuitement</button>
         <button class="btn-ghost" onclick="showS('login')">Se connecter</button>
@@ -469,7 +470,8 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
         <div class="flogo">Yo<span>●</span>Muna</div>
         <div class="ftag">YoMuna est l'assistant parental intelligent qui génère chaque jour des histoires personnalisées, des activités adaptées et des conseils parentaux — ancrés dans la culture de chez vous. Pour toutes les mamans du monde, où qu'elles soient.</div>
         <div class="fsoc">
-          <a class="sb" href="https://instagram.com/yomuna.africa" target="_blank" title="Instagram">📸</a>
+          <a class="sb" href="https://www.instagram.com/_yomuna" target="_blank" title="Instagram">📸</a>
+          <a class="sb" href="https://wa.me/22603118888" target="_blank" title="WhatsApp">💬</a>
         </div>
       </div>
       <div>
@@ -491,14 +493,14 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       </div>
       <div>
         <div class="fct">Nous contacter</div>
-        <div class="fci">📧 yo-muna237@gmail.com</div>
-        <div class="fci">💬 WhatsApp : +237 698 493 159</div>
+        <div class="fci">📧 yomuna237@gmail.com</div>
+        <div class="fci"><a href="https://wa.me/22603118888" target="_blank" style="color:rgba(255,255,255,0.6);text-decoration:none;">💬 WhatsApp : +226 03 11 88 88</a></div>
         <div class="fci">📍 Yaoundé, Cameroun</div>
         <div class="fci">🕐 Lun–Ven, 8h–18h WAT</div>
         <br>
         <div class="fct">Nos réseaux</div>
         <ul class="flinks">
-          <li><a href="https://instagram.com/yomuna.africa" target="_blank">📸 @yomuna.africa (Instagram)</a></li>
+          <li><a href="https://www.instagram.com/_yomuna" target="_blank">📸 @_yomuna (Instagram)</a></li>
         </ul>
       </div>
     </div>
@@ -566,8 +568,9 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
         <div class="khead"><div class="klbl">👶 Enfant 1</div></div>
         <div class="frow">
           <div class="fg"><label>Prénom</label><input type="text" class="kn" placeholder="Amina" /></div>
-          <div class="fg"><label>Âge</label><select class="ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div>
+          <div class="fg"><label>Sexe</label><select class="kg"><option value="fille">👧 Fille</option><option value="garcon">👦 Garçon</option></select></div>
         </div>
+        <div class="fg"><label>Âge</label><select class="ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div>
         <div class="fg"><label>Centres d'intérêt (optionnel)</label><input type="text" class="ki" placeholder="danse, foot, dessin..." /></div>
         <div class="fg"><label>Défi parental du moment (optionnel)</label><input type="text" class="kc" placeholder="caprices, sommeil, devoirs..." /></div>
       </div>
@@ -655,7 +658,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="asec">
       <div class="astitle">👶 Mes enfants <span style="margin-left:auto;font-size:0.78rem;color:var(--text-soft);font-weight:700" id="child-count">0 / 4</span></div>
       <div id="acc-children"></div>
-      <button class="badd" onclick="toast('Ajout d\'enfant disponible prochainement')">+ Ajouter un enfant</button>
+      <button class="badd" onclick="showAddChildForm()">+ Ajouter un enfant</button>
       <button class="bsm" onclick="toast('Profils mis à jour ✓')">Sauvegarder les profils</button>
     </div>
     <div class="asec">
@@ -791,6 +794,7 @@ async function loginUser() {
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
+    updateNav(true);
     await loadDashboard();
     showS('dashboard');
   } catch(e) {
@@ -807,6 +811,7 @@ async function logoutUser() {
   currentUser = null; currentToken = null; currentChildren = [];
   localStorage.removeItem('yomuna_token');
   localStorage.removeItem('yomuna_user');
+  updateNav(false);
   showS('home');
 }
 
@@ -818,7 +823,7 @@ function addKid() {
   const icons = ['','👶','👧','👦','🧒'];
   const d = document.createElement('div');
   d.className = 'kcard';
-  d.innerHTML = `<div class="khead"><div class="klbl">${icons[kidCount]||'👶'} Enfant ${kidCount}</div><button class="brm" onclick="this.closest('.kcard').remove();kidCount--">✕</button></div><div class="frow"><div class="fg"><label>Prénom</label><input type="text" class="kn" placeholder="Prénom"/></div><div class="fg"><label>Âge</label><select class="ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div></div><div class="fg"><label>Centres d'intérêt</label><input type="text" class="ki" placeholder="foot, dessin..."/></div><div class="fg"><label>Défi parental</label><input type="text" class="kc" placeholder="caprices, sommeil..."/></div>`;
+  d.innerHTML = `<div class="khead"><div class="klbl">${icons[kidCount]||'👶'} Enfant ${kidCount}</div><button class="brm" onclick="this.closest('.kcard').remove();kidCount--">✕</button></div><div class="frow"><div class="fg"><label>Prénom</label><input type="text" class="kn" placeholder="Prénom"/></div><div class="fg"><label>Sexe</label><select class="kg"><option value="fille">👧 Fille</option><option value="garcon">👦 Garçon</option></select></div></div><div class="fg"><label>Âge</label><select class="ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div><div class="fg"><label>Centres d'intérêt</label><input type="text" class="ki" placeholder="foot, dessin..."/></div><div class="fg"><label>Défi parental</label><input type="text" class="kc" placeholder="caprices, sommeil..."/></div>`;
   document.getElementById('klist').appendChild(d);
   if (kidCount >= 4) document.getElementById('btnaddkid').style.display = 'none';
 }
@@ -829,9 +834,10 @@ async function saveChildren() {
   cards.forEach(card => {
     const name = card.querySelector('.kn')?.value?.trim();
     const age = card.querySelector('.ka')?.value;
+    const gender = card.querySelector('.kg')?.value || 'fille';
     const interests = card.querySelector('.ki')?.value?.trim();
     const challenge = card.querySelector('.kc')?.value?.trim();
-    if (name) children.push({ user_id: currentUser.id, name, age, interests, challenge });
+    if (name) children.push({ user_id: currentUser.id, name, age, gender, interests, challenge });
   });
   if (children.length === 0) { toast('Ajoutez au moins un enfant.'); return; }
   currentChildren = children;
@@ -1058,13 +1064,17 @@ async function generateContent(childIndex, type) {
   const countryName = countryNames[country] || country;
   const langInstr = lang === 'en' ? 'in English' : lang === 'both' ? 'en français et en anglais' : 'en français';
 
+  const gender = child.gender === 'garcon' ? 'garçon' : 'fille';
+  const pronoun = child.gender === 'garcon' ? 'il' : 'elle';
+  const pronounPossessive = child.gender === 'garcon' ? 'son' : 'sa';
+
   let prompt = '';
   if (type === 'story') {
-    prompt = `Tu es un conteur africain talentueux. Écris une belle histoire du soir en ${lang === 'en' ? 'anglais' : 'français'} pour un enfant prénommé ${child.name}, âgé de ${child.age}, du ${countryName}. L'histoire doit mentionner des lieux, personnages ou traditions du ${countryName}. L'enfant aime : ${child.interests || 'les aventures et la nature'}. L'histoire doit faire 200 à 250 mots, avoir un début, un milieu et une fin avec une morale. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "titre de l'histoire", "content": "texte complet de l'histoire ici"}`;
+    prompt = `Tu es un conteur africain talentueux et pédagogue. Écris une belle histoire originale et éducative en ${lang === 'en' ? 'anglais' : 'français'} pour un enfant prénommé ${child.name}, c'est une ${gender} âgée de ${child.age}, du ${countryName}. Utilise les pronoms corrects (${pronoun}, ${pronounPossessive}) tout au long de l'histoire. L'histoire doit : être ancrée dans la culture du ${countryName} avec des lieux et personnages locaux, enseigner une valeur ou une leçon concrète adaptée à l'âge ${child.age}, avoir un personnage principal courageux et intelligent, éviter les clichés, être originale et surprenante. L'enfant aime : ${child.interests || 'les aventures et la nature'}. Longueur : 250 mots minimum. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "titre de l'histoire", "content": "texte complet de l'histoire"}`;
   } else if (type === 'activity') {
-    prompt = `Tu es un expert en activités éducatives pour enfants. Propose une activité créative détaillée en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${child.age}, réalisable à la maison avec des objets simples du quotidien. L'enfant aime : ${child.interests || 'jouer et créer'}. Décris étape par étape comment faire l'activité (au moins 5 étapes détaillées), le matériel nécessaire et les bénéfices pour l'enfant. Longueur : 150 à 200 mots. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "nom de l'activité", "content": "description détaillée avec les étapes", "duration": "durée estimée"}`;
+    prompt = `Tu es un expert en activités éducatives pour enfants. Propose une activité créative et éducative détaillée en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${gender} de ${child.age}, réalisable à la maison avec des objets simples. L'enfant aime : ${child.interests || 'jouer et créer'}. L'activité doit : lister le matériel nécessaire, expliquer les étapes clairement et en détail (minimum 5 étapes numérotées), expliquer ce que l'enfant va apprendre ou développer, être adaptée à l'âge ${child.age}. Longueur : 200 mots minimum. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "nom de l'activité", "content": "description complète avec matériel et étapes numérotées", "duration": "durée estimée"}`;
   } else {
-    prompt = `Tu es un expert en parentalité bienveillante et psychologie de l'enfant. Donne un conseil parental complet et pratique en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant dans son développement'}". Enfant : ${child.name}, ${child.age}, au ${countryName}. Le conseil doit expliquer pourquoi ce comportement existe, donner 3 à 4 stratégies concrètes à appliquer, et encourager le parent. Longueur : 200 à 250 mots. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "titre du conseil", "content": "conseil complet et détaillé ici"}`;
+    prompt = `Tu es un expert en parentalité bienveillante et psychologie de l'enfant. Donne un conseil parental complet et pratique en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant dans son développement'}". Enfant : ${child.name}, ${gender} de ${child.age}, au ${countryName}. Le conseil doit : expliquer pourquoi ce comportement est normal à cet âge, donner 3 à 4 stratégies concrètes numérotées à appliquer immédiatement, être bienveillant et encourageant pour le parent, être adapté à la culture africaine. Longueur : 250 mots minimum. Réponds UNIQUEMENT avec un objet JSON valide sans markdown : {"title": "titre du conseil", "content": "conseil complet et détaillé"}`;
   }
 
   try {
@@ -1154,11 +1164,11 @@ async function loadHistory() {
     const typeLabels = {story:'📖 Histoire',activity:'🎮 Activité',advice:'💡 Conseil'};
     list.innerHTML = `<p style="font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-bottom:0.5rem">${history.length} contenus générés</p>` +
       history.map(h => `
-        <div class="hi">
-          <div><div class="hiti">${h.title || 'Sans titre'}</div><div class="hifo">Pour ${h.child_name}</div></div>
+        <div class="hi" onclick="showModal('${(h.title||'').replace(/'/g,"\\'")}', '${(h.content||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')" style="cursor:pointer;">
+          <div><div class="hiti">${h.title || 'Sans titre'}</div><div class="hifo">Pour ${h.child_name} • ${new Date(h.created_at).toLocaleDateString('fr-FR')}</div></div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem">
             <span class="hibadge">${typeLabels[h.type] || h.type}</span>
-            <span class="hidt">${new Date(h.created_at).toLocaleDateString('fr-FR')}</span>
+            <span style="font-size:0.75rem;color:var(--peach);font-weight:700">Cliquer pour lire →</span>
           </div>
         </div>`).join('');
   } catch(e) {
@@ -1181,8 +1191,50 @@ async function updateProfile() {
 // ===== UI HELPERS =====
 function showModal(title, content) {
   document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-content').textContent = content;
+  // Formater le contenu avec des sauts de ligne
+  const formatted = content.replace(/\\n/g, '\n').replace(/(\d+\.\s)/g, '\n$1');
+  document.getElementById('modal-content').textContent = formatted;
   document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function showAddChildForm() {
+  // Aller à l'étape 2 du signup pour ajouter un enfant
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:2rem;';
+  modal.innerHTML = `
+    <div style="background:white;border-radius:24px;padding:2rem;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;">
+      <h3 style="font-family:'Baloo 2',cursive;font-size:1.4rem;margin-bottom:1.5rem;">➕ Ajouter un enfant</h3>
+      <div class="frow">
+        <div class="fg"><label>Prénom</label><input type="text" id="new-kn" placeholder="Prénom"/></div>
+        <div class="fg"><label>Sexe</label><select id="new-kg"><option value="fille">👧 Fille</option><option value="garcon">👦 Garçon</option></select></div>
+      </div>
+      <div class="fg"><label>Âge</label><select id="new-ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div>
+      <div class="fg"><label>Centres d'intérêt</label><input type="text" id="new-ki" placeholder="foot, dessin..."/></div>
+      <div class="fg"><label>Défi parental</label><input type="text" id="new-kc" placeholder="caprices, sommeil..."/></div>
+      <button class="bfull bpm" onclick="saveNewChild()" style="margin-top:1rem;">Ajouter cet enfant</button>
+      <button class="bfull bback" onclick="this.closest('div[style]').remove()" style="margin-top:0.5rem;">Annuler</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+async function saveNewChild() {
+  const name = document.getElementById('new-kn').value.trim();
+  const gender = document.getElementById('new-kg').value;
+  const age = document.getElementById('new-ka').value;
+  const interests = document.getElementById('new-ki').value.trim();
+  const challenge = document.getElementById('new-kc').value.trim();
+  if (!name) { toast('Entrez le prénom de l\'enfant'); return; }
+  if (currentChildren.length >= 4) { toast('Maximum 4 enfants'); return; }
+  showLoading('Ajout en cours...');
+  try {
+    await sb.insert('children', { user_id: currentUser.id, name, gender, age, interests, challenge }, currentToken);
+    document.querySelector('div[style*="position:fixed"]')?.remove();
+    await loadDashboard();
+    swTab('account', document.querySelectorAll('.dtab')[2]);
+    toast(`${name} ajouté(e) avec succès ✓`);
+  } catch(e) {
+    toast('Erreur lors de l\'ajout');
+  } finally { hideLoading(); }
 }
 
 function closeModal(event) {
@@ -1205,6 +1257,13 @@ async function resetPassword() {
   } catch(e) {
     toast('Erreur. Vérifiez votre connexion.');
   } finally { hideLoading(); }
+}
+
+function updateNav(loggedIn) {
+  const signupBtn = document.getElementById('nav-signup-btn');
+  const dashBtn = document.getElementById('nav-dashboard-btn');
+  if (signupBtn) signupBtn.style.display = loggedIn ? 'none' : 'block';
+  if (dashBtn) dashBtn.style.display = loggedIn ? 'block' : 'none';
 }
 
 function showS(n) {
@@ -1297,6 +1356,7 @@ window.addEventListener('load', async () => {
   if (token && user) {
     currentToken = token;
     currentUser = JSON.parse(user);
+    updateNav(true);
     await loadDashboard();
     showS('dashboard');
   }
