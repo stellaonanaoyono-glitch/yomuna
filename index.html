@@ -604,6 +604,99 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 </div>
 </div>
 
+<!-- ADMIN -->
+<div id="s-admin" class="screen">
+<div class="dash">
+  <div class="dh">
+    <div>
+      <div class="dgreet">🔐 Dashboard <em>Admin</em></div>
+      <div class="ddate" id="admin-date"></div>
+    </div>
+    <div style="display:flex;gap:0.75rem;">
+      <button class="bsm" onclick="loadAdminData()">🔄 Actualiser</button>
+      <button class="bsm" onclick="showS('dashboard')">← Retour</button>
+    </div>
+  </div>
+
+  <!-- STATS CARDS -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem;" id="admin-stats">
+    <div class="asec" style="text-align:center;">
+      <div style="font-size:2.5rem;font-weight:800;color:var(--peach);" id="stat-users">—</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-soft);">👤 Inscrits total</div>
+    </div>
+    <div class="asec" style="text-align:center;">
+      <div style="font-size:2.5rem;font-weight:800;color:var(--mint);" id="stat-subs">—</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-soft);">💳 Abonnements actifs</div>
+    </div>
+    <div class="asec" style="text-align:center;">
+      <div style="font-size:2.5rem;font-weight:800;color:var(--yellow);" id="stat-children">—</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-soft);">👶 Enfants enregistrés</div>
+    </div>
+    <div class="asec" style="text-align:center;">
+      <div style="font-size:2.5rem;font-weight:800;color:var(--purple);" id="stat-revenue">—</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-soft);">💰 Revenus total (FCFA)</div>
+    </div>
+  </div>
+
+  <!-- STATS ROW 2 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:2rem;">
+    <div class="asec" style="text-align:center;">
+      <div style="font-size:2rem;font-weight:800;color:var(--peach);" id="stat-today-gen">—</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-soft);">🎯 Générations aujourd'hui</div>
+    </div>
+    <div class="asec" style="text-align:center;">
+      <div style="font-size:2rem;font-weight:800;color:var(--mint);" id="stat-history">—</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-soft);">📚 Contenus générés total</div>
+    </div>
+    <div class="asec" style="text-align:center;">
+      <div style="font-size:2rem;font-weight:800;color:var(--yellow);" id="stat-countries">—</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--text-soft);">🌍 Pays représentés</div>
+    </div>
+  </div>
+
+  <!-- PLANS BREAKDOWN -->
+  <div class="asec" style="margin-bottom:2rem;">
+    <div class="astitle">📊 Répartition par plan</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;" id="admin-plans">
+      <div style="text-align:center;background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:1.8rem;font-weight:800;" id="plan-solo-count">—</div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--text-soft);">Plan Solo</div>
+      </div>
+      <div style="text-align:center;background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:1.8rem;font-weight:800;" id="plan-fam-count">—</div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--text-soft);">Plan Famille</div>
+      </div>
+      <div style="text-align:center;background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:1.8rem;font-weight:800;" id="plan-ann-count">—</div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--text-soft);">Plan Annuel</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS LIST -->
+  <div class="asec">
+    <div class="astitle">👥 Liste des utilisateurs</div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;" id="admin-users-table">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="text-align:left;padding:0.75rem 0.5rem;font-weight:800;color:var(--text-soft);">Nom</th>
+            <th style="text-align:left;padding:0.75rem 0.5rem;font-weight:800;color:var(--text-soft);">Email</th>
+            <th style="text-align:left;padding:0.75rem 0.5rem;font-weight:800;color:var(--text-soft);">Pays</th>
+            <th style="text-align:left;padding:0.75rem 0.5rem;font-weight:800;color:var(--text-soft);">Plan</th>
+            <th style="text-align:left;padding:0.75rem 0.5rem;font-weight:800;color:var(--text-soft);">Statut</th>
+            <th style="text-align:left;padding:0.75rem 0.5rem;font-weight:800;color:var(--text-soft);">Inscription</th>
+          </tr>
+        </thead>
+        <tbody id="admin-users-body">
+          <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-soft);">Chargement...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- LOGIN -->
 <div id="s-login" class="screen">
 <div class="fscr">
@@ -632,6 +725,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <div id="days-counter" style="font-size:0.85rem;font-weight:700;margin-top:0.3rem;color:var(--text-soft)"></div>
     </div>
     <button class="bsm" onclick="logoutUser()">Déconnexion</button>
+    <button class="bsm" id="admin-nav-btn" style="display:none;background:var(--purple);color:white;border-color:var(--purple);" onclick="goAdmin()">🔐 Admin</button>
   </div>
   <div class="dtabs">
     <button class="dtab on" onclick="swTab('today',this)">✨ Aujourd'hui</button>
@@ -841,6 +935,10 @@ async function loginUser() {
     updateNav(true);
     await loadDashboard();
     showS('dashboard');
+    // Si c'est l'admin, afficher le bouton admin
+    if (currentUser.email === ADMIN_EMAIL) {
+      document.getElementById('admin-nav-btn').style.display = 'block';
+    }
   } catch(e) {
     showErr('err-login','Erreur de connexion. Vérifiez votre internet.');
   } finally { hideLoading(); }
@@ -1008,6 +1106,7 @@ async function loadDashboard() {
   const subs = await sb.select('subscriptions', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken);
   if (subs && subs[0]) {
     const sub = subs[0];
+    currentPlan = sub.plan;
     const planNames = {solo:'Plan Solo',fam:'Plan Famille',ann:'Plan Annuel'};
     const planName = planNames[sub.plan] || 'Plan actif';
 
@@ -1123,7 +1222,51 @@ function renderAccountChildren() {
   });
 }
 
-// ===== GEMINI AI GENERATION =====
+// ===== DAILY QUOTA =====
+const PLAN_QUOTAS = { solo: 6, fam: 12, ann: 20 };
+let currentPlan = 'solo';
+let todayUsage = 0;
+
+async function checkAndIncrementQuota() {
+  const today = new Date().toISOString().split('T')[0];
+  try {
+    // Récupérer usage du jour
+    const usage = await sb.select('daily_usage', `user_id=eq.${currentUser.id}&date=eq.${today}`, currentToken);
+    const quota = PLAN_QUOTAS[currentPlan] || 6;
+
+    if (usage && usage[0]) {
+      todayUsage = usage[0].count;
+      if (todayUsage >= quota) {
+        toast(`⚠️ Limite de ${quota} générations atteinte aujourd'hui. Revenez demain !`);
+        return false;
+      }
+      // Incrémenter
+      await sb.update('daily_usage', `user_id=eq.${currentUser.id}&date=eq.${today}`, { count: todayUsage + 1 }, currentToken);
+      todayUsage++;
+    } else {
+      // Premier usage du jour
+      await sb.insert('daily_usage', { user_id: currentUser.id, date: today, count: 1 }, currentToken);
+      todayUsage = 1;
+    }
+    updateQuotaDisplay();
+    return true;
+  } catch(e) {
+    console.log('Quota check error:', e);
+    return true; // En cas d'erreur, on laisse passer
+  }
+}
+
+function updateQuotaDisplay() {
+  const quota = PLAN_QUOTAS[currentPlan] || 6;
+  const remaining = quota - todayUsage;
+  const counter = document.getElementById('days-counter');
+  if (counter) {
+    const daysText = counter.textContent.split('•')[0].trim();
+    counter.textContent = `${daysText} • 🎯 ${remaining} génération${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''} aujourd'hui`;
+  }
+}
+
+// ===== AI GENERATION =====
 async function generateContent(childIndex, type) {
   const child = currentChildren[childIndex];
   if (!child) return;
@@ -1137,6 +1280,13 @@ async function generateContent(childIndex, type) {
   const btn = card.querySelector('.bregen');
 
   if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+
+  // Vérifier le quota journalier
+  const canGenerate = await checkAndIncrementQuota();
+  if (!canGenerate) {
+    if (btn) { btn.disabled = false; btn.textContent = '🔄 Régénérer'; }
+    return;
+  }
 
   // Récupérer la langue et le pays du profil
   const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken);
@@ -1354,6 +1504,107 @@ async function resetPassword() {
   } finally { hideLoading(); }
 }
 
+// ===== ADMIN =====
+const ADMIN_EMAIL = 'yomuna237@gmail.com';
+
+async function loadAdminData() {
+  const today = new Date().toISOString().split('T')[0];
+  if (document.getElementById('admin-date')) {
+    document.getElementById('admin-date').textContent = `Dernière mise à jour : ${new Date().toLocaleString('fr-FR')}`;
+  }
+
+  try {
+    // Tous les profils
+    const profiles = await sb.select('profiles', 'select=*&order=created_at.desc', currentToken);
+    const users = profiles || [];
+    document.getElementById('stat-users').textContent = users.length;
+
+    // Pays uniques
+    const countries = [...new Set(users.map(u => u.country).filter(Boolean))];
+    document.getElementById('stat-countries').textContent = countries.length;
+
+    // Tous les abonnements
+    const subs = await sb.select('subscriptions', 'select=*&order=created_at.desc', currentToken);
+    const allSubs = subs || [];
+
+    // Actifs (30 jours pour mensuel, 365 pour annuel)
+    const activeSubs = allSubs.filter(s => {
+      const start = new Date(s.created_at);
+      const days = s.plan === 'ann' ? 365 : 30;
+      const end = new Date(start);
+      end.setDate(end.getDate() + days);
+      return new Date() < end && s.status !== 'expired';
+    });
+    document.getElementById('stat-subs').textContent = activeSubs.length;
+
+    // Revenus total
+    const revenue = allSubs.reduce((sum, s) => sum + (s.amount || 0), 0);
+    document.getElementById('stat-revenue').textContent = revenue.toLocaleString('fr-FR');
+
+    // Plans breakdown
+    document.getElementById('plan-solo-count').textContent = allSubs.filter(s => s.plan === 'solo').length;
+    document.getElementById('plan-fam-count').textContent = allSubs.filter(s => s.plan === 'fam').length;
+    document.getElementById('plan-ann-count').textContent = allSubs.filter(s => s.plan === 'ann').length;
+
+    // Enfants
+    const children = await sb.select('children', 'select=*', currentToken);
+    document.getElementById('stat-children').textContent = (children || []).length;
+
+    // Historique total
+    const history = await sb.select('history', 'select=id', currentToken);
+    document.getElementById('stat-history').textContent = (history || []).length;
+
+    // Générations aujourd'hui
+    const todayUsages = await sb.select('daily_usage', `date=eq.${today}`, currentToken);
+    const totalToday = (todayUsages || []).reduce((sum, u) => sum + (u.count || 0), 0);
+    document.getElementById('stat-today-gen').textContent = totalToday;
+
+    // Table utilisateurs
+    const subsMap = {};
+    allSubs.forEach(s => { if (!subsMap[s.user_id]) subsMap[s.user_id] = s; });
+
+    const planNames = {solo:'Solo',fam:'Famille',ann:'Annuel'};
+    const countryNames = {CM:'🇨🇲 CM',FR:'🇫🇷 FR',CA:'🇨🇦 CA',GB:'🇬🇧 UK',US:'🇺🇸 US',GA:'🇬🇦 GA',CG:'🇨🇬 CG',CI:'🇨🇮 CI',SN:'🇸🇳 SN',NG:'🇳🇬 NG'};
+
+    const tbody = document.getElementById('admin-users-body');
+    if (users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-soft);">Aucun utilisateur</td></tr>';
+    } else {
+      tbody.innerHTML = users.map(u => {
+        const sub = subsMap[u.id];
+        const planName = sub ? planNames[sub.plan] || sub.plan : '—';
+        const isActive = sub ? (() => {
+          const start = new Date(sub.created_at);
+          const days = sub.plan === 'ann' ? 365 : 30;
+          const end = new Date(start);
+          end.setDate(end.getDate() + days);
+          return new Date() < end;
+        })() : false;
+        return `<tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:0.75rem 0.5rem;font-weight:700;">${u.first_name || ''} ${u.last_name || ''}</td>
+          <td style="padding:0.75rem 0.5rem;color:var(--text-soft);font-size:0.82rem;">${u.email || '—'}</td>
+          <td style="padding:0.75rem 0.5rem;">${countryNames[u.country] || u.country || '—'}</td>
+          <td style="padding:0.75rem 0.5rem;"><span style="background:var(--yellow-light);color:var(--text-mid);padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:800;">${planName}</span></td>
+          <td style="padding:0.75rem 0.5rem;"><span style="background:${isActive ? 'var(--mint-light)' : 'rgba(255,140,105,0.15)'};color:${isActive ? '#03A97A' : 'var(--peach-dark)'};padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:800;">${sub ? (isActive ? '✓ Actif' : '✗ Expiré') : 'Sans abonnement'}</span></td>
+          <td style="padding:0.75rem 0.5rem;color:var(--text-soft);font-size:0.82rem;">${u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—'}</td>
+        </tr>`;
+      }).join('');
+    }
+  } catch(e) {
+    console.log('Admin load error:', e);
+    toast('Erreur de chargement des données admin');
+  }
+}
+
+function goAdmin() {
+  showS('admin');
+  const d = new Date();
+  if (document.getElementById('admin-date')) {
+    document.getElementById('admin-date').textContent = `Dernière mise à jour : ${d.toLocaleString('fr-FR')}`;
+  }
+  loadAdminData();
+}
+
 function updateNav(loggedIn) {
   const signupBtn = document.getElementById('nav-signup-btn');
   const dashBtn = document.getElementById('nav-dashboard-btn');
@@ -1525,6 +1776,10 @@ window.addEventListener('load', async () => {
     updateNav(true);
     await loadDashboard();
     showS('dashboard');
+    if (currentUser.email === ADMIN_EMAIL) {
+      const adminBtn = document.getElementById('admin-nav-btn');
+      if (adminBtn) adminBtn.style.display = 'block';
+    }
   }
 });
 
