@@ -1339,8 +1339,9 @@ function renderChildPills() {
           </div>
         </div>
         <div class="cc cc-a" id="activity-card-${i}">
-          <div class="cct">🎮 Activité du moment
+          <div class="cct">🎮 Activité de la semaine
             <span style="margin-left:auto;">
+              <span style="background:var(--mint-light);color:#03A97A;font-size:0.68rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:50px;">SEMAINE</span>
               <button onclick="toggleFavorite(${i},'activity')" id="fav-activity-${i}" style="background:none;border:none;cursor:pointer;font-size:1.1rem;" title="Ajouter aux favoris">🤍</button>
             </span>
           </div>
@@ -1360,12 +1361,29 @@ function renderChildPills() {
             <button class="bregen" onclick="generateContent(${i},'advice')" id="regen-advice-${i}">🔄 Nouveau conseil</button>
           </div>
         </div>
+        <div class="cc cgf" style="border-top:4px solid var(--purple);" id="learning-card-${i}">
+          <div class="cct" style="color:var(--purple);">🧠 Mon apprentissage du jour</div>
+          <div class="ccti" id="learning-title-${i}">Chargement...</div>
+          <div id="learning-emoji-${i}" style="font-size:2.5rem;margin:0.5rem 0;"></div>
+          <div class="cctx" id="learning-text-${i}">YoMuna prépare un apprentissage pour ${child.name}...</div>
+          <div id="learning-fact-${i}" style="margin-top:0.75rem;padding:0.7rem 0.9rem;background:var(--purple-light);border-radius:10px;font-size:0.85rem;font-weight:700;color:var(--purple);display:none;">
+            ⚡ Le savais-tu ? <span id="learning-fact-text-${i}"></span>
+          </div>
+          <div id="learning-question-${i}" style="margin-top:0.6rem;padding:0.7rem 0.9rem;background:var(--mint-light);border-radius:10px;font-size:0.85rem;font-weight:700;color:#03A97A;display:none;">
+            💬 À discuter ensemble : <em id="learning-q-text-${i}"></em>
+          </div>
+          <div class="ccf" style="margin-top:1rem;">
+            <span class="ccb" style="background:var(--purple-light);color:var(--purple);">Éveil & Culture</span>
+            <button class="bregen" onclick="generateContent(${i},'learning')" id="regen-learning-${i}" style="border-color:var(--purple);color:var(--purple);">🔄 Autre apprentissage</button>
+          </div>
+        </div>
       </div>`;
     contents.appendChild(div);
     // Auto-générer le contenu (sans compter dans le quota)
     generateContent(i, 'story', true);
     generateContent(i, 'activity', true);
     generateContent(i, 'advice', true);
+    generateContent(i, 'learning', true);
   });
 }
 
@@ -1399,21 +1417,66 @@ function renderAccountChildren() {
 }
 
 async function saveAllChildren() {
-  try {
-    for (let i = 0; i < currentChildren.length; i++) {
-      const child = currentChildren[i];
-      const name = document.getElementById(`acc-child-name-${i}`)?.value.trim() || child.name;
-      const gender = document.getElementById(`acc-child-gender-${i}`)?.value || child.gender || 'fille';
-      const age = document.getElementById(`acc-child-age-${i}`)?.value || child.age;
-      const interests = document.getElementById(`acc-child-interests-${i}`)?.value || '';
-      const challenge = document.getElementById(`acc-child-challenge-${i}`)?.value || '';
-      await sb.update('children', `id=eq.${child.id}`, { name, gender, age, interests, challenge }, currentToken);
-      currentChildren[i] = { ...child, name, gender, age, interests, challenge };
+  const btn = document.querySelector('.bsm[onclick="saveAllChildren()"]');
+  if (btn) { btn.textContent = '⏳ Sauvegarde...'; btn.disabled = true; }
+  let success = 0;
+  let failed = 0;
+
+  for (let i = 0; i < currentChildren.length; i++) {
+    const child = currentChildren[i];
+    const name = document.getElementById(`acc-child-name-${i}`)?.value.trim() || child.name;
+    const gender = document.getElementById(`acc-child-gender-${i}`)?.value || child.gender || 'fille';
+    const age = document.getElementById(`acc-child-age-${i}`)?.value || child.age;
+    const interests = document.getElementById(`acc-child-interests-${i}`)?.value.trim() || '';
+    const challenge = document.getElementById(`acc-child-challenge-${i}`)?.value.trim() || '';
+
+    try {
+      if (!child.id) {
+        // Pas d'ID — tenter de retrouver l'enfant via user_id + name
+        const existing = await sb.select('children', `user_id=eq.${currentUser.id}&name=eq.${encodeURIComponent(child.name)}`, currentToken);
+        if (existing && existing[0]) {
+          child.id = existing[0].id;
+          currentChildren[i] = { ...child, id: existing[0].id };
+        } else {
+          // Créer l'enfant si inexistant
+          await sb.insert('children', { user_id: currentUser.id, name, gender, age, interests, challenge }, currentToken);
+          success++;
+          continue;
+        }
+      }
+
+      const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/children?id=eq.${child.id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': CONFIG.SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${currentToken}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ name, gender, age, interests, challenge })
+      });
+
+      if (res.status === 200 || res.status === 204) {
+        currentChildren[i] = { ...child, name, gender, age, interests, challenge };
+        success++;
+      } else {
+        const err = await res.text();
+        console.error('Supabase update error:', res.status, err);
+        failed++;
+      }
+    } catch(e) {
+      console.error('Save child error:', e);
+      failed++;
     }
-    toast('✓ Profils mis à jour avec succès !');
+  }
+
+  if (btn) { btn.textContent = '💾 Sauvegarder les profils'; btn.disabled = false; }
+
+  if (failed === 0) {
+    toast(`✓ ${success} profil${success > 1 ? 's' : ''} mis à jour !`);
     renderChildPills();
-  } catch(e) {
-    toast('Erreur lors de la sauvegarde. Réessayez.');
+  } else {
+    toast(`⚠️ ${success} sauvegardé(s), ${failed} erreur(s). Vérifiez votre connexion.`);
   }
 }
 
@@ -1510,11 +1573,91 @@ async function generateContent(childIndex, type, autoLoad = false) {
 
   let prompt = '';
   if (type === 'story') {
-    prompt = `Tu es un conteur talentueux et pédagogue. Écris une belle histoire du soir originale et éducative en ${lang === 'en' ? 'anglais' : 'français'} pour un enfant prénommé ${child.name}, c'est un(e) ${gender} âgé(e) de ${child.age}, vivant au ${countryName}. Ton de l'histoire : ${toneDesc}. Utilise les pronoms corrects (${pronoun}, ${pronounPossessive}). L'histoire doit : être ancrée dans la culture du ${countryName}, enseigner une valeur concrète adaptée à l'âge, être originale et surprenante. L'enfant aime : ${child.interests || 'les aventures et la nature'}. Longueur : 200 mots minimum. À la fin du JSON ajoute : "educational_value" (2-3 compétences développées ex: "courage, curiosité, respect") et "emotional_question" (une question émotionnelle pour après la lecture ex: "Comment te sentirais-tu si tu trouvais une lampe magique ?"). Réponds UNIQUEMENT avec du JSON valide : {"title": "...", "content": "...", "reading_time": "X min", "educational_value": "...", "emotional_question": "..."}`;
+    prompt = `Tu es un conteur professionnel pour enfants, poétique et captivant. Écris une histoire du soir LONGUE, riche et immersive en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${gender} de ${child.age}, vivant au ${countryName}.
+
+Ton de l'histoire : ${toneDesc}.
+Pronoms à utiliser : ${pronoun}, ${pronounPossessive}.
+
+EXIGENCES ABSOLUES :
+- Minimum 400 mots, idéalement 500-600 mots
+- Histoire complète avec début, milieu, rebondissement et fin satisfaisante
+- Le prénom ${child.name} apparaît au moins 8 fois dans l'histoire
+- Décors ancrés dans ${countryName} : lieux réels, noms locaux, nature locale
+- Une valeur morale claire transmise naturellement (pas expliquée)
+- Personnages secondaires avec des noms africains/locaux
+- Dialogue entre personnages (minimum 3 échanges)
+- Descriptions sensorielles riches (sons, couleurs, odeurs, textures)
+- Fin apaisante qui invite au sommeil
+
+QUESTION DU SOIR : Après l'histoire, génère UNE question émotionnellement profonde et spécifique à l'histoire (pas générique), qui invite ${child.name} à réfléchir sur ses propres émotions ou valeurs. Ex: "Si tu avais trouvé cette lampe, à qui aurais-tu offert ton premier vœu et pourquoi ?"
+
+Réponds UNIQUEMENT en JSON valide :
+{"title": "...", "content": "histoire complète de 400-600 mots...", "reading_time": "X min", "educational_value": "courage, curiosité, générosité", "emotional_question": "question précise et émotionnelle liée à l'histoire..."}`;
+
   } else if (type === 'activity') {
-    prompt = `Tu es un expert en activités éducatives pour enfants. Propose une activité créative et éducative détaillée en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${gender} de ${child.age}, au ${countryName}. L'enfant aime : ${child.interests || 'jouer et créer'}. Liste le matériel, explique les étapes (minimum 5), ce que l'enfant développe, adaptée à l'âge. 200 mots minimum. Réponds UNIQUEMENT avec du JSON valide : {"title": "...", "content": "...", "duration": "..."}`;
-  } else {
-    prompt = `Tu es un expert en parentalité bienveillante. Donne un conseil parental complet en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant dans son développement'}". Enfant : ${child.name}, ${gender} de ${child.age}, au ${countryName}. Explique pourquoi ce comportement est normal, donne 3-4 stratégies concrètes numérotées, sois bienveillant. 200 mots minimum. Réponds UNIQUEMENT avec du JSON valide : {"title": "...", "content": "..."}`;
+    // Activité hebdomadaire — basée sur âge et genre, pas centres d'intérêt
+    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' :
+                     child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' :
+                     child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
+    const genreLabel = child.gender === 'garcon' ? 'garçon' : 'fille';
+
+    prompt = `Tu es un expert en activités éducatives et créatives pour enfants. Propose une activité COMPLÈTE et DÉTAILLÉE pour cette semaine pour ${child.name}, ${genreLabel} de ${ageGroup}, au ${countryName}.
+
+EXIGENCES ABSOLUES :
+- Activité réalisable à la maison avec du matériel simple et accessible
+- Adaptée précisément à l'âge ${ageGroup} en termes de complexité motrice et cognitive
+- Durée réelle : 30 à 60 minutes
+- MATÉRIEL : liste précise et exhaustive de tout ce dont on a besoin (chaque item sur une ligne)
+- ÉTAPES : minimum 6 étapes numérotées, chacune clairement expliquée en 2-3 phrases
+- VARIANTE FACILE : une version simplifiée si l'enfant a des difficultés
+- VARIANTE DIFFICILE : une version plus challenging si l'enfant veut aller plus loin
+- Ce que l'enfant développe : compétences précises (motricité fine, créativité, logique...)
+- Conseil au parent : comment accompagner sans faire à la place
+
+Ne te base PAS sur les centres d'intérêt. Base-toi sur ce qui est développementalement approprié et stimulant pour un(e) ${genreLabel} de ${ageGroup}.
+
+Réponds UNIQUEMENT en JSON valide :
+{"title": "...", "content": "description complète et détaillée avec matériel, étapes numérotées, variantes et conseil parent...", "duration": "X-Y minutes", "skills": "compétences développées..."}`;
+
+  } else if (type === 'advice') {
+    prompt = `Tu es un expert en parentalité bienveillante et psychologie du développement de l'enfant. Donne un conseil parental COMPLET et PRATIQUE en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant dans son épanouissement'}".
+
+Enfant : ${child.name}, ${gender} de ${child.age}, au ${countryName}.
+
+STRUCTURE OBLIGATOIRE :
+1. Pourquoi ce comportement est normal à cet âge (explication psychologique simple)
+2. Ce qu'il NE FAUT PAS faire (et pourquoi ça empire la situation)
+3. Stratégies concrètes (minimum 4, numérotées, avec exemples de phrases à dire)
+4. Ce qu'on peut attendre comme changement et dans quel délai
+5. Mot d'encouragement bienveillant pour le parent
+
+Minimum 300 mots. Bienveillant, pratique, sans jugement.
+
+Réponds UNIQUEMENT en JSON valide :
+{"title": "...", "content": "conseil complet structuré..."}`;
+
+  } else if (type === 'learning') {
+    // Apprentissage du jour
+    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' :
+                     child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' :
+                     child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
+    const learningTypes = ['un mot dans une autre langue avec son histoire', 'la découverte d\'un animal fascinant', 'un monument ou lieu extraordinaire du monde', 'un fait scientifique étonnant', 'une tradition culturelle d\'ailleurs', 'un personnage historique inspirant', 'une plante ou fleur remarquable', 'un phénomène naturel'];
+    const randomType = learningTypes[Math.floor(Math.random() * learningTypes.length)];
+
+    prompt = `Tu es un éducateur passionné et créatif. Crée un "apprentissage du jour" captivant pour ${child.name}, ${gender} de ${ageGroup}, au ${countryName}.
+
+Thème d'aujourd'hui : ${randomType}
+
+EXIGENCES :
+- Adapté à ${ageGroup} : langage simple, phrases courtes, exemples concrets
+- Informatif ET amusant, avec une anecdote surprenante
+- Une question pour ouvrir la discussion avec le parent
+- Un lien avec la vie quotidienne de l'enfant
+- Emoji pertinents pour rendre visuel
+- 150-200 mots
+
+Réponds UNIQUEMENT en JSON valide :
+{"title": "...", "emoji": "🌍", "content": "contenu de l'apprentissage...", "fun_fact": "fait amusant et surprenant...", "discussion_question": "question pour discuter avec le parent..."}`;
   }
 
   try {
@@ -1554,17 +1697,24 @@ async function generateContent(childIndex, type, autoLoad = false) {
     if (titleEl) titleEl.textContent = parsed.title || 'Moment personnalisé';
     if (textEl) {
       const fullContent = parsed.content || '';
-      const preview = fullContent.length > 250 ? fullContent.substring(0, 250) + '...' : fullContent;
+      // Seuil généreux — afficher les 150 premiers mots
+      const words = fullContent.split(' ');
+      const previewWords = words.slice(0, 80).join(' ');
+      const preview = words.length > 80 ? previewWords + '...' : fullContent;
       textEl.textContent = preview;
+
+      // Supprimer ancien bouton lire la suite
       const existingBtn = document.getElementById(`readmore-${type}-${childIndex}`);
       if (existingBtn) existingBtn.remove();
-      if (fullContent.length > 250) {
+
+      // Ajouter bouton si contenu plus long
+      if (words.length > 80) {
         const readMoreBtn = document.createElement('button');
         readMoreBtn.id = `readmore-${type}-${childIndex}`;
         readMoreBtn.className = 'bregen';
-        readMoreBtn.style.cssText = 'margin-top:0.75rem;display:block;';
-        readMoreBtn.textContent = '📖 Lire la suite';
-        readMoreBtn.onclick = () => showModal(parsed.title, fullContent);
+        readMoreBtn.style.cssText = 'margin-top:0.85rem;display:block;width:100%;justify-content:center;border-color:var(--peach);color:var(--peach-dark);font-weight:800;';
+        readMoreBtn.textContent = '📖 Lire la suite complète';
+        readMoreBtn.onclick = () => showModal(parsed.title || 'Contenu', fullContent);
         textEl.parentNode.insertBefore(readMoreBtn, textEl.nextSibling);
       }
     }
@@ -1574,6 +1724,26 @@ async function generateContent(childIndex, type, autoLoad = false) {
       badgeEl.textContent = `${child.age} · ${parsed.reading_time}`;
     } else if (type === 'activity' && parsed.duration && badgeEl) {
       badgeEl.textContent = `${child.age} · ${parsed.duration}`;
+    }
+
+    // Affichage spécial pour l'apprentissage
+    if (type === 'learning') {
+      const emojiEl = document.getElementById(`learning-emoji-${childIndex}`);
+      if (emojiEl && parsed.emoji) emojiEl.textContent = parsed.emoji;
+
+      const factEl = document.getElementById(`learning-fact-${childIndex}`);
+      const factText = document.getElementById(`learning-fact-text-${childIndex}`);
+      if (factEl && factText && parsed.fun_fact) {
+        factText.textContent = parsed.fun_fact;
+        factEl.style.display = 'block';
+      }
+
+      const qEl = document.getElementById(`learning-question-${childIndex}`);
+      const qText = document.getElementById(`learning-q-text-${childIndex}`);
+      if (qEl && qText && parsed.discussion_question) {
+        qText.textContent = parsed.discussion_question;
+        qEl.style.display = 'block';
+      }
     }
 
     // Valeur éducative
@@ -1904,25 +2074,41 @@ function setDate() {
 
 async function loadHistory() {
   const list = document.getElementById('history-list');
+  if (!list) return;
   try {
-    const history = await sb.select('history', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=20`, currentToken);
+    const history = await sb.select('history', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=30`, currentToken);
     if (!history || history.length === 0) {
-      list.innerHTML = '<p style="color:var(--text-soft);font-weight:700">Aucun contenu généré pour l\'instant.</p>';
+      list.innerHTML = '<p style="color:var(--text-soft);font-weight:700;text-align:center;padding:2rem;">Aucun contenu pour l\'instant.<br><br>Génère ta première histoire du soir !</p>';
       return;
     }
-    const typeLabels = {story:'📖 Histoire',activity:'🎮 Activité',advice:'💡 Conseil'};
-    list.innerHTML = `<p style="font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-bottom:0.5rem">${history.length} contenus générés</p>` +
-      history.map(h => `
-        <div class="hi" onclick="showModal('${(h.title||'').replace(/'/g,"\\'")}', '${(h.content||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')" style="cursor:pointer;">
-          <div><div class="hiti">${h.title || 'Sans titre'}</div><div class="hifo">Pour ${h.child_name} • ${new Date(h.created_at).toLocaleDateString('fr-FR')}</div></div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem">
+
+    // Stocker le contenu dans un objet global pour éviter les problèmes d'échappement
+    window.historyCache = {};
+    history.forEach((h, idx) => { window.historyCache[idx] = { title: h.title, content: h.content }; });
+
+    const typeLabels = { story:'📖 Histoire', activity:'🎮 Activité', advice:'💡 Conseil', learning:'🧠 Apprentissage' };
+    list.innerHTML = `<p style="font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-bottom:0.75rem">${history.length} contenu${history.length > 1 ? 's' : ''} dans l'historique</p>` +
+      history.map((h, idx) => `
+        <div class="hi" onclick="openHistory(${idx})" style="cursor:pointer;">
+          <div>
+            <div class="hiti">${h.title || 'Sans titre'}</div>
+            <div class="hifo">Pour ${h.child_name || 'votre enfant'} · ${new Date(h.created_at).toLocaleDateString('fr-FR')}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
             <span class="hibadge">${typeLabels[h.type] || h.type}</span>
-            <span style="font-size:0.75rem;color:var(--peach);font-weight:700">Cliquer pour lire →</span>
+            <span style="font-size:0.75rem;color:var(--peach);font-weight:700;">Lire →</span>
           </div>
         </div>`).join('');
   } catch(e) {
-    list.innerHTML = '<p style="color:var(--text-soft);font-weight:700">Erreur de chargement.</p>';
+    console.error('History error:', e);
+    list.innerHTML = '<p style="color:var(--text-soft);font-weight:700;">Erreur de chargement. Vérifiez votre connexion.</p>';
   }
+}
+
+function openHistory(idx) {
+  const item = window.historyCache?.[idx];
+  if (!item) return;
+  showModal(item.title || 'Contenu', item.content || '');
 }
 
 async function updateProfile() {
