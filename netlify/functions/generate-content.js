@@ -16,9 +16,9 @@ exports.handler = async (event) => {
   try {
     const { prompt, type } = JSON.parse(event.body);
 
-    // Modèle lourd pour les histoires, léger pour le reste
+    // Modèle puissant pour les histoires avec limites séparées
     const model = (type === 'story')
-      ? 'llama-3.3-70b-versatile'
+      ? 'llama-3.1-70b-versatile'
       : 'llama-3.1-8b-instant';
 
     const maxTokens = (type === 'story') ? 3000 : 1200;
