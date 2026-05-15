@@ -1608,7 +1608,7 @@ async function generateContent(childIndex, type, autoLoad = false) {
     const res = await fetch('/.netlify/functions/generate-content', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({ prompt, type })
     });
 
     const data = await res.json();
