@@ -979,7 +979,7 @@ function closeModal(event) {
 // ============================================================
 const CONFIG = {
   SUPABASE_URL: 'https://cszvvbqyttsxjlrnrizi.supabase.co',
-  SUPABASE_ANON_KEY: 'REMPLACE_PAR_TA_SUPABASE_ANON_KEYeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenZ2YnF5dHRzeGpscm5yaXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MDM5NzgsImV4cCI6MjA5MzM3OTk3OH0.t1L-JpsDDcxpx4z31TIzJPJDmln5dnlsRRIfqolG4Ww',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenZ2YnF5dHRzeGpscm5yaXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MDM5NzgsImV4cCI6MjA5MzM3OTk3OH0.t1L-JpsDDcxpx4z31TIzJPJDmln5dnlsRRIfqolG4Ww',
   NOTCHPAY_PUBLIC_KEY: ''
 };
 // ============================================================
@@ -1094,25 +1094,16 @@ async function loginUser() {
   try {
     const res = await sb.signIn(em, pw);
     if (res.error) { showErr('err-login', 'Email ou mot de passe incorrect.'); return; }
-    if (!res.access_token) { showErr('err-login', 'Réponse invalide. Réessayez.'); return; }
 
     currentToken = res.access_token;
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
     updateNav(true);
-
-    // Afficher le dashboard d'abord, puis charger les données
     showS('dashboard');
+    await loadDashboard().catch(e => console.error('Dashboard error:', e));
 
-    // Charger les données après (ne bloque pas la connexion)
-    try {
-      await loadDashboard();
-    } catch(e) {
-      console.error('Dashboard load error:', e);
-    }
-
-    if (currentUser.email === ADMIN_EMAIL) {
+    if (currentUser && currentUser.email === ADMIN_EMAIL) {
       const btn = document.getElementById('admin-nav-btn');
       if (btn) btn.style.display = 'block';
     }
