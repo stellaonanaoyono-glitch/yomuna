@@ -269,20 +269,65 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 .error-msg.show{display:block;}
 
 /* TOAST */
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--text);color:white;padding:0.9rem 1.6rem;border-radius:16px;font-size:0.9rem;font-weight:800;box-shadow:0 8px 30px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:999;border-left:4px solid var(--peach);}
+.toast{position:fixed;bottom:5rem;right:1rem;background:var(--text);color:white;padding:0.9rem 1.6rem;border-radius:16px;font-size:0.9rem;font-weight:800;box-shadow:0 8px 30px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:999;border-left:4px solid var(--peach);}
 .toast.show{transform:translateY(0);opacity:1;}
 
+/* MOBILE BOTTOM NAV */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:white;border-top:2px solid var(--border);padding:0.4rem 0 0.5rem;box-shadow:0 -4px 20px rgba(0,0,0,0.08);}
+.mobile-nav-items{display:flex;justify-content:space-around;align-items:center;}
+.mnav-btn{display:flex;flex-direction:column;align-items:center;gap:0.15rem;background:none;border:none;cursor:pointer;padding:0.4rem 0.6rem;border-radius:12px;transition:all 0.2s;font-family:'Nunito',sans-serif;min-width:60px;}
+.mnav-btn.on{background:rgba(255,140,105,0.1);}
+.mnav-ico{font-size:1.3rem;line-height:1;}
+.mnav-lbl{font-size:0.62rem;font-weight:800;color:var(--text-soft);}
+.mnav-btn.on .mnav-lbl{color:var(--peach-dark);}
+
+/* DASHBOARD FOOTER */
+.dash-footer{background:var(--text);color:rgba(255,255,255,0.6);padding:2rem 2rem 1.5rem;margin-top:3rem;}
+.dash-footer-in{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.dash-footer-logo{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:white;}
+.dash-footer-logo span{color:var(--yellow);}
+.dash-footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.dash-footer-links a{color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.82rem;font-weight:600;cursor:pointer;transition:color 0.2s;}
+.dash-footer-links a:hover{color:var(--peach-light);}
+.dash-footer-copy{font-size:0.78rem;color:rgba(255,255,255,0.3);width:100%;text-align:center;margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,0.1);}
+
 @media(max-width:900px){
-  nav{padding:0 1.5rem}.nav-links{display:none}
-  .hero-in{grid-template-columns:1fr}.phone-mock{display:none}
-  .hero h1{font-size:2.5rem}.steps{grid-template-columns:1fr 1fr}.steps::before{display:none}
+  nav{padding:0 1.25rem}.nav-links{display:none}
+  .hero-in{grid-template-columns:1fr;gap:2rem}.phone-mock{display:none}
+  .hero-wrap{padding:3rem 1.25rem 4rem}
+  .hero h1{font-size:2.3rem}
+  .steps{grid-template-columns:1fr 1fr}.steps::before{display:none}
   .rcv-grid,.testi-grid,.price-grid{grid-template-columns:1fr}.pc.feat{transform:none}
   .cult-in{grid-template-columns:1fr}.ft-top{grid-template-columns:1fr 1fr}
   .cg{grid-template-columns:1fr}.planopts{grid-template-columns:1fr}.frow{grid-template-columns:1fr}
 }
-@media(max-width:600px){
-  .sec,.hero-wrap,.faq-bg,.testi-bg{padding:3rem 1.5rem}
-  footer{padding:3rem 1.5rem 1.5rem}.ft-top{grid-template-columns:1fr;gap:2rem}
+@media(max-width:640px){
+  .sec,.hero-wrap,.faq-bg,.testi-bg{padding:2.5rem 1rem}
+  footer{padding:2.5rem 1rem 1.5rem}.ft-top{grid-template-columns:1fr;gap:2rem}
+  .mobile-nav{display:block}
+  body{padding-bottom:65px}
+  .dash{padding:1.5rem 1rem 1rem}
+  .dh{flex-direction:column;gap:0.75rem}
+  .dgreet{font-size:1.6rem}
+  .dtabs{display:none}
+  .cpills{gap:0.4rem}
+  .cpill{padding:0.4rem 0.9rem;font-size:0.82rem}
+  .cc{padding:1.2rem}
+  .fbox{padding:1.75rem 1.25rem;border-radius:24px}
+  .hero h1{font-size:1.9rem}
+  .steps{grid-template-columns:1fr}
+  .price-grid{grid-template-columns:1fr}
+  .sticker{display:none}
+  nav{height:58px}
+  .screen{padding-top:58px}
+  .toast{bottom:5.5rem;right:0.75rem;left:0.75rem;text-align:center}
+  .dh > div:last-child{width:100%;display:flex;gap:0.5rem}
+  .dh > div:last-child button{flex:1;font-size:0.82rem;padding:0.5rem}
+  .cg{gap:0.9rem}
+  .asec{padding:1.1rem}
+  .dash-footer{padding:1.5rem 1rem;margin-bottom:0}
+  .dash-footer-in{flex-direction:column;text-align:center;gap:0.75rem}
+  .dash-footer-links{justify-content:center}
 }
 </style>
 </head>
@@ -292,6 +337,28 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 <div class="loading-overlay hidden" id="loading">
   <div class="spinner"></div>
   <div class="loading-text" id="loading-text">Génération en cours...</div>
+</div>
+
+<!-- MOBILE BOTTOM NAV (visible uniquement dans le dashboard sur mobile) -->
+<div class="mobile-nav" id="mobile-nav" style="display:none;">
+  <div class="mobile-nav-items">
+    <button class="mnav-btn on" id="mnav-today" onclick="mnavGo('today')">
+      <span class="mnav-ico">✨</span><span class="mnav-lbl">Aujourd'hui</span>
+    </button>
+    <button class="mnav-btn" id="mnav-library" onclick="mnavGo('library')">
+      <span class="mnav-ico">📚</span><span class="mnav-lbl">Biblio</span>
+    </button>
+    <button class="mnav-btn" id="mnav-story" onclick="quickStory()">
+      <span style="font-size:1.6rem;background:var(--peach);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin-top:-16px;box-shadow:0 4px 15px var(--shadow-warm);" class="mnav-ico">🌙</span>
+      <span class="mnav-lbl" style="color:var(--peach-dark);">Histoire</span>
+    </button>
+    <button class="mnav-btn" id="mnav-history" onclick="mnavGo('history')">
+      <span class="mnav-ico">🕐</span><span class="mnav-lbl">Historique</span>
+    </button>
+    <button class="mnav-btn" id="mnav-account" onclick="mnavGo('account')">
+      <span class="mnav-ico">👤</span><span class="mnav-lbl">Compte</span>
+    </button>
+  </div>
 </div>
 
 <!-- NAV -->
@@ -789,7 +856,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <div class="astitle">👶 Mes enfants <span style="margin-left:auto;font-size:0.78rem;color:var(--text-soft);font-weight:700" id="child-count">0 / 4</span></div>
       <div id="acc-children"></div>
       <button class="badd" onclick="showAddChildForm()">+ Ajouter un enfant</button>
-      <button class="bsm" onclick="toast('Profils mis à jour ✓')">Sauvegarder les profils</button>
+      <button class="bsm" onclick="saveAllChildren()">💾 Sauvegarder les profils</button>
     </div>
     <div class="asec">
       <div class="astitle">💳 Mon abonnement</div>
@@ -816,6 +883,22 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   </div>
 
 </div><!-- end dash -->
+
+<!-- DASHBOARD FOOTER -->
+<footer class="dash-footer">
+  <div class="dash-footer-in">
+    <div class="dash-footer-logo">Yo<span>●</span>Muna</div>
+    <div class="dash-footer-links">
+      <a onclick="swTab('today',null)">Aujourd'hui</a>
+      <a onclick="swTab('library',null)">Bibliothèque</a>
+      <a onclick="swTab('history',null)">Historique</a>
+      <a onclick="swTab('account',null)">Mon compte</a>
+      <a href="mailto:yomuna237@gmail.com">Contact</a>
+    </div>
+    <div class="dash-footer-copy">© 2026 YoMuna · yo-muna.com · yomuna237@gmail.com · @_yomuna</div>
+  </div>
+</footer>
+
 </div><!-- end s-dashboard -->
 
 <!-- EXPIRED MODAL -->
@@ -1288,19 +1371,50 @@ function renderChildPills() {
 
 function renderAccountChildren() {
   const container = document.getElementById('acc-children');
+  if (!container) return;
   container.innerHTML = '';
   currentChildren.forEach((child, i) => {
     container.innerHTML += `
-      <div class="kcard">
+      <div class="kcard" id="acc-child-${i}">
         <div class="khead"><div class="klbl">👶 ${child.name}</div></div>
         <div class="frow">
-          <div class="fg"><label>Prénom</label><input type="text" value="${child.name}" /></div>
-          <div class="fg"><label>Âge</label><select><option>${child.age}</option></select></div>
+          <div class="fg"><label>Prénom</label><input type="text" id="acc-child-name-${i}" value="${child.name || ''}" /></div>
+          <div class="fg"><label>Sexe</label>
+            <select id="acc-child-gender-${i}">
+              <option value="fille" ${(child.gender !== 'garcon') ? 'selected' : ''}>👧 Fille</option>
+              <option value="garcon" ${(child.gender === 'garcon') ? 'selected' : ''}>👦 Garçon</option>
+            </select>
+          </div>
         </div>
-        <div class="fg"><label>Centres d'intérêt</label><input type="text" value="${child.interests||''}" /></div>
-        <div class="fg"><label>Défi parental</label><input type="text" value="${child.challenge||''}" /></div>
+        <div class="fg"><label>Âge</label>
+          <select id="acc-child-age-${i}">
+            ${['3–4 ans','5–6 ans','7–8 ans','9–10 ans'].map(a =>
+              `<option ${child.age === a ? 'selected' : ''}>${a}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fg"><label>Centres d'intérêt</label><input type="text" id="acc-child-interests-${i}" value="${child.interests||''}" placeholder="danse, foot, dessin..." /></div>
+        <div class="fg"><label>Défi parental du moment</label><input type="text" id="acc-child-challenge-${i}" value="${child.challenge||''}" placeholder="caprices, sommeil, devoirs..." /></div>
       </div>`;
   });
+}
+
+async function saveAllChildren() {
+  try {
+    for (let i = 0; i < currentChildren.length; i++) {
+      const child = currentChildren[i];
+      const name = document.getElementById(`acc-child-name-${i}`)?.value.trim() || child.name;
+      const gender = document.getElementById(`acc-child-gender-${i}`)?.value || child.gender || 'fille';
+      const age = document.getElementById(`acc-child-age-${i}`)?.value || child.age;
+      const interests = document.getElementById(`acc-child-interests-${i}`)?.value || '';
+      const challenge = document.getElementById(`acc-child-challenge-${i}`)?.value || '';
+      await sb.update('children', `id=eq.${child.id}`, { name, gender, age, interests, challenge }, currentToken);
+      currentChildren[i] = { ...child, name, gender, age, interests, challenge };
+    }
+    toast('✓ Profils mis à jour avec succès !');
+    renderChildPills();
+  } catch(e) {
+    toast('Erreur lors de la sauvegarde. Réessayez.');
+  }
 }
 
 // ===== DAILY QUOTA =====
@@ -1379,8 +1493,8 @@ async function generateContent(childIndex, type, autoLoad = false) {
   const pronoun = child.gender === 'garcon' ? 'il' : 'elle';
   const pronounPossessive = child.gender === 'garcon' ? 'son' : 'sa';
 
-  // Récupérer le ton choisi pour les histoires
-  const toneSelect = document.getElementById(`tone-${childIndex}`);
+  // Récupérer le ton choisi — uniquement pour les histoires
+  const toneSelect = type === 'story' ? document.getElementById(`tone-${childIndex}`) : null;
   const toneValue = toneSelect ? toneSelect.value : 'apaisante';
   const toneLabels = {
     apaisante: 'apaisante et douce pour le soir, qui aide à se détendre',
@@ -2053,6 +2167,11 @@ function showS(n) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('s-'+n).classList.add('active');
   window.scrollTo(0,0);
+  // Afficher/cacher la nav mobile selon l'écran
+  const mobileNav = document.getElementById('mobile-nav');
+  if (mobileNav) {
+    mobileNav.style.display = (n === 'dashboard') ? 'block' : 'none';
+  }
 }
 
 function goStep(n) {
@@ -2067,10 +2186,48 @@ function showExpiredModal() {
 }
 
 function renewSubscription() {
-  document.getElementById('expired-modal').classList.add('hidden');
-  // Aller à l'étape 3 du signup (paiement uniquement)
-  goStep(3);
-  showS('signup');
+  // Ouvrir un modal de renouvellement sans quitter le dashboard
+  const modal = document.createElement('div');
+  modal.id = 'renew-modal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:1.5rem;';
+  modal.innerHTML = `
+    <div style="background:white;border-radius:24px;padding:2rem;max-width:420px;width:100%;box-shadow:0 25px 70px rgba(0,0,0,0.2);">
+      <div style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">🔄 Renouveler</div>
+      <p style="color:var(--text-soft);font-weight:600;font-size:0.9rem;margin-bottom:1.5rem;">Choisissez votre plan pour continuer à profiter de YoMuna.</p>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;">
+        <div onclick="startRenew('solo','2500')" style="border:2px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--peach)'" onmouseout="this.style.borderColor='var(--border)'">
+          <strong>Solo</strong> — 2 500 FCFA/mois · 1 enfant
+        </div>
+        <div onclick="startRenew('fam','4000')" style="border:2px solid var(--peach);border-radius:14px;padding:1rem;cursor:pointer;background:rgba(255,140,105,0.05);">
+          <strong>⭐ Famille</strong> — 4 000 FCFA/mois · 4 enfants
+        </div>
+        <div onclick="startRenew('ann','20000')" style="border:2px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;" onmouseover="this.style.borderColor='var(--peach)'" onmouseout="this.style.borderColor='var(--border)'">
+          <strong>Annuel</strong> — 20 000 FCFA/an · 4 enfants
+        </div>
+      </div>
+      <button onclick="document.getElementById('renew-modal').remove()" style="width:100%;padding:0.75rem;border:2px solid var(--border);border-radius:50px;background:none;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;color:var(--text-soft);">Annuler</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+async function startRenew(plan, amount) {
+  document.getElementById('renew-modal')?.remove();
+  currentSelectedPlan = plan;
+  currentSelectedAmount = amount;
+  await initiatePayment();
+}
+
+// ===== MOBILE NAV =====
+function mnavGo(tab) {
+  document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('on'));
+  const btn = document.getElementById(`mnav-${tab}`);
+  if (btn) btn.classList.add('on');
+  swTab(tab, null);
+  // Sync desktop tabs
+  document.querySelectorAll('.dtab').forEach(b => {
+    if (b.getAttribute('onclick')?.includes(`'${tab}'`)) b.classList.add('on');
+    else b.classList.remove('on');
+  });
 }
 
 async function loadWeeklyReport() {
