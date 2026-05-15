@@ -18,10 +18,10 @@ exports.handler = async (event) => {
 
     // Modèle puissant pour les histoires avec limites séparées
     const model = (type === 'story')
-      ? 'llama-3.1-70b-versatile'
+      ? 'llama-3.3-70b-versatile'
       : 'llama-3.1-8b-instant';
 
-    const maxTokens = (type === 'story') ? 3000 : 1200;
+    const maxTokens = (type === 'story') ? 2000 : 1200;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
