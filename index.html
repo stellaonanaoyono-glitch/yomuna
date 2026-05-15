@@ -1551,22 +1551,35 @@ async function generateContent(childIndex, type, autoLoad = false) {
   };
   const toneDesc = toneLabels[toneValue] || 'apaisante';
 
+  // ===== PROMPTS =====
+  const childName = child.name || 'Mon enfant';
+  const childAge = child.age || '5-6 ans';
+  const childChallenge = child.challenge || 'epanouissement';
+  const toneSelect = type === 'story' ? document.getElementById('tone-' + childIndex) : null;
+  const toneValue = toneSelect ? toneSelect.value : 'apaisante';
+  const toneMap = {
+    apaisante: 'douce et apaisante pour le soir',
+    aventure: "pleine d'aventure et de suspense",
+    drole: 'drole et pleine d humour',
+    confiance: 'qui renforce la confiance en soi',
+    educative: 'educative qui apprend quelque chose',
+    culture: 'ancree dans les traditions et culture locales',
+    foi: 'inspiree de la foi chretienne avec des valeurs bibliques uniquement',
+    famille: "centree sur l'amour familial"
+  };
+  const toneDesc = toneMap[toneValue] || 'douce';
+
   let prompt = '';
   if (type === 'story') {
-    prompt = `Écris une histoire du soir en français pour ${child.name} (${gender}, ${child.age}, ${countryName}). Ton: ${toneDesc}. Pronoms: ${pronoun}/${pronounPossessive}. Minimum 400 mots. Histoire complète avec début, milieu, fin. Décors de ${countryName}. Valeur morale. Dialogues. Le prénom ${child.name} apparaît souvent. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"titre","content":"histoire complète","reading_time":"X min","educational_value":"courage, curiosité","emotional_question":"question émotionnelle spécifique à l'histoire"}`;
-
+    prompt = 'Ecris une histoire ' + toneDesc + ' pour ' + childName + ' (' + gender + ', ' + childAge + ', ' + countryName + '). Minimum 400 mots. Debut, milieu, fin. Le prenom ' + childName + ' apparait souvent. Decors de ' + countryName + '. Une valeur morale. Des dialogues. Reponds avec du JSON valide exactement comme ceci: {"title":"le titre","content":"toute l histoire ici","educational_value":"valeur apprise","emotional_question":"question pour l enfant"}';
   } else if (type === 'activity') {
-    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' : child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' : child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
-    prompt = `Propose une activité créative pour ${child.name} (${gender}, ${ageGroup}, ${countryName}). Réalisable à la maison. Matériel simple. Minimum 6 étapes numérotées. Durée 30-60 min. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"nom activité","content":"MATERIEL NECESSAIRE:\\n- item1\\n- item2\\n\\nETAPES:\\n1. etape\\n2. etape\\n3. etape\\n4. etape\\n5. etape\\n6. etape\\n\\nCE QUE L'ENFANT DEVELOPPE:\\n...\\n\\nCONSEIL PARENT:\\n...","duration":"30-45 minutes","skills":"compétences"}`;
-
+    prompt = 'Propose une activite creative pour ' + childName + ' (' + gender + ', ' + childAge + '). Faisable a la maison. Materiel simple. 6 etapes minimum. 30 a 60 minutes. Reponds avec du JSON valide exactement comme ceci: {"title":"nom activite","content":"Materiel necessaire:\n- item\n\nEtapes:\n1. etape\n2. etape\n3. etape\n4. etape\n5. etape\n6. etape\n\nCe que l enfant developpe:\ntexte","duration":"30-45 minutes"}';
   } else if (type === 'advice') {
-    prompt = `Donne un conseil parental en français pour ce défi: "${child.challenge || 'épanouissement de mon enfant'}". Enfant: ${child.name}, ${gender}, ${child.age}, ${countryName}. Structure: 1.Pourquoi normal 2.Ce qu'il ne faut pas faire 3.4 stratégies concrètes 4.Délai changement 5.Encouragement. Minimum 300 mots. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"titre conseil","content":"conseil complet"}`;
-
+    prompt = 'Donne un conseil parental pratique pour: ' + childChallenge + ' avec ' + childName + ' (' + gender + ', ' + childAge + '). 200 mots minimum. 4 strategies concretes numerotees. Reponds avec du JSON valide exactement comme ceci: {"title":"titre du conseil","content":"tout le conseil ici"}';
   } else if (type === 'learning') {
-    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' : child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' : child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
-    const themes = ['un mot en wolof ou en lingala','un animal extraordinaire d\'Afrique','un monument célèbre du monde','un fait scientifique amusant','un héros africain historique','une tradition culturelle originale'];
+    const themes = ['un mot en swahili','un animal fascinant d Afrique','un monument celebre','un fait scientifique amusant','un heros africain'];
     const theme = themes[Math.floor(Math.random() * themes.length)];
-    prompt = `Crée un apprentissage du jour sur "${theme}" pour ${child.name} (${ageGroup}, ${countryName}). Langage simple, amusant, 150 mots max. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"titre","emoji":"🌍","content":"contenu court et amusant","fun_fact":"anecdote surprenante","discussion_question":"question pour discuter avec le parent"}`;
+    prompt = 'Cree un apprentissage sur ' + theme + ' pour ' + childName + ' (' + childAge + '). Court et amusant, 100 mots max. Reponds avec du JSON valide exactement comme ceci: {"title":"titre","emoji":"emoji","content":"texte court","fun_fact":"anecdote","discussion_question":"question pour le parent"}';
   }
 
   try {
@@ -1577,154 +1590,112 @@ async function generateContent(childIndex, type, autoLoad = false) {
     });
 
     const data = await res.json();
-    let text = data.text || '';
-    console.log(`[YoMuna] ${type} response (${text.length} chars):`, text.substring(0, 200));
+    const rawText = (data.text || '').trim();
+    console.log('[YoMuna]', type, 'chars:', rawText.length, 'preview:', rawText.substring(0, 100));
 
-    // Nettoyage agressif
-    text = text
-      .replace(/```json\s*/gi, '')
-      .replace(/```\s*/g, '')
-      .trim();
+    if (!rawText) {
+      if (titleEl) titleEl.textContent = 'API vide';
+      if (textEl) textEl.textContent = data.error || 'Verifiez la cle GROQ_API_KEY dans Netlify > Environment variables.';
+      return;
+    }
 
-    // Extraire le premier objet JSON valide dans le texte
+    // Parser JSON de facon robuste
     let parsed = null;
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      let jsonStr = jsonMatch[0];
-      // Tenter parse direct
-      try {
-        parsed = JSON.parse(jsonStr);
-      } catch(e1) {
-        // Nettoyer les sauts de ligne à l'intérieur des strings
-        try {
-          jsonStr = jsonStr
-            .replace(/[\r\n]+/g, ' ')
-            .replace(/\t/g, ' ')
-            .replace(/\s{2,}/g, ' ');
-          parsed = JSON.parse(jsonStr);
-        } catch(e2) {
-          // Extraction manuelle champ par champ
+    // Nettoyer le texte
+    let clean = rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
+    // Extraire objet JSON
+    const m = clean.match(/\{[\s\S]*\}/);
+    if (m) {
+      try { parsed = JSON.parse(m[0]); } catch(e1) {
+        try { parsed = JSON.parse(m[0].replace(/[\r\n]+/g,' ')); } catch(e2) {
+          // Extraction regex champ par champ
           parsed = {};
-          const fields = ['title','content','reading_time','educational_value','emotional_question','duration','skills','emoji','fun_fact','discussion_question'];
-          fields.forEach(field => {
-            const rx = new RegExp(`"${field}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`);
-            const m = jsonStr.match(rx);
-            if (m) parsed[field] = m[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+          ['title','content','educational_value','emotional_question','duration','emoji','fun_fact','discussion_question'].forEach(f => {
+            const rx = new RegExp('"' + f + '"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"');
+            const fm = m[0].match(rx);
+            if (fm) parsed[f] = fm[1].replace(/\\n/g,'\n');
           });
         }
       }
     }
 
-    // Si toujours pas de contenu, extraire le texte brut
-    if (!parsed || !parsed.content) {
-      console.warn('[YoMuna] JSON parse failed, raw text:', text.substring(0, 500));
-      const rawText = text
-        .replace(/[{}"\\]/g, ' ')
-        .replace(/title:|content:|duration:|skills:|emoji:|fun_fact:|discussion_question:|reading_time:|educational_value:|emotional_question:/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-      const typeLabel = type === 'story' ? 'Histoire' : type === 'activity' ? 'Activité' : type === 'learning' ? 'Apprentissage' : 'Conseil';
+    // Fallback : utiliser le texte brut comme content
+    if (!parsed || !parsed.content || parsed.content.length < 20) {
+      const typeLabel = {story:'Histoire', activity:'Activite', advice:'Conseil', learning:'Apprentissage'}[type] || 'Contenu';
       parsed = {
-        title: `${typeLabel} pour ${child.name}`,
-        content: rawText.length > 30 ? rawText : `Erreur de génération. Clique sur "Régénérer" pour réessayer.`
+        title: typeLabel + ' pour ' + childName,
+        content: clean.replace(/[{}"]/g,' ').replace(/\\n/g,' ').replace(/\s+/g,' ').trim()
       };
     }
 
-    if (titleEl) titleEl.textContent = parsed.title || 'Moment personnalisé';
-    if (textEl) {
-      const fullContent = parsed.content || '';
-      // Seuil généreux — afficher les 150 premiers mots
+    // Afficher titre
+    if (titleEl) titleEl.textContent = parsed.title || ('Contenu pour ' + childName);
+
+    // Afficher contenu avec apercu
+    const fullContent = parsed.content || '';
+    if (textEl && fullContent) {
       const words = fullContent.split(' ');
-      const previewWords = words.slice(0, 80).join(' ');
-      const preview = words.length > 80 ? previewWords + '...' : fullContent;
-      textEl.textContent = preview;
-
-      // Supprimer ancien bouton lire la suite
-      const existingBtn = document.getElementById(`readmore-${type}-${childIndex}`);
-      if (existingBtn) existingBtn.remove();
-
-      // Ajouter bouton si contenu plus long
-      if (words.length > 80) {
-        const readMoreBtn = document.createElement('button');
-        readMoreBtn.id = `readmore-${type}-${childIndex}`;
-        readMoreBtn.className = 'bregen';
-        readMoreBtn.style.cssText = 'margin-top:0.85rem;display:block;width:100%;justify-content:center;border-color:var(--peach);color:var(--peach-dark);font-weight:800;';
-        readMoreBtn.textContent = '📖 Lire la suite complète';
-        readMoreBtn.onclick = () => showModal(parsed.title || 'Contenu', fullContent);
-        textEl.parentNode.insertBefore(readMoreBtn, textEl.nextSibling);
+      textEl.textContent = words.slice(0, 60).join(' ') + (words.length > 60 ? '...' : '');
+      const oldBtn = document.getElementById('readmore-' + type + '-' + childIndex);
+      if (oldBtn) oldBtn.remove();
+      if (words.length > 60) {
+        const btn = document.createElement('button');
+        btn.id = 'readmore-' + type + '-' + childIndex;
+        btn.className = 'bregen';
+        btn.style.cssText = 'margin-top:0.85rem;display:block;width:100%;border-color:var(--peach);color:var(--peach-dark);font-weight:800;';
+        btn.textContent = 'Lire la suite complete';
+        const t = parsed.title, c = fullContent;
+        btn.onclick = function() { showModal(t, c); };
+        textEl.parentNode.insertBefore(btn, textEl.nextSibling);
       }
     }
 
-    // Image pour l'activité via Unsplash
-    if (type === 'activity' && parsed.title) {
-      const imgContainer = document.getElementById(`activity-img-${childIndex}`);
-      if (imgContainer) {
-        const keywords = parsed.title.split(' ').slice(0,4).join(' ');
-        const query = encodeURIComponent(`kids craft activity ${keywords}`);
-        imgContainer.innerHTML = `<img src="https://source.unsplash.com/400x220/?${query}" alt="Aperçu activité" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:0.5rem;display:block;" onerror="this.parentNode.style.display='none'" />`;
-        imgContainer.style.display = 'block';
-      }
-    }
-
-    // Temps de lecture / durée
-    if (type === 'story' && parsed.reading_time && badgeEl) {
-      badgeEl.textContent = `${child.age} · ${parsed.reading_time}`;
+    // Badge
+    if (type === 'story' && badgeEl) {
+      const mins = Math.max(1, Math.ceil(fullContent.split(' ').length / 150));
+      badgeEl.textContent = childAge + ' · ~' + mins + ' min';
     } else if (type === 'activity' && parsed.duration && badgeEl) {
-      badgeEl.textContent = `${child.age} · ${parsed.duration}`;
+      badgeEl.textContent = childAge + ' · ' + parsed.duration;
     }
 
-    // Affichage spécial pour l'apprentissage
+    // Histoire extras
+    if (type === 'story') {
+      const eduEl = document.getElementById('story-edu-' + childIndex);
+      const eduTxt = document.getElementById('story-edu-text-' + childIndex);
+      if (eduEl && eduTxt && parsed.educational_value) { eduTxt.textContent = parsed.educational_value; eduEl.style.display = 'block'; }
+      const qEl = document.getElementById('story-question-' + childIndex);
+      const qTxt = document.getElementById('story-q-text-' + childIndex);
+      if (qEl && qTxt && parsed.emotional_question) { qTxt.textContent = parsed.emotional_question; qEl.style.display = 'block'; }
+    }
+
+    // Apprentissage extras
     if (type === 'learning') {
-      const emojiEl = document.getElementById(`learning-emoji-${childIndex}`);
-      if (emojiEl && parsed.emoji) emojiEl.textContent = parsed.emoji;
+      const emojiEl = document.getElementById('learning-emoji-' + childIndex);
+      if (emojiEl) emojiEl.textContent = parsed.emoji || '🌍';
+      const factEl = document.getElementById('learning-fact-' + childIndex);
+      const factTxt = document.getElementById('learning-fact-text-' + childIndex);
+      if (factEl && factTxt && parsed.fun_fact) { factTxt.textContent = parsed.fun_fact; factEl.style.display = 'block'; }
+      const dqEl = document.getElementById('learning-question-' + childIndex);
+      const dqTxt = document.getElementById('learning-q-text-' + childIndex);
+      if (dqEl && dqTxt && parsed.discussion_question) { dqTxt.textContent = parsed.discussion_question; dqEl.style.display = 'block'; }
+    }
 
-      const factEl = document.getElementById(`learning-fact-${childIndex}`);
-      const factText = document.getElementById(`learning-fact-text-${childIndex}`);
-      if (factEl && factText && parsed.fun_fact) {
-        factText.textContent = parsed.fun_fact;
-        factEl.style.display = 'block';
-      }
-
-      const qEl = document.getElementById(`learning-question-${childIndex}`);
-      const qText = document.getElementById(`learning-q-text-${childIndex}`);
-      if (qEl && qText && parsed.discussion_question) {
-        qText.textContent = parsed.discussion_question;
-        qEl.style.display = 'block';
+    // Image activite
+    if (type === 'activity' && parsed.title) {
+      const imgEl = document.getElementById('activity-img-' + childIndex);
+      if (imgEl) {
+        const q = encodeURIComponent('children craft activity ' + parsed.title.split(' ').slice(0,3).join(' '));
+        imgEl.innerHTML = '<img src="https://source.unsplash.com/400x220/?' + q + '" alt="Apercu" style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:0.5rem;" onerror="this.parentNode.style.display=\'none\'">';
+        imgEl.style.display = 'block';
       }
     }
 
-    // Valeur éducative
-    if (type === 'story' && parsed.educational_value) {
-      const eduEl = document.getElementById(`story-edu-${childIndex}`);
-      const eduText = document.getElementById(`story-edu-text-${childIndex}`);
-      if (eduEl && eduText) {
-        eduText.textContent = parsed.educational_value;
-        eduEl.style.display = 'block';
-      }
+    // Historique
+    if (fullContent.length > 20) {
+      if (!window.storyCache) window.storyCache = {};
+      window.storyCache[type + '-' + childIndex] = parsed;
+      await sb.insert('history', { user_id: currentUser.id, child_name: childName, type, title: parsed.title, content: fullContent }, currentToken).catch(() => {});
     }
-
-    // Question émotionnelle
-    if (type === 'story' && parsed.emotional_question) {
-      const qEl = document.getElementById(`story-question-${childIndex}`);
-      const qText = document.getElementById(`story-q-text-${childIndex}`);
-      if (qEl && qText) {
-        qText.textContent = parsed.emotional_question;
-        qEl.style.display = 'block';
-      }
-    }
-
-    // Sauvegarder dans l'historique
-    await sb.insert('history', {
-      user_id: currentUser.id,
-      child_name: child.name,
-      type: type,
-      title: parsed.title,
-      content: parsed.content
-    }, currentToken).catch(() => {});
-
-    // Stocker le contenu pour la bibliothèque et PDF
-    if (!window.storyCache) window.storyCache = {};
-    window.storyCache[`${type}-${childIndex}`] = parsed;
 
   } catch(e) {
     console.error('Erreur génération:', e);
