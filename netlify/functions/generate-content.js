@@ -14,7 +14,14 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { prompt } = JSON.parse(event.body);
+    const { prompt, type } = JSON.parse(event.body);
+
+    // Modèle lourd pour les histoires, léger pour le reste
+    const model = (type === 'story')
+      ? 'llama-3.3-70b-versatile'
+      : 'llama-3.1-8b-instant';
+
+    const maxTokens = (type === 'story') ? 3000 : 1200;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -23,7 +30,7 @@ exports.handler = async (event) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model,
         messages: [
           {
             role: 'system',
@@ -35,7 +42,7 @@ exports.handler = async (event) => {
           }
         ],
         temperature: 0.8,
-        max_tokens: 3000
+        max_tokens: maxTokens
       })
     });
 
@@ -51,7 +58,7 @@ exports.handler = async (event) => {
     }
 
     const text = data.choices?.[0]?.message?.content || '';
-    console.log('Groq OK, length:', text.length);
+    console.log(`Groq OK [${model}], length:`, text.length);
 
     return {
       statusCode: 200,
