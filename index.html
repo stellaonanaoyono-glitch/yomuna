@@ -1629,91 +1629,20 @@ async function generateContent(childIndex, type, autoLoad = false) {
 
   let prompt = '';
   if (type === 'story') {
-    prompt = `Tu es un conteur professionnel pour enfants, poétique et captivant. Écris une histoire du soir LONGUE, riche et immersive en ${lang === 'en' ? 'anglais' : 'français'} pour ${child.name}, ${gender} de ${child.age}, vivant au ${countryName}.
-
-Ton de l'histoire : ${toneDesc}.
-Pronoms à utiliser : ${pronoun}, ${pronounPossessive}.
-
-EXIGENCES ABSOLUES :
-- Minimum 400 mots, idéalement 500-600 mots
-- Histoire complète avec début, milieu, rebondissement et fin satisfaisante
-- Le prénom ${child.name} apparaît au moins 8 fois dans l'histoire
-- Décors ancrés dans ${countryName} : lieux réels, noms locaux, nature locale
-- Une valeur morale claire transmise naturellement (pas expliquée)
-- Personnages secondaires avec des noms africains/locaux
-- Dialogue entre personnages (minimum 3 échanges)
-- Descriptions sensorielles riches (sons, couleurs, odeurs, textures)
-- Fin apaisante qui invite au sommeil
-
-QUESTION DU SOIR : Après l'histoire, génère UNE question émotionnellement profonde et spécifique à l'histoire (pas générique), qui invite ${child.name} à réfléchir sur ses propres émotions ou valeurs. Ex: "Si tu avais trouvé cette lampe, à qui aurais-tu offert ton premier vœu et pourquoi ?"
-
-Réponds UNIQUEMENT en JSON valide :
-{"title": "...", "content": "histoire complète de 400-600 mots...", "reading_time": "X min", "educational_value": "courage, curiosité, générosité", "emotional_question": "question précise et émotionnelle liée à l'histoire..."}`;
+    prompt = `Écris une histoire du soir en français pour ${child.name} (${gender}, ${child.age}, ${countryName}). Ton: ${toneDesc}. Pronoms: ${pronoun}/${pronounPossessive}. Minimum 400 mots. Histoire complète avec début, milieu, fin. Décors de ${countryName}. Valeur morale. Dialogues. Le prénom ${child.name} apparaît souvent. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"titre","content":"histoire complète","reading_time":"X min","educational_value":"courage, curiosité","emotional_question":"question émotionnelle spécifique à l'histoire"}`;
 
   } else if (type === 'activity') {
-    // Activité hebdomadaire — basée sur âge et genre, pas centres d'intérêt
-    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' :
-                     child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' :
-                     child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
-    const genreLabel = child.gender === 'garcon' ? 'garçon' : 'fille';
-
-    prompt = `Tu es un expert en activités éducatives et créatives pour enfants. Propose une activité COMPLÈTE et DÉTAILLÉE pour cette semaine pour ${child.name}, ${genreLabel} de ${ageGroup}, au ${countryName}.
-
-EXIGENCES ABSOLUES :
-- Activité réalisable à la maison avec du matériel simple et accessible
-- Adaptée précisément à l'âge ${ageGroup} en termes de complexité motrice et cognitive
-- Durée réelle : 30 à 60 minutes
-- MATÉRIEL : liste précise et exhaustive de tout ce dont on a besoin (chaque item sur une ligne)
-- ÉTAPES : minimum 6 étapes numérotées, chacune clairement expliquée en 2-3 phrases
-- VARIANTE FACILE : une version simplifiée si l'enfant a des difficultés
-- VARIANTE DIFFICILE : une version plus challenging si l'enfant veut aller plus loin
-- Ce que l'enfant développe : compétences précises (motricité fine, créativité, logique...)
-- Conseil au parent : comment accompagner sans faire à la place
-
-Ne te base PAS sur les centres d'intérêt. Base-toi sur ce qui est développementalement approprié et stimulant pour un(e) ${genreLabel} de ${ageGroup}.
-
-Réponds UNIQUEMENT en JSON valide :
-{"title": "...", "content": "description complète et détaillée avec matériel, étapes numérotées, variantes et conseil parent...", "duration": "X-Y minutes", "skills": "compétences développées..."}`;
+    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' : child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' : child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
+    prompt = `Propose une activité créative pour ${child.name} (${gender}, ${ageGroup}, ${countryName}). Réalisable à la maison. Matériel simple. Minimum 6 étapes numérotées. Durée 30-60 min. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"nom activité","content":"MATERIEL NECESSAIRE:\\n- item1\\n- item2\\n\\nETAPES:\\n1. etape\\n2. etape\\n3. etape\\n4. etape\\n5. etape\\n6. etape\\n\\nCE QUE L'ENFANT DEVELOPPE:\\n...\\n\\nCONSEIL PARENT:\\n...","duration":"30-45 minutes","skills":"compétences"}`;
 
   } else if (type === 'advice') {
-    prompt = `Tu es un expert en parentalité bienveillante et psychologie du développement de l'enfant. Donne un conseil parental COMPLET et PRATIQUE en ${lang === 'en' ? 'anglais' : 'français'} pour ce défi : "${child.challenge || 'accompagner mon enfant dans son épanouissement'}".
-
-Enfant : ${child.name}, ${gender} de ${child.age}, au ${countryName}.
-
-STRUCTURE OBLIGATOIRE :
-1. Pourquoi ce comportement est normal à cet âge (explication psychologique simple)
-2. Ce qu'il NE FAUT PAS faire (et pourquoi ça empire la situation)
-3. Stratégies concrètes (minimum 4, numérotées, avec exemples de phrases à dire)
-4. Ce qu'on peut attendre comme changement et dans quel délai
-5. Mot d'encouragement bienveillant pour le parent
-
-Minimum 300 mots. Bienveillant, pratique, sans jugement.
-
-Réponds UNIQUEMENT en JSON valide :
-{"title": "...", "content": "conseil complet structuré..."}`;
+    prompt = `Donne un conseil parental en français pour ce défi: "${child.challenge || 'épanouissement de mon enfant'}". Enfant: ${child.name}, ${gender}, ${child.age}, ${countryName}. Structure: 1.Pourquoi normal 2.Ce qu'il ne faut pas faire 3.4 stratégies concrètes 4.Délai changement 5.Encouragement. Minimum 300 mots. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"titre conseil","content":"conseil complet"}`;
 
   } else if (type === 'learning') {
-    // Apprentissage du jour
-    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' :
-                     child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' :
-                     child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
-    const learningTypes = ['un mot dans une autre langue avec son histoire', 'la découverte d\'un animal fascinant', 'un monument ou lieu extraordinaire du monde', 'un fait scientifique étonnant', 'une tradition culturelle d\'ailleurs', 'un personnage historique inspirant', 'une plante ou fleur remarquable', 'un phénomène naturel'];
-    const randomType = learningTypes[Math.floor(Math.random() * learningTypes.length)];
-
-    prompt = `Tu es un éducateur passionné et créatif. Crée un "apprentissage du jour" captivant pour ${child.name}, ${gender} de ${ageGroup}, au ${countryName}.
-
-Thème d'aujourd'hui : ${randomType}
-
-EXIGENCES :
-- Adapté à ${ageGroup} : langage simple, phrases courtes, exemples concrets
-- Informatif ET amusant, avec une anecdote surprenante
-- Une question pour ouvrir la discussion avec le parent
-- Un lien avec la vie quotidienne de l'enfant
-- Emoji pertinents pour rendre visuel
-- 150-200 mots
-
-Réponds UNIQUEMENT en JSON valide :
-{"title": "...", "emoji": "🌍", "content": "contenu de l'apprentissage...", "fun_fact": "fait amusant et surprenant...", "discussion_question": "question pour discuter avec le parent..."}`;
+    const ageGroup = child.age?.includes('3') || child.age?.includes('4') ? '3-4 ans' : child.age?.includes('5') || child.age?.includes('6') ? '5-6 ans' : child.age?.includes('7') || child.age?.includes('8') ? '7-8 ans' : '9-10 ans';
+    const themes = ['un mot en wolof ou en lingala','un animal extraordinaire d\'Afrique','un monument célèbre du monde','un fait scientifique amusant','un héros africain historique','une tradition culturelle originale'];
+    const theme = themes[Math.floor(Math.random() * themes.length)];
+    prompt = `Crée un apprentissage du jour sur "${theme}" pour ${child.name} (${ageGroup}, ${countryName}). Langage simple, amusant, 150 mots max. Réponds UNIQUEMENT avec ce JSON (pas de texte avant ou après): {"title":"titre","emoji":"🌍","content":"contenu court et amusant","fun_fact":"anecdote surprenante","discussion_question":"question pour discuter avec le parent"}`;
   }
 
   try {
@@ -1725,29 +1654,50 @@ Réponds UNIQUEMENT en JSON valide :
 
     const data = await res.json();
     let text = data.text || '';
-    text = text.replace(/```json/g,'').replace(/```/g,'').trim();
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) text = jsonMatch[0];
+    console.log(`[YoMuna] ${type} response (${text.length} chars):`, text.substring(0, 200));
 
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch(e) {
+    // Nettoyage agressif
+    text = text
+      .replace(/```json\s*/gi, '')
+      .replace(/```\s*/g, '')
+      .trim();
+
+    // Extraire le premier objet JSON valide dans le texte
+    let parsed = null;
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      let jsonStr = jsonMatch[0];
+      // Tenter parse direct
       try {
-        const cleaned = text.replace(/\n/g, ' ');
-        parsed = JSON.parse(cleaned);
-      } catch(e2) {
-        const titleMatch = text.match(/"title"\s*:\s*"([^"]+)"/);
-        const contentMatch = text.match(/"content"\s*:\s*"([\s\S]+?)(?:"\s*[,}]|"$)/);
-        parsed = {
-          title: titleMatch ? titleMatch[1] : 'Moment personnalisé',
-          content: contentMatch ? contentMatch[1].replace(/\\n/g, '\n') : text.replace(/[{}"\[\]]/g, '').trim()
-        };
+        parsed = JSON.parse(jsonStr);
+      } catch(e1) {
+        // Nettoyer les sauts de ligne à l'intérieur des strings
+        try {
+          jsonStr = jsonStr
+            .replace(/[\r\n]+/g, ' ')
+            .replace(/\t/g, ' ')
+            .replace(/\s{2,}/g, ' ');
+          parsed = JSON.parse(jsonStr);
+        } catch(e2) {
+          // Extraction manuelle champ par champ
+          parsed = {};
+          const fields = ['title','content','reading_time','educational_value','emotional_question','duration','skills','emoji','fun_fact','discussion_question'];
+          fields.forEach(field => {
+            const rx = new RegExp(`"${field}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`);
+            const m = jsonStr.match(rx);
+            if (m) parsed[field] = m[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+          });
+        }
       }
     }
 
+    // Si toujours pas de contenu, extraire le texte brut
     if (!parsed || !parsed.content) {
-      parsed = { title: 'Moment personnalisé', content: text.replace(/[{}"]/g, '').replace(/title:|content:|duration:/g, '').trim() };
+      const rawText = text.replace(/[{}"\\]/g, '').replace(/title:|content:|duration:|skills:|emoji:|fun_fact:|discussion_question:|reading_time:|educational_value:|emotional_question:/g, '\n').trim();
+      parsed = {
+        title: (text.match(/"title"\s*:\s*"([^"]{3,})"/) || [])[1] || `${type === 'story' ? 'Histoire' : type === 'activity' ? 'Activité' : type === 'learning' ? 'Apprentissage' : 'Conseil'} pour ${child.name}`,
+        content: rawText.length > 20 ? rawText : 'Contenu en cours de chargement...'
+      };
     }
 
     if (titleEl) titleEl.textContent = parsed.title || 'Moment personnalisé';
