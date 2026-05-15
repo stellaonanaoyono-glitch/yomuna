@@ -1279,10 +1279,10 @@ function renderChildPills() {
         </div>
       </div>`;
     contents.appendChild(div);
-    // Auto-générer le contenu
-    generateContent(i, 'story');
-    generateContent(i, 'activity');
-    generateContent(i, 'advice');
+    // Auto-générer le contenu (sans compter dans le quota)
+    generateContent(i, 'story', true);
+    generateContent(i, 'activity', true);
+    generateContent(i, 'advice', true);
   });
 }
 
@@ -1348,11 +1348,10 @@ function updateQuotaDisplay() {
 }
 
 // ===== AI GENERATION =====
-async function generateContent(childIndex, type) {
+async function generateContent(childIndex, type, autoLoad = false) {
   const child = currentChildren[childIndex];
   if (!child) return;
 
-  const typeMap = { story: 'story', activity: 'activity', advice: 'advice' };
   const titleEl = document.getElementById(`${type}-title-${childIndex}`);
   const textEl = document.getElementById(`${type}-text-${childIndex}`);
   const badgeEl = document.getElementById(`${type}-badge-${childIndex}`);
@@ -1360,11 +1359,13 @@ async function generateContent(childIndex, type) {
 
   if (regenBtn) { regenBtn.disabled = true; regenBtn.textContent = '⏳'; }
 
-  // Vérifier le quota journalier
-  const canGenerate = await checkAndIncrementQuota();
-  if (!canGenerate) {
-    if (regenBtn) { regenBtn.disabled = false; regenBtn.textContent = type === 'story' ? '🔄 Nouvelle histoire' : type === 'activity' ? '🔄 Nouvelle activité' : '🔄 Nouveau conseil'; }
-    return;
+  // Vérifier le quota uniquement si ce n'est pas le chargement initial
+  if (!autoLoad) {
+    const canGenerate = await checkAndIncrementQuota();
+    if (!canGenerate) {
+      if (regenBtn) { regenBtn.disabled = false; regenBtn.textContent = type === 'story' ? '🔄 Nouvelle histoire' : type === 'activity' ? '🔄 Nouvelle activité' : '🔄 Nouveau conseil'; }
+      return;
+    }
   }
 
   // Récupérer la langue et le pays du profil
@@ -1542,33 +1543,145 @@ function toggleFavorite(childIndex, type) {
 }
 
 // ===== DOWNLOAD STORY PDF =====
-function downloadStoryPDF(childIndex) {
+async function downloadStoryPDF(childIndex) {
   const cached = window.storyCache?.[`story-${childIndex}`];
-  if (!cached) { toast('Histoire non disponible'); return; }
+  if (!cached || !cached.content) { toast('Histoire non disponible — génère d\'abord une histoire'); return; }
   const child = currentChildren[childIndex];
-  const date = new Date().toLocaleDateString('fr-FR');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-  <style>
-    body{font-family:Georgia,serif;max-width:600px;margin:40px auto;padding:20px;color:#2D1B00;line-height:1.8;}
-    .logo{font-size:2rem;font-weight:800;color:#E06840;margin-bottom:5px;}
-    .logo span{color:#FFD166;}
-    h1{font-size:1.5rem;color:#2D1B00;margin:20px 0 10px;}
-    .meta{font-size:0.85rem;color:#A0714F;margin-bottom:25px;padding-bottom:15px;border-bottom:2px solid #F0DCCC;}
-    p{margin-bottom:12px;text-align:justify;}
-    .footer{margin-top:30px;padding-top:15px;border-top:2px solid #F0DCCC;font-size:0.8rem;color:#A0714F;text-align:center;}
-  </style></head><body>
-  <div class="logo">Yo<span>●</span>Muna</div>
-  <h1>${cached.title}</h1>
-  <div class="meta">Histoire de ${child?.name} · ${date} · yo-muna.com</div>
-  ${(cached.content || '').split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')}
-  <div class="footer">Un moment YoMuna · Créé avec ❤️ pour ${child?.name} · yo-muna.com</div>
-  </body></html>`;
-  const blob = new Blob([html], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `Histoire-${child?.name}-${date.replace(/\//g,'-')}.html`;
-  a.click();
-  toast('📄 Histoire téléchargée !');
+
+  toast('📄 Génération du PDF...');
+
+  try {
+    // Charger jsPDF si pas encore chargé
+    if (!window.jspdf) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const title = cached.title || 'Histoire YoMuna';
+    const content = (cached.content || '').replace(/\\n/g, '\n');
+    const childName = child?.name || 'Mon enfant';
+    const date = new Date().toLocaleDateString('fr-FR');
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const maxW = pageW - margin * 2;
+    let y = margin;
+
+    // Fond crème
+    doc.setFillColor(255, 248, 240);
+    doc.rect(0, 0, pageW, pageH, 'F');
+
+    // Bande orange en haut
+    doc.setFillColor(255, 140, 105);
+    doc.rect(0, 0, pageW, 18, 'F');
+
+    // Logo
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('YoMuna', margin, 12);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('yo-muna.com', pageW - margin, 12, { align: 'right' });
+
+    y = 32;
+
+    // Titre
+    doc.setTextColor(45, 27, 0);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    const titleLines = doc.splitTextToSize(title, maxW);
+    doc.text(titleLines, pageW / 2, y, { align: 'center' });
+    y += titleLines.length * 8 + 4;
+
+    // Ligne décorative
+    doc.setDrawColor(255, 209, 102);
+    doc.setLineWidth(1.5);
+    doc.line(margin, y, pageW - margin, y);
+    y += 7;
+
+    // Méta
+    doc.setTextColor(160, 113, 79);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text(`Une histoire pour ${childName} · ${date}`, pageW / 2, y, { align: 'center' });
+    y += 12;
+
+    // Contenu
+    doc.setTextColor(45, 27, 0);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+
+    const paragraphs = content.split('\n').filter(p => p.trim());
+    paragraphs.forEach(para => {
+      const lines = doc.splitTextToSize(para.trim(), maxW);
+      if (y + lines.length * 6 > pageH - 25) {
+        doc.addPage();
+        doc.setFillColor(255, 248, 240);
+        doc.rect(0, 0, pageW, pageH, 'F');
+        y = margin;
+      }
+      doc.text(lines, margin, y);
+      y += lines.length * 6 + 4;
+    });
+
+    // Valeur éducative
+    if (cached.educational_value) {
+      y += 4;
+      if (y + 18 > pageH - 25) {
+        doc.addPage();
+        doc.setFillColor(255, 248, 240);
+        doc.rect(0, 0, pageW, pageH, 'F');
+        y = margin;
+      }
+      doc.setFillColor(255, 240, 179);
+      doc.roundedRect(margin, y, maxW, 13, 3, 3, 'F');
+      doc.setTextColor(139, 105, 20);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      const eduLines = doc.splitTextToSize(`✨ Cette histoire développe : ${cached.educational_value}`, maxW - 8);
+      doc.text(eduLines, margin + 4, y + 8);
+      y += 18;
+    }
+
+    // Footer sur chaque page
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= totalPages; p++) {
+      doc.setPage(p);
+      doc.setFillColor(45, 27, 0);
+      doc.rect(0, pageH - 12, pageW, 12, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Créé avec YoMuna · La magie parentale pour toutes les familles · yo-muna.com', pageW / 2, pageH - 4, { align: 'center' });
+    }
+
+    // Sauvegarder
+    const filename = `Histoire_${childName}_${date.replace(/\//g,'-')}_YoMuna.pdf`;
+    doc.save(filename);
+    toast('📄 Histoire téléchargée avec succès !');
+
+  } catch(e) {
+    console.error('PDF error:', e);
+    // Fallback : ouvrir dans un nouvel onglet
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${cached.title}</title>
+    <style>body{font-family:Georgia,serif;max-width:600px;margin:40px auto;padding:20px;color:#2D1B00;line-height:1.8;}
+    h1{color:#E06840;}p{margin-bottom:12px;text-align:justify;}</style></head><body>
+    <h1>${cached.title}</h1><p><em>Pour ${child?.name} · ${new Date().toLocaleDateString('fr-FR')} · yo-muna.com</em></p>
+    ${(cached.content||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')}
+    </body></html>`;
+    const w = window.open('', '_blank');
+    if (w) { w.document.write(html); w.document.close(); w.print(); }
+    toast('Ouvre la fenêtre et imprime pour sauvegarder');
+  }
 }
 
 // ===== LIBRARY =====
