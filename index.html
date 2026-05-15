@@ -526,7 +526,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="fi"><div class="fq" onclick="faqT(this)">Comment se passe le paiement ? Je n'ai pas de carte bancaire.<span class="ftog">+</span></div><div class="fa">Aucun problème ! YoMuna accepte MTN Mobile Money, Orange Money, Wave et toutes les cartes bancaires. Le prélèvement est automatique chaque mois — tu n'as rien à faire.</div></div>
     <div class="fi"><div class="fq" onclick="faqT(this)">Puis-je résilier à tout moment ?<span class="ftog">+</span></div><div class="fa">Oui, sans justification et sans frais. Tu peux résilier depuis ton espace membre en un clic. Tu continues à avoir accès à YoMuna jusqu'à la fin de ta période payée.</div></div>
     <div class="fi"><div class="fq" onclick="faqT(this)">Le plan annuel à 20 000 FCFA — pour combien d'enfants ?<span class="ftog">+</span></div><div class="fa">Le plan annuel inclut jusqu'à 4 enfants pendant 12 mois complets. Que tu aies 1 ou 4 enfants, tu paies le même prix. Comparé au plan Famille mensuel (4 000 FCFA × 12 = 48 000 FCFA), tu économises 28 000 FCFA sur l'année.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Combien de moments puis-je créer par jour ?<span class="ftog">+</span></div><div class="fa">Chaque plan inclut un quota journalier : Solo 3 moments/jour, Famille 5 moments/jour, Annuel 10 moments/jour. Un "moment" c'est une histoire, une activité ou un conseil parental. Ce quota est conçu pour être suffisant pour une utilisation quotidienne normale.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Combien de moments puis-je créer par jour ?<span class="ftog">+</span></div><div class="fa">Chaque plan inclut un quota journalier : Solo 4 créations/jour, Famille 6 créations/jour, Annuel 12 créations/jour. Une "création" c'est une nouvelle histoire, activité, conseil ou apprentissage. Les contenus déjà générés restent toujours accessibles même si le quota est atteint. Le compteur se remet à zéro chaque nuit à minuit.</div></div>
   </div>
 </section>
 
@@ -1492,28 +1492,27 @@ async function saveAllChildren() {
 }
 
 // ===== DAILY QUOTA =====
-const PLAN_QUOTAS = { solo: 3, fam: 5, ann: 10 };
+// Quotas +20% par rapport aux valeurs initiales
+const PLAN_QUOTAS = { solo: 4, fam: 6, ann: 12 };
 let currentPlan = 'solo';
 let todayUsage = 0;
 
 async function checkAndIncrementQuota() {
   const today = new Date().toISOString().split('T')[0];
   try {
-    // Récupérer usage du jour
     const usage = await sb.select('daily_usage', `user_id=eq.${currentUser.id}&date=eq.${today}`, currentToken);
-    const quota = PLAN_QUOTAS[currentPlan] || 6;
+    const quota = PLAN_QUOTAS[currentPlan] || 4;
 
     if (usage && usage[0]) {
       todayUsage = usage[0].count;
       if (todayUsage >= quota) {
-        toast(`⚠️ Limite de ${quota} générations atteinte aujourd'hui. Revenez demain !`);
+        // Message clair avec heure de réinitialisation
+        showQuotaAlert(quota);
         return false;
       }
-      // Incrémenter
       await sb.update('daily_usage', `user_id=eq.${currentUser.id}&date=eq.${today}`, { count: todayUsage + 1 }, currentToken);
       todayUsage++;
     } else {
-      // Premier usage du jour
       await sb.insert('daily_usage', { user_id: currentUser.id, date: today, count: 1 }, currentToken);
       todayUsage = 1;
     }
@@ -1521,17 +1520,58 @@ async function checkAndIncrementQuota() {
     return true;
   } catch(e) {
     console.log('Quota check error:', e);
-    return true; // En cas d'erreur, on laisse passer
+    return true;
   }
 }
 
+function showQuotaAlert(quota) {
+  // Calculer l'heure de réinitialisation (minuit heure locale)
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  const hoursLeft = Math.ceil((tomorrow - now) / (1000 * 60 * 60));
+
+  // Afficher un message clair dans le dashboard
+  const existing = document.getElementById('quota-alert-banner');
+  if (existing) return; // Déjà affiché
+
+  const banner = document.createElement('div');
+  banner.id = 'quota-alert-banner';
+  banner.style.cssText = `
+    background: linear-gradient(135deg, #2D1B00, #6B4226);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-left: 4px solid var(--peach);
+    flex-wrap: wrap;
+  `;
+  banner.innerHTML = `
+    <div>
+      <div style="font-weight:800;font-size:1rem;margin-bottom:0.25rem;">🎯 Créations du jour épuisées</div>
+      <div style="font-size:0.85rem;opacity:0.8;">Tu as utilisé tes ${quota} créations d'aujourd'hui. Tes histoires sauvegardées restent accessibles. Retour dans <strong>${hoursLeft}h</strong>.</div>
+    </div>
+    <button onclick="document.getElementById('quota-alert-banner').remove()" style="background:none;border:2px solid rgba(255,255,255,0.3);border-radius:50px;color:white;padding:0.4rem 1rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.82rem;cursor:pointer;white-space:nowrap;">
+      Voir mes histoires →
+    </button>`;
+
+  const contents = document.getElementById('child-contents');
+  if (contents) contents.insertBefore(banner, contents.firstChild);
+}
+
 function updateQuotaDisplay() {
-  const quota = PLAN_QUOTAS[currentPlan] || 6;
+  const quota = PLAN_QUOTAS[currentPlan] || 4;
   const remaining = quota - todayUsage;
   const counter = document.getElementById('days-counter');
   if (counter) {
     const daysText = counter.textContent.split('•')[0].trim();
-    counter.textContent = `${daysText} • 🎯 ${remaining} génération${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''} aujourd'hui`;
+    const color = remaining <= 1 ? 'var(--peach-dark)' : 'var(--text-soft)';
+    counter.innerHTML = `${daysText} &bull; <span style="color:${color};font-weight:800;">🎯 ${remaining} création${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''} aujourd'hui</span>`;
   }
 }
 
@@ -1551,8 +1591,13 @@ async function generateContent(childIndex, type, autoLoad = false) {
   if (!autoLoad) {
     const canGenerate = await checkAndIncrementQuota();
     if (!canGenerate) {
-      if (regenBtn) { regenBtn.disabled = false; regenBtn.textContent = type === 'story' ? '🔄 Nouvelle histoire' : type === 'activity' ? '🔄 Nouvelle activité' : '🔄 Nouveau conseil'; }
-      return;
+      // Restaurer le bouton SANS toucher au contenu existant
+      if (regenBtn) {
+        regenBtn.disabled = false;
+        const labels = { story:'🔄 Nouvelle histoire', activity:'🔄 Nouvelle activité', advice:'🔄 Nouveau conseil', learning:'🔄 Autre apprentissage' };
+        regenBtn.textContent = labels[type] || '🔄 Régénérer';
+      }
+      return; // Sortir SANS effacer le contenu
     }
   }
 
