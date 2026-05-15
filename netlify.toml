@@ -1,5 +1,6 @@
 [build]
   publish = "."
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"
@@ -8,3 +9,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
+
+# Email de rappel quotidien à 18h WAT (17h UTC)
+[functions."daily-reminder"]
+  schedule = "0 17 * * *"
