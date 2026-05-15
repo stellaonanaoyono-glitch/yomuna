@@ -254,7 +254,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 /* MODAL */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:2rem;}
 .modal-overlay.hidden{display:none!important;}
-.modal-box{background:white;border-radius:24px;padding:2rem;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.2);}
+.modal-box{background:white;border-radius:24px;padding:2rem;max-width:640px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.2);}
 .modal-title{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:1rem;line-height:1.3;}
 .modal-content{font-size:0.95rem;color:var(--text-mid);line-height:1.8;font-weight:600;white-space:pre-wrap;}
 .modal-close{width:100%;padding:0.85rem;border-radius:50px;background:var(--peach);color:white;border:none;font-size:1rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:1.5rem;}
@@ -1318,7 +1318,7 @@ function renderChildPills() {
               <option value="confiance">💪 Confiance en soi</option>
               <option value="educative">📚 Éducative</option>
               <option value="culture">🌺 Culture et traditions</option>
-              <option value="foi">🙏 Foi et spiritualité</option>
+              <option value="foi">✝️ Foi chrétienne</option>
               <option value="famille">❤️ Amour et famille</option>
             </select>
           </div>
@@ -1345,6 +1345,7 @@ function renderChildPills() {
               <button onclick="toggleFavorite(${i},'activity')" id="fav-activity-${i}" style="background:none;border:none;cursor:pointer;font-size:1.1rem;" title="Ajouter aux favoris">🤍</button>
             </span>
           </div>
+          <div id="activity-img-${i}" style="display:none;margin-bottom:0.5rem;"></div>
           <div class="ccti" id="activity-title-${i}">Création en cours...</div>
           <div class="cctx" id="activity-text-${i}">YoMuna prépare une activité pour ${child.name}...</div>
           <div class="ccf">
@@ -1379,12 +1380,22 @@ function renderChildPills() {
         </div>
       </div>`;
     contents.appendChild(div);
-    // Auto-générer le contenu (sans compter dans le quota)
-    generateContent(i, 'story', true);
-    generateContent(i, 'activity', true);
-    generateContent(i, 'advice', true);
-    generateContent(i, 'learning', true);
   });
+
+  // Générer séquentiellement pour éviter les conflits multi-profils
+  async function generateAll() {
+    for (let i = 0; i < currentChildren.length; i++) {
+      await generateContent(i, 'story', true);
+      await generateContent(i, 'activity', true);
+      await generateContent(i, 'advice', true);
+      await generateContent(i, 'learning', true);
+      // Petite pause entre chaque enfant pour éviter le rate limiting
+      if (i < currentChildren.length - 1) {
+        await new Promise(r => setTimeout(r, 800));
+      }
+    }
+  }
+  generateAll();
 }
 
 function renderAccountChildren() {
@@ -1566,7 +1577,7 @@ async function generateContent(childIndex, type, autoLoad = false) {
     confiance: 'qui renforce la confiance en soi et le courage',
     educative: 'éducative et instructive, qui enseigne une notion concrète',
     culture: 'ancrée dans les traditions et la culture locale',
-    foi: 'inspirée de valeurs spirituelles et de foi',
+    foi: 'inspirée de la foi chrétienne uniquement — valeurs bibliques, personnages de la Bible adaptés aux enfants, vertus chrétiennes comme l\'amour du prochain, le pardon, la générosité, la prière. Aucune référence à d\'autres religions.',
     famille: 'centrée sur l\'amour familial et les liens parents-enfants'
   };
   const toneDesc = toneLabels[toneValue] || 'apaisante';
@@ -1719,7 +1730,18 @@ Réponds UNIQUEMENT en JSON valide :
       }
     }
 
-    // Temps de lecture
+    // Image pour l'activité via Unsplash
+    if (type === 'activity' && parsed.title) {
+      const imgContainer = document.getElementById(`activity-img-${childIndex}`);
+      if (imgContainer) {
+        const keywords = parsed.title.split(' ').slice(0,4).join(' ');
+        const query = encodeURIComponent(`kids craft activity ${keywords}`);
+        imgContainer.innerHTML = `<img src="https://source.unsplash.com/400x220/?${query}" alt="Aperçu activité" style="width:100%;height:180px;object-fit:cover;border-radius:12px;margin-bottom:0.5rem;display:block;" onerror="this.parentNode.style.display='none'" />`;
+        imgContainer.style.display = 'block';
+      }
+    }
+
+    // Temps de lecture / durée
     if (type === 'story' && parsed.reading_time && badgeEl) {
       badgeEl.textContent = `${child.age} · ${parsed.reading_time}`;
     } else if (type === 'activity' && parsed.duration && badgeEl) {
@@ -1786,7 +1808,13 @@ Réponds UNIQUEMENT en JSON valide :
   } finally {
     if (regenBtn) {
       regenBtn.disabled = false;
-      regenBtn.textContent = type === 'story' ? '🔄 Nouvelle histoire' : type === 'activity' ? '🔄 Nouvelle activité' : '🔄 Nouveau conseil';
+      const labels = {
+        story: '🔄 Nouvelle histoire',
+        activity: '🔄 Nouvelle activité',
+        advice: '🔄 Nouveau conseil',
+        learning: '🔄 Autre apprentissage'
+      };
+      regenBtn.textContent = labels[type] || '🔄 Régénérer';
     }
   }
 }
@@ -2125,11 +2153,28 @@ async function updateProfile() {
 
 // ===== UI HELPERS =====
 function showModal(title, content) {
-  document.getElementById('modal-title').textContent = title;
-  // Formater le contenu avec des sauts de ligne
-  const formatted = content.replace(/\\n/g, '\n').replace(/(\d+\.\s)/g, '\n$1');
-  document.getElementById('modal-content').textContent = formatted;
-  document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('modal-title').textContent = title || 'Contenu';
+  const raw = (content || '').replace(/\\n/g, '\n');
+  // Formater en paragraphes HTML pour un meilleur affichage
+  const paragraphs = raw.split('\n').filter(l => l.trim() !== '');
+  const formatted = paragraphs.map(p => {
+    const trimmed = p.trim();
+    // Détecter les étapes numérotées
+    if (/^\d+[\.\)]\s/.test(trimmed)) {
+      return `<p style="margin:0.6rem 0;padding-left:0.5rem;border-left:3px solid var(--peach);"><strong>${trimmed}</strong></p>`;
+    }
+    // Détecter les titres (MAJUSCULES ou avec **)
+    if (trimmed.startsWith('**') || trimmed === trimmed.toUpperCase() && trimmed.length < 60) {
+      return `<p style="margin:1rem 0 0.4rem;font-weight:800;color:var(--peach-dark);">${trimmed.replace(/\*\*/g,'')}</p>`;
+    }
+    return `<p style="margin:0.5rem 0;">${trimmed}</p>`;
+  }).join('');
+  document.getElementById('modal-content').innerHTML = formatted;
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.remove('hidden');
+  // Scroll vers le haut du modal
+  const box = overlay.querySelector('.modal-box');
+  if (box) box.scrollTop = 0;
 }
 
 function showAddChildForm() {
@@ -2405,15 +2450,28 @@ async function startRenew(plan, amount) {
 
 // ===== MOBILE NAV =====
 function mnavGo(tab) {
+  // Mettre à jour les boutons mobile
   document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('on'));
-  const btn = document.getElementById(`mnav-${tab}`);
-  if (btn) btn.classList.add('on');
-  swTab(tab, null);
-  // Sync desktop tabs
-  document.querySelectorAll('.dtab').forEach(b => {
-    if (b.getAttribute('onclick')?.includes(`'${tab}'`)) b.classList.add('on');
-    else b.classList.remove('on');
+  const activeBtn = document.getElementById(`mnav-${tab}`);
+  if (activeBtn) activeBtn.classList.add('on');
+
+  // Cacher tous les onglets
+  ['today','library','history','report','account'].forEach(t => {
+    const el = document.getElementById(`dt-${t}`);
+    if (el) el.classList.add('hidden');
   });
+
+  // Afficher l'onglet cible
+  const target = document.getElementById(`dt-${tab}`);
+  if (target) target.classList.remove('hidden');
+
+  // Charger si nécessaire
+  if (tab === 'history') loadHistory();
+  if (tab === 'library') loadLibrary();
+  if (tab === 'report') loadWeeklyReport();
+
+  // Scroll en haut
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function loadWeeklyReport() {
