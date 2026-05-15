@@ -3,27 +3,27 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const GROQ_API_KEY = process.env.GROQ_API_KEY;
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-  if (!GROQ_API_KEY) {
+  if (!OPENAI_API_KEY) {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: '', error: 'GROQ_API_KEY manquante dans les variables d\'environnement Netlify' })
+      body: JSON.stringify({ text: '', error: 'OPENAI_API_KEY manquante dans les variables Netlify' })
     };
   }
 
   try {
     const { prompt } = JSON.parse(event.body);
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -34,25 +34,24 @@ exports.handler = async (event) => {
             content: prompt
           }
         ],
-        temperature: 0.7,
+        temperature: 0.8,
         max_tokens: 3000
       })
     });
 
     const data = await response.json();
 
-    // Log Groq errors
     if (data.error) {
-      console.error('Groq API error:', JSON.stringify(data.error));
+      console.error('OpenAI error:', data.error.message);
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: '', error: data.error.message || 'Groq API error' })
+        body: JSON.stringify({ text: '', error: data.error.message })
       };
     }
 
     const text = data.choices?.[0]?.message?.content || '';
-    console.log('Groq response OK, length:', text.length, 'preview:', text.substring(0, 100));
+    console.log('OpenAI OK, length:', text.length);
 
     return {
       statusCode: 200,
