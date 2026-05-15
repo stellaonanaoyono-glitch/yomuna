@@ -18,7 +18,7 @@ exports.handler = async (event) => {
 
     // Modèle puissant pour les histoires avec limites séparées
     const model = (type === 'story')
-      ? 'llama-3.3-70b-versatile'
+      ? 'mixtral-8x7b-32768'
       : 'llama-3.1-8b-instant';
 
     const maxTokens = (type === 'story') ? 2000 : 1200;
