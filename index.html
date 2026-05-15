@@ -924,12 +924,62 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 <div class="toast" id="toastEl"></div>
 
 <script>
+// ===== FONCTIONS UTILITAIRES — définies en premier =====
+function showS(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('s-' + n);
+  if (target) target.classList.add('active');
+  window.scrollTo(0, 0);
+  const mobileNav = document.getElementById('mobile-nav');
+  if (mobileNav) mobileNav.style.display = (n === 'dashboard') ? 'block' : 'none';
+}
+
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function faqT(el) { el.closest('.fi').classList.toggle('open'); }
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.classList.add('show'); }
+}
+
+function showLoading(msg) {
+  const el = document.getElementById('loading-text');
+  if (el) el.textContent = msg || 'Chargement...';
+  const ov = document.getElementById('loading');
+  if (ov) ov.classList.remove('hidden');
+}
+
+function hideLoading() {
+  const ov = document.getElementById('loading');
+  if (ov) ov.classList.add('hidden');
+}
+
+function goStep(n) {
+  ['ss1','ss2','ss3'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+  ['sd1','sd2','sd3'].forEach((id,i) => { const el = document.getElementById(id); if (el) el.classList.toggle('on', i < n); });
+  const target = document.getElementById('ss' + n);
+  if (target) target.classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function closeModal(event) {
+  const overlay = document.getElementById('modal-overlay');
+  if (event.target === overlay) overlay.classList.add('hidden');
+}
+
 // ============================================================
 // CONFIGURATION — REMPLACE CES VALEURS PAR LES TIENNES
 // ============================================================
 const CONFIG = {
   SUPABASE_URL: 'https://cszvvbqyttsxjlrnrizi.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenZ2YnF5dHRzeGpscm5yaXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MDM5NzgsImV4cCI6MjA5MzM3OTk3OH0.t1L-JpsDDcxpx4z31TIzJPJDmln5dnlsRRIfqolG4Ww',
+  SUPABASE_ANON_KEY: 'REMPLACE_PAR_TA_SUPABASE_ANON_KEYeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenZ2YnF5dHRzeGpscm5yaXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MDM5NzgsImV4cCI6MjA5MzM3OTk3OH0.t1L-JpsDDcxpx4z31TIzJPJDmln5dnlsRRIfqolG4Ww',
   NOTCHPAY_PUBLIC_KEY: ''
 };
 // ============================================================
@@ -1038,25 +1088,36 @@ async function registerUser() {
 async function loginUser() {
   const em = document.getElementById('lem').value.trim();
   const pw = document.getElementById('lpw').value;
-  if (!em||!pw) { showErr('err-login','Veuillez remplir email et mot de passe.'); return; }
+  if (!em || !pw) { showErr('err-login', 'Veuillez remplir email et mot de passe.'); return; }
 
   showLoading('Connexion en cours...');
   try {
     const res = await sb.signIn(em, pw);
-    if (res.error) { showErr('err-login','Email ou mot de passe incorrect.'); return; }
+    if (res.error) { showErr('err-login', 'Email ou mot de passe incorrect.'); return; }
+    if (!res.access_token) { showErr('err-login', 'Réponse invalide. Réessayez.'); return; }
+
     currentToken = res.access_token;
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
     updateNav(true);
-    await loadDashboard();
+
+    // Afficher le dashboard d'abord, puis charger les données
     showS('dashboard');
-    // Si c'est l'admin, afficher le bouton admin
+
+    // Charger les données après (ne bloque pas la connexion)
+    try {
+      await loadDashboard();
+    } catch(e) {
+      console.error('Dashboard load error:', e);
+    }
+
     if (currentUser.email === ADMIN_EMAIL) {
-      document.getElementById('admin-nav-btn').style.display = 'block';
+      const btn = document.getElementById('admin-nav-btn');
+      if (btn) btn.style.display = 'block';
     }
   } catch(e) {
-    showErr('err-login','Erreur de connexion. Vérifiez votre internet.');
+    showErr('err-login', 'Erreur de connexion. Vérifiez votre internet.');
   } finally { hideLoading(); }
 }
 
@@ -1198,83 +1259,70 @@ async function initiatePayment() {
 
 // ===== DASHBOARD =====
 async function loadDashboard() {
-  setDate();
-  // Charger profil
-  const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken);
-  if (profile && profile[0]) {
-    const p = profile[0];
-    document.getElementById('dname').textContent = p.first_name || 'Marie';
-    document.getElementById('acc-fn').value = p.first_name || '';
-    document.getElementById('acc-ln').value = p.last_name || '';
-    document.getElementById('acc-em').value = p.email || '';
-    document.getElementById('acc-wa').value = p.whatsapp || '';
-    document.getElementById('acc-co').value = p.country || 'CM';
-    document.getElementById('acc-lg').value = p.language || 'fr';
-  }
-  // Charger enfants
-  const children = await sb.select('children', `user_id=eq.${currentUser.id}`, currentToken);
-  currentChildren = children || [];
-  document.getElementById('child-count').textContent = `${currentChildren.length} / 4`;
-  renderChildPills();
-  renderAccountChildren();
+  try {
+    setDate();
 
-  // Bypass abonnement pour l'admin
-  if (currentUser.email === ADMIN_EMAIL) {
-    currentPlan = 'ann';
+    // Charger profil
+    const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken).catch(() => []);
+    if (profile && profile[0]) {
+      const p = profile[0];
+      const safe = (id, val) => { const el = document.getElementById(id); if (el) el.textContent !== undefined ? (el.value !== undefined ? el.value = val : el.textContent = val) : null; };
+      const dname = document.getElementById('dname'); if (dname) dname.textContent = p.first_name || 'Bienvenue';
+      const fn = document.getElementById('acc-fn'); if (fn) fn.value = p.first_name || '';
+      const ln = document.getElementById('acc-ln'); if (ln) ln.value = p.last_name || '';
+      const em = document.getElementById('acc-em'); if (em) em.value = p.email || '';
+      const wa = document.getElementById('acc-wa'); if (wa) wa.value = p.whatsapp || '';
+      const co = document.getElementById('acc-co'); if (co) co.value = p.country || 'CM';
+      const lg = document.getElementById('acc-lg'); if (lg) lg.value = p.language || 'fr';
+    }
+
+    // Charger enfants
+    const children = await sb.select('children', `user_id=eq.${currentUser.id}`, currentToken).catch(() => []);
+    currentChildren = children || [];
+    const cc = document.getElementById('child-count'); if (cc) cc.textContent = `${currentChildren.length} / 4`;
     renderChildPills();
     renderAccountChildren();
-    loadHistory();
-    return;
-  }
 
-  // Charger abonnement et calculer jours restants
-  const subs = await sb.select('subscriptions', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken);
-  if (subs && subs[0]) {
-    const sub = subs[0];
-    currentPlan = sub.plan;
-    const planNames = {solo:'Plan Solo',fam:'Plan Famille',ann:'Plan Annuel'};
-    const planName = planNames[sub.plan] || 'Plan actif';
-
-    // Calculer la date d'expiration
-    const startDate = new Date(sub.created_at);
-    const durationDays = sub.plan === 'ann' ? 365 : 30;
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + durationDays);
-    const today = new Date();
-    const daysLeft = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)));
-    const isActive = daysLeft > 0 && sub.status !== 'expired';
-
-    // Afficher les infos d'abonnement
-    document.getElementById('plan-name').textContent = planName;
-    document.getElementById('plan-detail').innerHTML = `
-      ${sub.amount} FCFA • Expire le ${endDate.toLocaleDateString('fr-FR')}
-      <br><span style="color:${daysLeft <= 5 ? '#E06840' : '#06D6A0'};font-weight:800;">
-        ${daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}` : '❌ Abonnement expiré'}
-      </span>`;
-
-    // Afficher compteur dans le dashboard
-    const counter = document.getElementById('days-counter');
-    if (counter) {
-      counter.textContent = daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} d'abonnement restant${daysLeft > 1 ? 's' : ''}` : '❌ Abonnement expiré — Renouveler';
-      counter.style.color = daysLeft <= 5 ? 'var(--peach-dark)' : 'var(--text-soft)';
-      counter.onclick = daysLeft === 0 ? () => showS('signup') : null;
-      counter.style.cursor = daysLeft === 0 ? 'pointer' : 'default';
-    }
-
-    // Bloquer l'accès si abonnement expiré
-    if (!isActive) {
-      showExpiredModal();
+    // Bypass admin
+    if (currentUser.email === ADMIN_EMAIL) {
+      currentPlan = 'ann';
       return;
     }
-  } else {
-    // Pas d'abonnement — bloquer
-    showExpiredModal();
-    return;
-  }
 
-  // Charger historique et rapport hebdomadaire
-  loadHistory();
-  loadWeeklyReport();
+    // Charger abonnement
+    const subs = await sb.select('subscriptions', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken).catch(() => []);
+    if (subs && subs[0]) {
+      const sub = subs[0];
+      currentPlan = sub.plan;
+      const planNames = { solo:'Plan Solo', fam:'Plan Famille', ann:'Plan Annuel' };
+      const startDate = new Date(sub.created_at);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + (sub.plan === 'ann' ? 365 : 30));
+      const daysLeft = Math.max(0, Math.ceil((endDate - new Date()) / 86400000));
+      const isActive = daysLeft > 0 && sub.status !== 'expired';
+
+      const pn = document.getElementById('plan-name'); if (pn) pn.textContent = planNames[sub.plan] || 'Plan actif';
+      const pd = document.getElementById('plan-detail');
+      if (pd) pd.innerHTML = `${sub.amount} FCFA • Expire le ${endDate.toLocaleDateString('fr-FR')}<br><span style="color:${daysLeft <= 5 ? '#E06840' : '#06D6A0'};font-weight:800;">${daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}` : '❌ Expiré'}</span>`;
+
+      const counter = document.getElementById('days-counter');
+      if (counter) {
+        counter.textContent = daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}` : '❌ Abonnement expiré';
+        counter.style.color = daysLeft <= 5 ? 'var(--peach-dark)' : 'var(--text-soft)';
+      }
+
+      if (!isActive) { showExpiredModal(); return; }
+    } else {
+      showExpiredModal(); return;
+    }
+
+    // Charger historique
+    loadHistory().catch(() => {});
+
+  } catch(e) {
+    console.error('loadDashboard error:', e);
+    // Ne pas bloquer la connexion en cas d'erreur
+  }
 }
 
 function renderChildPills() {
@@ -1533,23 +1581,6 @@ async function generateContent(childIndex, type, autoLoad = false) {
   const countryName = countryNames[country] || country;
 
   const gender = child.gender === 'garcon' ? 'garçon' : 'fille';
-  const pronoun = child.gender === 'garcon' ? 'il' : 'elle';
-  const pronounPossessive = child.gender === 'garcon' ? 'son' : 'sa';
-
-  // Récupérer le ton choisi — uniquement pour les histoires
-  const toneSelect = type === 'story' ? document.getElementById(`tone-${childIndex}`) : null;
-  const toneValue = toneSelect ? toneSelect.value : 'apaisante';
-  const toneLabels = {
-    apaisante: 'apaisante et douce pour le soir, qui aide à se détendre',
-    aventure: 'pleine d\'aventure et de découverte, avec suspense et rebondissements',
-    drole: 'drôle et légère, avec de l\'humour adapté aux enfants',
-    confiance: 'qui renforce la confiance en soi et le courage',
-    educative: 'éducative et instructive, qui enseigne une notion concrète',
-    culture: 'ancrée dans les traditions et la culture locale',
-    foi: 'inspirée de la foi chrétienne uniquement — valeurs bibliques, personnages de la Bible adaptés aux enfants, vertus chrétiennes comme l\'amour du prochain, le pardon, la générosité, la prière. Aucune référence à d\'autres religions.',
-    famille: 'centrée sur l\'amour familial et les liens parents-enfants'
-  };
-  const toneDesc = toneLabels[toneValue] || 'apaisante';
 
   // ===== PROMPTS =====
   const childName = child.name || 'Mon enfant';
@@ -2113,12 +2144,6 @@ async function saveNewChild() {
   } finally { hideLoading(); }
 }
 
-function closeModal(event) {
-  if (event.target === document.getElementById('modal-overlay')) {
-    document.getElementById('modal-overlay').classList.add('hidden');
-  }
-}
-
 async function resetPassword() {
   const em = document.getElementById('lem').value.trim();
   if (!em) { showErr('err-login', 'Entrez votre email pour réinitialiser votre mot de passe.'); return; }
@@ -2290,23 +2315,9 @@ function updateNav(loggedIn) {
   if (dashBtn) dashBtn.style.display = loggedIn ? 'block' : 'none';
 }
 
-function showS(n) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('s-'+n).classList.add('active');
-  window.scrollTo(0,0);
-  // Afficher/cacher la nav mobile selon l'écran
-  const mobileNav = document.getElementById('mobile-nav');
-  if (mobileNav) {
-    mobileNav.style.display = (n === 'dashboard') ? 'block' : 'none';
-  }
-}
 
-function goStep(n) {
-  ['ss1','ss2','ss3'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  ['sd1','sd2','sd3'].forEach((id,i) => document.getElementById(id).classList.toggle('on', i<n));
-  document.getElementById('ss'+n).classList.remove('hidden');
-  window.scrollTo(0,0);
-}
+
+
 
 function showExpiredModal() {
   document.getElementById('expired-modal').classList.remove('hidden');
@@ -2426,30 +2437,6 @@ async function loadWeeklyReport() {
   }
 }
 
-function faqT(el) { el.closest('.fi').classList.toggle('open'); }
-
-function showErr(id, msg) {
-  const el = document.getElementById(id);
-  if (el) { el.textContent = msg; el.classList.add('show'); }
-  hideLoading();
-}
-
-function showLoading(msg) {
-  document.getElementById('loading-text').textContent = msg || 'Chargement...';
-  document.getElementById('loading').classList.remove('hidden');
-}
-
-function hideLoading() {
-  document.getElementById('loading').classList.add('hidden');
-}
-
-function toast(msg) {
-  const el = document.getElementById('toastEl');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
-
 // Vérifier si retour de paiement NotchPay
 window.addEventListener('load', async () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -2489,18 +2476,25 @@ window.addEventListener('load', async () => {
     return;
   }
 
-  // Connexion normale
+  // Connexion normale depuis localStorage
   const token = localStorage.getItem('yomuna_token');
   const user = localStorage.getItem('yomuna_user');
   if (token && user) {
-    currentToken = token;
-    currentUser = JSON.parse(user);
-    updateNav(true);
-    await loadDashboard();
-    showS('dashboard');
-    if (currentUser.email === ADMIN_EMAIL) {
-      const adminBtn = document.getElementById('admin-nav-btn');
-      if (adminBtn) adminBtn.style.display = 'block';
+    try {
+      currentToken = token;
+      currentUser = JSON.parse(user);
+      updateNav(true);
+      showS('dashboard'); // Afficher d'abord
+      await loadDashboard().catch(e => console.error('Auto-login dashboard error:', e));
+      if (currentUser.email === ADMIN_EMAIL) {
+        const adminBtn = document.getElementById('admin-nav-btn');
+        if (adminBtn) adminBtn.style.display = 'block';
+      }
+    } catch(e) {
+      console.error('Auto-login error:', e);
+      // Token invalide — retour à l'accueil
+      localStorage.removeItem('yomuna_token');
+      localStorage.removeItem('yomuna_user');
     }
   }
 });
