@@ -1492,86 +1492,22 @@ async function saveAllChildren() {
 }
 
 // ===== DAILY QUOTA =====
-// Quotas +20% par rapport aux valeurs initiales
-const PLAN_QUOTAS = { solo: 4, fam: 6, ann: 12 };
+// Quota désactivé — génération illimitée
+const PLAN_QUOTAS = { solo: 999, fam: 999, ann: 999 };
 let currentPlan = 'solo';
 let todayUsage = 0;
 
 async function checkAndIncrementQuota() {
-  const today = new Date().toISOString().split('T')[0];
-  try {
-    const usage = await sb.select('daily_usage', `user_id=eq.${currentUser.id}&date=eq.${today}`, currentToken);
-    const quota = PLAN_QUOTAS[currentPlan] || 4;
-
-    if (usage && usage[0]) {
-      todayUsage = usage[0].count;
-      if (todayUsage >= quota) {
-        // Message clair avec heure de réinitialisation
-        showQuotaAlert(quota);
-        return false;
-      }
-      await sb.update('daily_usage', `user_id=eq.${currentUser.id}&date=eq.${today}`, { count: todayUsage + 1 }, currentToken);
-      todayUsage++;
-    } else {
-      await sb.insert('daily_usage', { user_id: currentUser.id, date: today, count: 1 }, currentToken);
-      todayUsage = 1;
-    }
-    updateQuotaDisplay();
-    return true;
-  } catch(e) {
-    console.log('Quota check error:', e);
-    return true;
-  }
+  return true; // Toujours autorisé
 }
 
-function showQuotaAlert(quota) {
-  // Calculer l'heure de réinitialisation (minuit heure locale)
-  const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  const hoursLeft = Math.ceil((tomorrow - now) / (1000 * 60 * 60));
-
-  // Afficher un message clair dans le dashboard
-  const existing = document.getElementById('quota-alert-banner');
-  if (existing) return; // Déjà affiché
-
-  const banner = document.createElement('div');
-  banner.id = 'quota-alert-banner';
-  banner.style.cssText = `
-    background: linear-gradient(135deg, #2D1B00, #6B4226);
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 16px;
-    margin-bottom: 1.25rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    border-left: 4px solid var(--peach);
-    flex-wrap: wrap;
-  `;
-  banner.innerHTML = `
-    <div>
-      <div style="font-weight:800;font-size:1rem;margin-bottom:0.25rem;">🎯 Créations du jour épuisées</div>
-      <div style="font-size:0.85rem;opacity:0.8;">Tu as utilisé tes ${quota} créations d'aujourd'hui. Tes histoires sauvegardées restent accessibles. Retour dans <strong>${hoursLeft}h</strong>.</div>
-    </div>
-    <button onclick="document.getElementById('quota-alert-banner').remove()" style="background:none;border:2px solid rgba(255,255,255,0.3);border-radius:50px;color:white;padding:0.4rem 1rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.82rem;cursor:pointer;white-space:nowrap;">
-      Voir mes histoires →
-    </button>`;
-
-  const contents = document.getElementById('child-contents');
-  if (contents) contents.insertBefore(banner, contents.firstChild);
-}
+function showQuotaAlert() {}
 
 function updateQuotaDisplay() {
-  const quota = PLAN_QUOTAS[currentPlan] || 4;
-  const remaining = quota - todayUsage;
   const counter = document.getElementById('days-counter');
-  if (counter) {
+  if (counter && counter.textContent) {
     const daysText = counter.textContent.split('•')[0].trim();
-    const color = remaining <= 1 ? 'var(--peach-dark)' : 'var(--text-soft)';
-    counter.innerHTML = `${daysText} &bull; <span style="color:${color};font-weight:800;">🎯 ${remaining} création${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''} aujourd'hui</span>`;
+    if (daysText) counter.textContent = daysText;
   }
 }
 
@@ -1587,19 +1523,7 @@ async function generateContent(childIndex, type, autoLoad = false) {
 
   if (regenBtn) { regenBtn.disabled = true; regenBtn.textContent = '⏳'; }
 
-  // Vérifier le quota uniquement si ce n'est pas le chargement initial
-  if (!autoLoad) {
-    const canGenerate = await checkAndIncrementQuota();
-    if (!canGenerate) {
-      // Restaurer le bouton SANS toucher au contenu existant
-      if (regenBtn) {
-        regenBtn.disabled = false;
-        const labels = { story:'🔄 Nouvelle histoire', activity:'🔄 Nouvelle activité', advice:'🔄 Nouveau conseil', learning:'🔄 Autre apprentissage' };
-        regenBtn.textContent = labels[type] || '🔄 Régénérer';
-      }
-      return; // Sortir SANS effacer le contenu
-    }
-  }
+  // Pas de quota — génération toujours autorisée
 
   // Récupérer la langue et le pays du profil
   const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken);
@@ -1693,10 +1617,16 @@ async function generateContent(childIndex, type, autoLoad = false) {
 
     // Si toujours pas de contenu, extraire le texte brut
     if (!parsed || !parsed.content) {
-      const rawText = text.replace(/[{}"\\]/g, '').replace(/title:|content:|duration:|skills:|emoji:|fun_fact:|discussion_question:|reading_time:|educational_value:|emotional_question:/g, '\n').trim();
+      console.warn('[YoMuna] JSON parse failed, raw text:', text.substring(0, 500));
+      const rawText = text
+        .replace(/[{}"\\]/g, ' ')
+        .replace(/title:|content:|duration:|skills:|emoji:|fun_fact:|discussion_question:|reading_time:|educational_value:|emotional_question:/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      const typeLabel = type === 'story' ? 'Histoire' : type === 'activity' ? 'Activité' : type === 'learning' ? 'Apprentissage' : 'Conseil';
       parsed = {
-        title: (text.match(/"title"\s*:\s*"([^"]{3,})"/) || [])[1] || `${type === 'story' ? 'Histoire' : type === 'activity' ? 'Activité' : type === 'learning' ? 'Apprentissage' : 'Conseil'} pour ${child.name}`,
-        content: rawText.length > 20 ? rawText : 'Contenu en cours de chargement...'
+        title: `${typeLabel} pour ${child.name}`,
+        content: rawText.length > 30 ? rawText : `Erreur de génération. Clique sur "Régénérer" pour réessayer.`
       };
     }
 
