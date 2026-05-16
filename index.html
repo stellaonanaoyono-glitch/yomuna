@@ -1018,7 +1018,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 <div class="dash">
   <div class="dh">
     <div>
-      <div class="dgreet" id="dgreet-text">Bonsoir, <em id="dname">Marie</em> 🌙</div>
+      <div class="dgreet" id="dgreet-text">Chargement... <em id="dname"></em></div>
       <div style="font-size:0.95rem;color:var(--text-mid);font-weight:600;margin-top:0.2rem;" id="dgreet-sub">Prêt(e) pour le rituel du soir ?</div>
       <div class="ddate" id="ddate"></div>
       <div id="days-counter" style="font-size:0.85rem;font-weight:700;margin-top:0.3rem;color:var(--text-soft)"></div>
@@ -1587,20 +1587,22 @@ async function initiatePayment() {
 // ===== DASHBOARD =====
 async function loadDashboard() {
   try {
-    setDate();
+    // setDate sera appelé après le chargement du profil avec le vrai prénom
 
     // Charger profil
     const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken).catch(() => []);
     if (profile && profile[0]) {
       const p = profile[0];
-      const safe = (id, val) => { const el = document.getElementById(id); if (el) el.textContent !== undefined ? (el.value !== undefined ? el.value = val : el.textContent = val) : null; };
-      const dname = document.getElementById('dname'); if (dname) dname.textContent = p.first_name || 'Bienvenue';
+      const firstName = p.first_name || 'Bienvenue';
+      setDate(firstName); // Greeting avec le vrai prénom
       const fn = document.getElementById('acc-fn'); if (fn) fn.value = p.first_name || '';
       const ln = document.getElementById('acc-ln'); if (ln) ln.value = p.last_name || '';
       const em = document.getElementById('acc-em'); if (em) em.value = p.email || '';
       const wa = document.getElementById('acc-wa'); if (wa) wa.value = p.whatsapp || '';
       const co = document.getElementById('acc-co'); if (co) co.value = p.country || 'CM';
       const lg = document.getElementById('acc-lg'); if (lg) lg.value = p.language || 'fr';
+    } else {
+      setDate(''); // Pas de prénom — afficher greeting sans nom
     }
 
     // Charger enfants
@@ -2483,7 +2485,7 @@ function loadSubscriptionDetails() {
 }
 
 // ===== DATE & GREETING =====
-function setDate() {
+function setDate(firstName) {
   const now = new Date();
   const h = now.getHours();
   const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
@@ -2493,22 +2495,22 @@ function setDate() {
   const el = document.getElementById('ddate');
   if (el) el.textContent = dateStr;
 
-  // Greeting contextuel
-  const greetEl = document.getElementById('dgreet-text');
-  const subEl = document.getElementById('dgreet-sub');
-  const name = document.getElementById('dname')?.textContent || '';
+  // Utiliser le prénom passé en paramètre, ou récupérer celui déjà dans le DOM
+  const name = firstName || document.getElementById('dname')?.textContent || '';
 
   let greet, sub, emoji;
   if (h >= 5 && h < 12) {
-    greet = `Bonjour, `; emoji = '☀️'; sub = 'Bien démarré(e) ce matin ?';
+    greet = 'Bonjour, '; emoji = '☀️'; sub = 'Bien démarré(e) ce matin ?';
   } else if (h >= 12 && h < 17) {
-    greet = `Bel après-midi, `; emoji = '🌤️'; sub = 'Un moment pour ton enfant ?';
+    greet = 'Bel après-midi, '; emoji = '🌤️'; sub = 'Un moment pour ton enfant ?';
   } else if (h >= 17 && h < 21) {
-    greet = `Bonsoir, `; emoji = '🌙'; sub = 'Prêt(e) pour le rituel du soir ?';
+    greet = 'Bonsoir, '; emoji = '🌙'; sub = 'Prêt(e) pour le rituel du soir ?';
   } else {
-    greet = `Bonne nuit, `; emoji = '⭐'; sub = 'Une dernière histoire avant de dormir ?';
+    greet = 'Bonne nuit, '; emoji = '⭐'; sub = 'Une dernière histoire avant de dormir ?';
   }
 
+  const greetEl = document.getElementById('dgreet-text');
+  const subEl = document.getElementById('dgreet-sub');
   if (greetEl) greetEl.innerHTML = `${greet}<em id="dname">${name}</em> ${emoji}`;
   if (subEl) subEl.textContent = sub;
 }
