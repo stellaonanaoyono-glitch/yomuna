@@ -178,7 +178,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,248,240,
 footer { display: none; }
 #s-home.active footer { display: block; }
 
-.yomuna-footer{background:var(--text);color:rgba(255,255,255,0.85);padding:4rem 3rem 2rem;}
+.yomuna-footer{background:#2D1B00;color:rgba(255,255,255,0.85);padding:4rem 3rem 2rem;}
+@media(max-width:768px){
+  .ft3col{grid-template-columns:1fr!important;gap:2rem!important;}
+  .yomuna-footer{padding:2.5rem 1.25rem 1.5rem!important;}
+}
 .ft-in{max-width:1150px;margin:0 auto;}
 .ft-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1.4fr;gap:2rem;margin-bottom:3rem;align-items:start;}
 .flogo{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:white;margin-bottom:0.75rem;}
@@ -331,39 +335,47 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   .hero h1{font-size:2.3rem}
   .steps{grid-template-columns:1fr 1fr}.steps::before{display:none}
   .rcv-grid,.testi-grid,.price-grid{grid-template-columns:1fr}.pc.feat{transform:none}
-  .cult-in{grid-template-columns:1fr}.ft-top{grid-template-columns:1fr 1fr}
+  .cult-in{grid-template-columns:1fr}
   .cg{grid-template-columns:1fr}.planopts{grid-template-columns:1fr}.frow{grid-template-columns:1fr}
+  .sec{padding:3.5rem 1.25rem}
 }
 @media(max-width:640px){
-  .modal-overlay{padding:0;align-items:flex-start;}
-  .modal-box{border-radius:16px 16px 0 0;max-height:100vh;margin:auto 0 0 0;width:100%;max-width:100%;}
-  #trial-modal .modal-box{border-radius:16px;max-width:calc(100% - 1rem);margin:0.5rem auto;}
-}
-  footer{padding:2.5rem 1rem 1.5rem}.ft-top{grid-template-columns:1fr;gap:2rem}
+  html,body{overflow-x:hidden;max-width:100vw;}
+  *{box-sizing:border-box;}
+  .modal-overlay{padding:0.5rem;align-items:flex-start;}
+  .modal-box{border-radius:16px;max-height:95vh;width:100%;max-width:100%;}
+  #trial-modal .modal-box{max-width:100%;margin:0.5rem;}
   .mobile-nav{display:block}
-  body{padding-bottom:65px}
-  .dash{padding:1.5rem 1rem 1rem}
+  body{padding-bottom:70px}
+  .dash{padding:1.25rem 1rem 1rem}
   .dh{flex-direction:column;gap:0.75rem}
-  .dgreet{font-size:1.6rem}
+  .dgreet{font-size:1.5rem}
   .dtabs{display:none}
   .cpills{gap:0.4rem}
   .cpill{padding:0.4rem 0.9rem;font-size:0.82rem}
-  .cc{padding:1.2rem}
-  .fbox{padding:1.75rem 1.25rem;border-radius:24px}
-  .hero h1{font-size:1.9rem}
+  .cc{padding:1.1rem}
+  .fbox{padding:1.5rem 1rem;border-radius:20px}
+  .hero h1{font-size:1.85rem}
+  .hero-wrap{padding:2rem 1rem 3rem}
+  .sec{padding:2.5rem 1rem}
+  .sec-in{padding:0}
   .steps{grid-template-columns:1fr}
   .price-grid{grid-template-columns:1fr}
   .sticker{display:none}
-  nav{height:58px}
+  nav{height:58px;padding:0 1rem;}
   .screen{padding-top:58px}
   .toast{bottom:5.5rem;right:0.75rem;left:0.75rem;text-align:center}
-  .dh > div:last-child{width:100%;display:flex;gap:0.5rem}
-  .dh > div:last-child button{flex:1;font-size:0.82rem;padding:0.5rem}
+  .dh>div:last-child{width:100%;display:flex;gap:0.5rem}
+  .dh>div:last-child button{flex:1;font-size:0.82rem;padding:0.5rem}
   .cg{gap:0.9rem}
-  .asec{padding:1.1rem}
+  .asec{padding:1rem}
   .dash-footer{padding:1.5rem 1rem;margin-bottom:0}
   .dash-footer-in{flex-direction:column;text-align:center;gap:0.75rem}
   .dash-footer-links{justify-content:center}
+  .fq{font-size:0.88rem;padding:1rem 1.1rem;}
+  .fa{padding:0 1.1rem 1rem;font-size:0.9rem;}
+  .hero-cta{flex-direction:column;}
+  .hero-cta>*{width:100%;}
 }
 </style>
 </head>
@@ -512,9 +524,10 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
         <div class="phone-ft">❤️ Ajouter aux favoris · 🔄 Nouvelle histoire</div>
       </div>
       <!-- Mascotte Muna -->
-      <div style="position:absolute;bottom:-20px;right:-20px;z-index:2;">
-        <img src="muna.png" alt="Muna" onerror="this.style.display='none'"
-          style="width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.15));" />
+      <div style="position:absolute;bottom:-15px;right:-10px;z-index:2;pointer-events:none;">
+        <img src="muna.png" alt="Muna"
+          onerror="this.style.display='none'"
+          style="width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.15));" />
       </div>
       <div class="sticker st2">🌍 Adapté à votre culture</div>
     </div>
@@ -661,7 +674,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   <div style="max-width:1150px;margin:0 auto;">
 
     <!-- 3 colonnes -->
-    <div style="display:grid;grid-template-columns:1.6fr 1fr 1.4fr;gap:3rem;margin-bottom:2.5rem;align-items:start;">
+    <div style="display:grid;grid-template-columns:1.6fr 1fr 1.4fr;gap:3rem;margin-bottom:2.5rem;align-items:start;" class="ft3col">
 
       <!-- COL 1 : Marque -->
       <div>
