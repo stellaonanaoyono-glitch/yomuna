@@ -1492,8 +1492,43 @@ const sb = {
     const opts = { method, headers: h };
     if (body) opts.body = JSON.stringify(body);
     const r = await fetch(CONFIG.SUPABASE_URL + path, opts);
+    // Si token expiré, tenter un refresh automatique
+    if (r.status === 401) {
+      const refreshed = await this.refreshToken();
+      if (refreshed) {
+        h['Authorization'] = `Bearer ${currentToken}`;
+        const r2 = await fetch(CONFIG.SUPABASE_URL + path, { method, headers: h, body: opts.body });
+        return r2.json();
+      }
+    }
     return r.json();
   },
+
+  async refreshToken() {
+    try {
+      const refreshToken = localStorage.getItem('yomuna_refresh_token');
+      if (!refreshToken) return false;
+      const r = await fetch(CONFIG.SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+        method: 'POST',
+        headers: { 'apikey': CONFIG.SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
+      if (!r.ok) return false;
+      const data = await r.json();
+      if (data.access_token) {
+        currentToken = data.access_token;
+        localStorage.setItem('yomuna_token', currentToken);
+        if (data.refresh_token) localStorage.setItem('yomuna_refresh_token', data.refresh_token);
+        console.log('[YoMuna] Token rafraîchi avec succès');
+        return true;
+      }
+      return false;
+    } catch(e) {
+      console.error('[YoMuna] Refresh token error:', e);
+      return false;
+    }
+  },
+
   async signUp(email, password, meta) {
     return this.req('/auth/v1/signup', 'POST', { email, password, options: { data: meta } });
   },
@@ -1507,19 +1542,30 @@ const sb = {
     const h = {
       'apikey': CONFIG.SUPABASE_ANON_KEY,
       'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
+      'Prefer': 'return=representation'
     };
     if (token) h['Authorization'] = `Bearer ${token}`;
     const r = await fetch(CONFIG.SUPABASE_URL + `/rest/v1/${table}`, {
       method: 'POST', headers: h, body: JSON.stringify(data)
     });
-    if (r.status === 201 || r.status === 204) return { success: true };
-    return r.json();
+    if (r.status === 401) {
+      const refreshed = await this.refreshToken();
+      if (refreshed) {
+        h['Authorization'] = `Bearer ${currentToken}`;
+        const r2 = await fetch(CONFIG.SUPABASE_URL + `/rest/v1/${table}`, {
+          method: 'POST', headers: h, body: JSON.stringify(data)
+        });
+        if (r2.status === 201 || r2.status === 200) return r2.json();
+      }
+    }
+    if (r.status === 201 || r.status === 200) return r.json();
+    const err = await r.json();
+    console.error('sb.insert error:', err);
+    throw new Error(err.message || 'Insert failed');
   },
   async select(table, query, token) {
     try {
       const result = await this.req(`/rest/v1/${table}?${query}`, 'GET', null, token);
-      // Supabase retourne toujours un tableau — si c'est un objet (erreur), retourner []
       if (Array.isArray(result)) return result;
       console.warn('sb.select unexpected result:', result);
       return [];
@@ -1583,6 +1629,7 @@ async function registerUser() {
       currentUser = loginRes.user;
       localStorage.setItem('yomuna_token', currentToken);
       localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
+      if (res?.refresh_token || data?.refresh_token) localStorage.setItem('yomuna_refresh_token', res?.refresh_token || data?.refresh_token || '');
 
       // Vérifier si abonnement déjà actif
       const subs = await sb.select('subscriptions',
@@ -1631,6 +1678,8 @@ async function registerUser() {
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
+    if (typeof res !== 'undefined' && res?.refresh_token) localStorage.setItem('yomuna_refresh_token', res.refresh_token);
+    if (typeof data !== 'undefined' && data?.refresh_token) localStorage.setItem('yomuna_refresh_token', data.refresh_token);
 
     // Sauvegarder profil
     await sb.insert('profiles', {
@@ -1661,6 +1710,8 @@ async function loginUser() {
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
+    if (typeof res !== 'undefined' && res?.refresh_token) localStorage.setItem('yomuna_refresh_token', res.refresh_token);
+    if (typeof data !== 'undefined' && data?.refresh_token) localStorage.setItem('yomuna_refresh_token', data.refresh_token);
     updateNav(true);
     showS('dashboard');
     // S'assurer que la config est chargée avant de charger le dashboard
@@ -1685,6 +1736,7 @@ async function logoutUser() {
   currentUser = null; currentToken = null; currentChildren = [];
   localStorage.removeItem('yomuna_token');
   localStorage.removeItem('yomuna_user');
+  localStorage.removeItem('yomuna_refresh_token');
   updateNav(false);
   showS('home');
 }
@@ -2129,7 +2181,7 @@ async function saveAllChildren() {
         }
       }
 
-      const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/children?id=eq.${child.id}`, {
+      let patchRes = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/children?id=eq.${child.id}`, {
         method: 'PATCH',
         headers: {
           'apikey': CONFIG.SUPABASE_ANON_KEY,
@@ -2140,12 +2192,27 @@ async function saveAllChildren() {
         body: JSON.stringify({ name, gender, age, interests, challenge, culture })
       });
 
-      if (res.status === 200 || res.status === 204 || res.status === 201) {
+      // Si token expiré, rafraîchir et réessayer
+      if (patchRes.status === 401) {
+        await sb.refreshToken();
+        patchRes = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/children?id=eq.${child.id}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': CONFIG.SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${currentToken}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ name, gender, age, interests, challenge, culture })
+        });
+      }
+
+      if (patchRes.status === 200 || patchRes.status === 204 || patchRes.status === 201) {
         currentChildren[i] = { ...child, name, gender, age, interests, challenge, culture };
         success++;
       } else {
-        const err = await res.text();
-        console.error(`PATCH child ${child.id} failed:`, res.status, err);
+        const err = await patchRes.text();
+        console.error(`PATCH child ${child.id} failed:`, patchRes.status, err);
         failed++;
       }
     } catch(e) {
@@ -2992,6 +3059,8 @@ async function adminLogin() {
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
+    if (typeof res !== 'undefined' && res?.refresh_token) localStorage.setItem('yomuna_refresh_token', res.refresh_token);
+    if (typeof data !== 'undefined' && data?.refresh_token) localStorage.setItem('yomuna_refresh_token', data.refresh_token);
     // Aller directement au dashboard admin sans vérification abonnement
     showS('admin');
     loadAdminData();
