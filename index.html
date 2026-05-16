@@ -1958,7 +1958,17 @@ function renderChildPills() {
           </div>
           <div class="ccf">
             <span class="ccb" id="story-badge-${i}">${child.age}</span>
-            <div style="display:flex;gap:0.5rem;">
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <!-- Lecteur audio -->
+              <div id="audio-player-${i}" style="display:none;align-items:center;gap:0.4rem;background:var(--light);border-radius:50px;padding:0.25rem 0.75rem;border:1.5px solid var(--border);">
+                <button onclick="toggleAudio(${i})" id="audio-btn-${i}" style="background:none;border:none;cursor:pointer;font-size:1.1rem;padding:0;line-height:1;" title="Écouter l'histoire">▶️</button>
+                <div id="audio-progress-${i}" style="width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;cursor:pointer;" onclick="seekAudio(event,${i})">
+                  <div id="audio-bar-${i}" style="height:100%;background:var(--peach);width:0%;transition:width 0.3s;border-radius:2px;"></div>
+                </div>
+                <span id="audio-time-${i}" style="font-size:0.7rem;font-weight:700;color:var(--text-soft);white-space:nowrap;">0:00</span>
+                <button onclick="stopAudio(${i})" style="background:none;border:none;cursor:pointer;font-size:0.85rem;padding:0;" title="Arrêter">⏹</button>
+              </div>
+              <button class="bregen" onclick="startAudio(${i})" id="listen-btn-${i}" title="Écouter l'histoire">🔊 Écouter</button>
               <button class="bregen" onclick="downloadStoryPDF(${i})" id="pdf-story-${i}" title="Télécharger l'histoire">📄</button>
               <button class="bregen" onclick="generateContent(${i},'story')" id="regen-story-${i}">🔄 Nouvelle histoire</button>
             </div>
@@ -2689,48 +2699,67 @@ function displayCachedContent(childIndex, type, cached) {
 
 
 function loadSubscriptionDetails() {
-  // Remplir les détails d'abonnement dans l'onglet Mon abonnement
-  const planNames = { solo:'Plan Solo', fam:'Plan Famille', ann:'Plan Annuel' };
-  const planChildren = { solo:'1 enfant', fam:'Jusqu\'à 4 enfants', ann:'Jusqu\'à 4 enfants' };
+  // Charger les détails d'abonnement depuis Supabase directement
+  sb.select('subscriptions',
+    `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`,
+    currentToken
+  ).then(subs => {
+    const planNames = { solo:'Plan Solo', fam:'Plan Famille', ann:'Plan Annuel' };
+    const planChildren = { solo:'1 enfant', fam:'Jusqu\'à 4 enfants', ann:'Jusqu\'à 4 enfants' };
 
-  const planName = document.getElementById('sub-plan-name');
-  const planDetail = document.getElementById('sub-plan-detail');
-  const statusChip = document.getElementById('sub-status-chip');
-  const progressBar = document.getElementById('sub-progress-bar');
-  const daysLeft = document.getElementById('sub-days-left');
-  const startDate = document.getElementById('sub-start-date');
-  const endDate = document.getElementById('sub-end-date');
-  const recapPlan = document.getElementById('sub-recap-plan');
-  const recapAmount = document.getElementById('sub-recap-amount');
-  const recapChildren = document.getElementById('sub-recap-children');
+    const planName = document.getElementById('sub-plan-name');
+    const planDetail = document.getElementById('sub-plan-detail');
+    const statusChip = document.getElementById('sub-status-chip');
+    const progressBar = document.getElementById('sub-progress-bar');
+    const daysLeftEl = document.getElementById('sub-days-left');
+    const recapPlan = document.getElementById('sub-recap-plan');
+    const recapAmount = document.getElementById('sub-recap-amount');
+    const recapChildren = document.getElementById('sub-recap-children');
 
-  // Lire depuis le plan-name et plan-detail du compte (déjà chargés)
-  const existingPlanName = document.getElementById('plan-name')?.textContent || '—';
-  const existingPlanDetail = document.getElementById('plan-detail')?.textContent || '—';
-  const existingDaysLeft = document.getElementById('days-counter')?.textContent || '';
+    if (!Array.isArray(subs) || subs.length === 0) {
+      // Pas encore d'abonnement — afficher message neutre
+      if (planName) planName.textContent = 'Aucun abonnement actif';
+      if (planDetail) planDetail.textContent = 'Souscrivez pour accéder à tous les contenus';
+      if (daysLeftEl) { daysLeftEl.textContent = ''; }
+      if (progressBar) progressBar.style.width = '0%';
+      if (statusChip) { statusChip.textContent = '⚠️ Inactif'; statusChip.style.background = 'var(--text-soft)'; }
+      return;
+    }
 
-  if (planName) planName.textContent = existingPlanName;
-  if (planDetail) planDetail.textContent = existingPlanDetail;
+    const sub = subs[0];
+    const plan = sub.plan || 'solo';
+    const start = new Date(sub.created_at);
+    const end = new Date(start);
+    end.setDate(end.getDate() + (plan === 'ann' ? 365 : 30));
+    const days = Math.max(0, Math.ceil((end - new Date()) / 86400000));
+    const totalDays = plan === 'ann' ? 365 : 30;
+    const pct = Math.max(3, Math.min(100, (days / totalDays) * 100));
 
-  // Extraire les jours restants pour la barre
-  const daysMatch = existingDaysLeft.match(/(\d+)\s*jour/);
-  const days = daysMatch ? parseInt(daysMatch[1]) : 0;
-  const totalDays = currentPlan === 'ann' ? 365 : 30;
-  const pct = Math.max(5, Math.min(100, (days / totalDays) * 100));
+    if (planName) planName.textContent = planNames[plan] || 'Plan actif';
+    if (planDetail) planDetail.textContent = `${sub.amount || 0} FCFA · Expire le ${end.toLocaleDateString('fr-FR')}`;
+    if (statusChip) statusChip.textContent = days > 0 ? '✓ Actif' : '⚠️ Expiré';
+    if (progressBar) {
+      progressBar.style.width = pct + '%';
+      progressBar.style.background = days <= 5
+        ? 'linear-gradient(90deg,#E06840,#CC3333)'
+        : 'linear-gradient(90deg,var(--peach),var(--peach-dark))';
+    }
+    if (daysLeftEl) {
+      if (days > 0) {
+        daysLeftEl.textContent = `⏳ ${days} jour${days > 1 ? 's' : ''} restant${days > 1 ? 's' : ''}`;
+        daysLeftEl.style.color = days <= 5 ? 'var(--peach-dark)' : 'var(--dark)';
+      } else {
+        daysLeftEl.textContent = 'Abonnement terminé — pensez à renouveler !';
+        daysLeftEl.style.color = 'var(--peach-dark)';
+      }
+    }
+    if (recapPlan) recapPlan.textContent = planNames[plan] || '—';
+    if (recapAmount) recapAmount.textContent = (sub.amount || '—') + ' FCFA';
+    if (recapChildren) recapChildren.textContent = planChildren[plan] || '—';
 
-  if (progressBar) progressBar.style.width = pct + '%';
-  if (progressBar) progressBar.style.background = days <= 5 ? 'linear-gradient(90deg,#E06840,#CC3333)' : 'linear-gradient(90deg,var(--peach),var(--peach-dark))';
-  if (daysLeft) {
-    daysLeft.textContent = days > 0 ? `⏳ ${days} jour${days > 1 ? 's' : ''} restant${days > 1 ? 's' : ''}` : '❌ Expiré';
-    daysLeft.style.color = days <= 5 ? 'var(--peach-dark)' : 'var(--dark)';
-  }
-
-  if (recapPlan) recapPlan.textContent = planNames[currentPlan] || existingPlanName;
-  if (recapChildren) recapChildren.textContent = planChildren[currentPlan] || '—';
-
-  // Montant depuis plan-detail
-  const amountMatch = existingPlanDetail.match(/[\d\s]+FCFA/);
-  if (recapAmount) recapAmount.textContent = amountMatch ? amountMatch[0] : '—';
+  }).catch(e => {
+    console.log('loadSubscriptionDetails error (non-blocking):', e);
+  });
 }
 
 // ===== DATE & GREETING =====
@@ -3275,6 +3304,135 @@ function showLegal(type) {
   document.getElementById('legal-modal').classList.remove('hidden');
 }
 
+
+// ===== MOTEUR AUDIO — Web Speech API =====
+const audioState = {};
+
+function getBestVoice() {
+  const voices = speechSynthesis.getVoices();
+  const prefs = [
+    v => v.lang.startsWith('fr') && v.name.toLowerCase().includes('female'),
+    v => v.lang.startsWith('fr') && (v.name.includes('Marie') || v.name.includes('Amelie') || v.name.includes('Audrey')),
+    v => v.lang.startsWith('fr'),
+    v => v.lang.startsWith('en'),
+    v => v.default,
+  ];
+  for (const pref of prefs) {
+    const found = voices.find(pref);
+    if (found) return found;
+  }
+  return voices[0] || null;
+}
+
+function getStoryText(childIndex) {
+  const cache = window.storyCache?.['story-' + childIndex];
+  if (cache?.content) return cache.content;
+  const title = document.getElementById('story-title-' + childIndex)?.textContent || '';
+  const text = document.getElementById('story-text-' + childIndex)?.textContent || '';
+  return title + '. ' + text;
+}
+
+function startAudio(childIndex) {
+  speechSynthesis.cancel();
+  Object.keys(audioState).forEach(k => stopAudio(parseInt(k)));
+
+  const text = getStoryText(childIndex);
+  if (!text || text.length < 10) {
+    toast("L'histoire n'est pas encore chargée. Attendez la génération.");
+    return;
+  }
+  if (!window.speechSynthesis) {
+    toast("La lecture audio n'est pas supportée par ce navigateur.");
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'fr-FR';
+  utterance.rate = 0.9;
+  utterance.pitch = 1.05;
+  utterance.volume = 1;
+  const voice = getBestVoice();
+  if (voice) utterance.voice = voice;
+
+  const words = text.split(' ').length;
+  const totalSec = Math.ceil(words / 2.2);
+
+  audioState[childIndex] = { utterance, playing: true, text, totalChars: text.length, startTime: Date.now(), totalSec };
+
+  const player = document.getElementById('audio-player-' + childIndex);
+  const listenBtn = document.getElementById('listen-btn-' + childIndex);
+  const audioBtn = document.getElementById('audio-btn-' + childIndex);
+  if (player) player.style.display = 'flex';
+  if (listenBtn) listenBtn.style.display = 'none';
+  if (audioBtn) audioBtn.textContent = '⏸️';
+
+  const interval = setInterval(() => {
+    const st = audioState[childIndex];
+    if (!st || !st.playing) { clearInterval(interval); return; }
+    const elapsed = (Date.now() - st.startTime) / 1000;
+    const pct = Math.min(100, (elapsed / totalSec) * 100);
+    const bar = document.getElementById('audio-bar-' + childIndex);
+    const timeEl = document.getElementById('audio-time-' + childIndex);
+    if (bar) bar.style.width = pct + '%';
+    if (timeEl) {
+      const m = Math.floor(elapsed / 60), s = Math.floor(elapsed % 60);
+      const tm = Math.floor(totalSec / 60), ts = Math.floor(totalSec % 60);
+      timeEl.textContent = m + ':' + String(s).padStart(2,'0') + ' / ' + tm + ':' + String(ts).padStart(2,'0');
+    }
+  }, 500);
+
+  audioState[childIndex].interval = interval;
+
+  utterance.onend = () => { clearInterval(interval); setTimeout(() => stopAudio(childIndex), 500); };
+  utterance.onerror = (e) => {
+    clearInterval(interval);
+    stopAudio(childIndex);
+    if (e.error !== 'interrupted') toast('Erreur audio. Essayez Chrome ou Safari.');
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
+function toggleAudio(childIndex) {
+  const st = audioState[childIndex];
+  if (!st) { startAudio(childIndex); return; }
+  const btn = document.getElementById('audio-btn-' + childIndex);
+  if (speechSynthesis.paused) {
+    speechSynthesis.resume();
+    if (btn) btn.textContent = '⏸️';
+    st.playing = true;
+  } else if (speechSynthesis.speaking) {
+    speechSynthesis.pause();
+    if (btn) btn.textContent = '▶️';
+    st.playing = false;
+  }
+}
+
+function stopAudio(childIndex) {
+  speechSynthesis.cancel();
+  const st = audioState[childIndex];
+  if (st?.interval) clearInterval(st.interval);
+  delete audioState[childIndex];
+  const player = document.getElementById('audio-player-' + childIndex);
+  const listenBtn = document.getElementById('listen-btn-' + childIndex);
+  const bar = document.getElementById('audio-bar-' + childIndex);
+  const timeEl = document.getElementById('audio-time-' + childIndex);
+  const btn = document.getElementById('audio-btn-' + childIndex);
+  if (player) player.style.display = 'none';
+  if (listenBtn) listenBtn.style.display = '';
+  if (bar) bar.style.width = '0%';
+  if (timeEl) timeEl.textContent = '0:00';
+  if (btn) btn.textContent = '▶️';
+}
+
+// Charger les voix au démarrage
+if (window.speechSynthesis) {
+  speechSynthesis.getVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+}
+// ===== FIN MOTEUR AUDIO =====
 
 let currentTrialType = 'story';
 
