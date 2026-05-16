@@ -1525,15 +1525,6 @@ async function initiatePayment() {
     console.error('Payment error:', e);
   } finally { hideLoading(); }
 }
-    } else {
-      console.log('No auth URL found:', JSON.stringify(payData));
-      toast('Erreur lors de l\'initialisation du paiement. Réessayez.');
-    }
-  } catch(e) {
-    console.error(e);
-    toast('Erreur de connexion. Vérifiez votre internet.');
-  } finally { hideLoading(); }
-}
 
 // ===== DASHBOARD =====
 async function loadDashboard() {
