@@ -4,6 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YoMuna — La magie parentale, quand tu veux</title>
+
+<!-- SEO -->
+<meta name="description" content="YoMuna génère chaque jour une histoire personnalisée, une activité créative et un conseil parental pour votre enfant — ancré dans votre culture. Dès 2 500 FCFA/mois." />
+<meta name="keywords" content="histoires enfants, parentalité africaine, YoMuna, histoires personnalisées, Cameroun, Afrique, parenting" />
+<link rel="canonical" href="https://yo-muna.com/" />
+
+<!-- Open Graph — preview WhatsApp, Facebook, LinkedIn -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://yo-muna.com/" />
+<meta property="og:title" content="YoMuna — La magie parentale, quand tu veux" />
+<meta property="og:description" content="Une histoire unique, une activité créative et un conseil parental — générés chaque jour pour votre enfant, ancrés dans votre culture. Dès 2 500 FCFA/mois." />
+<meta property="og:image" content="https://yo-muna.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="YoMuna" />
+<meta property="og:locale" content="fr_FR" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="YoMuna — La magie parentale, quand tu veux" />
+<meta name="twitter:description" content="Une histoire unique, une activité et un conseil parental chaque jour pour votre enfant — ancré dans votre culture africaine." />
+<meta name="twitter:image" content="https://yo-muna.com/og-image.png" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>" />
+
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -1137,6 +1163,20 @@ function showS(n) {
   const target = document.getElementById('s-' + n);
   if (target) target.classList.add('active');
   window.scrollTo(0, 0);
+  // Mettre à jour l'URL sans recharger la page
+  const hashMap = {
+    home: '/',
+    signup: '#signup',
+    login: '#login',
+    dashboard: '#dashboard',
+  };
+  const newHash = hashMap[n] || '#' + n;
+  if (newHash === '/') {
+    history.pushState(null, '', '/');
+  } else {
+    history.pushState(null, '', newHash);
+  }
+  // Afficher/cacher la nav mobile
   const mobileNav = document.getElementById('mobile-nav');
   if (mobileNav) mobileNav.style.display = (n === 'dashboard') ? 'block' : 'none';
 }
@@ -3079,11 +3119,11 @@ window.addEventListener('load', async () => {
   const reference = urlParams.get('reference');
   const hash = window.location.hash;
 
-  // Si URL admin
-  if (hash === '#admin') {
-    showS('admin-login');
-    return;
-  }
+  // ===== ROUTING PAR HASH =====
+  if (hash === '#admin') { showS('admin-login'); return; }
+  if (hash === '#signup') { showS('signup'); return; }
+  if (hash === '#login') { showS('login'); return; }
+  if (hash === '#trial') { showS('home'); setTimeout(() => showTrial(), 400); return; }
 
   // Retour depuis Stripe
   if (urlParams.get('stripe') === 'success') {
