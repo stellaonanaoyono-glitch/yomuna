@@ -1107,49 +1107,6 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 
 </div><!-- end s-dashboard -->
 
-<!-- expired modal removed -->
-    <div class="modal-title" style="margin-bottom:0.5rem;">Votre abonnement a expiré</div>
-    <p style="color:var(--text-mid);margin-bottom:1.5rem;line-height:1.7;font-size:0.9rem;">Vos enfants vous attendent ! Renouvelez en quelques secondes pour retrouver vos histoires du soir.</p>
-
-    <!-- Sélection du plan -->
-    <div style="margin-bottom:1.25rem;">
-      <div style="font-size:0.8rem;font-weight:800;color:var(--text-soft);margin-bottom:0.6rem;text-align:left;">Choisissez votre plan :</div>
-      <div style="display:flex;flex-direction:column;gap:0.5rem;">
-        <div onclick="selectRenewPlan('solo','2500',this)" class="renew-plan-opt renew-sel" style="border:2px solid var(--peach);border-radius:14px;padding:0.85rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:rgba(255,140,105,0.05);">
-          <div style="text-align:left;"><div style="font-weight:800;font-size:0.9rem;">Solo</div><div style="font-size:0.78rem;color:var(--text-soft);">1 enfant</div></div>
-          <div style="font-weight:800;color:var(--peach-dark);">2 500 FCFA/mois</div>
-        </div>
-        <div onclick="selectRenewPlan('fam','4000',this)" class="renew-plan-opt" style="border:2px solid var(--border);border-radius:14px;padding:0.85rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <div style="text-align:left;"><div style="font-weight:800;font-size:0.9rem;">⭐ Famille</div><div style="font-size:0.78rem;color:var(--text-soft);">Jusqu'à 4 enfants</div></div>
-          <div style="font-weight:800;color:var(--peach-dark);">4 000 FCFA/mois</div>
-        </div>
-        <div onclick="selectRenewPlan('ann','20000',this)" class="renew-plan-opt" style="border:2px solid var(--border);border-radius:14px;padding:0.85rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <div style="text-align:left;"><div style="font-weight:800;font-size:0.9rem;">🎉 Annuel</div><div style="font-size:0.78rem;color:var(--text-soft);">4 enfants · 12 mois</div></div>
-          <div style="font-weight:800;color:var(--peach-dark);">20 000 FCFA/an</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mode de paiement -->
-    <div style="margin-bottom:1.25rem;">
-      <div style="font-size:0.8rem;font-weight:800;color:var(--text-soft);margin-bottom:0.6rem;text-align:left;">Mode de paiement :</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
-        <div onclick="selectRenewPay('mtn',this)" class="renew-pay-opt renew-pay-sel" style="border:2px solid var(--peach);border-radius:12px;padding:0.7rem;cursor:pointer;text-align:center;background:rgba(255,140,105,0.05);">
-          <div style="font-size:1.3rem;">📱</div><div style="font-size:0.8rem;font-weight:800;">MTN MoMo</div>
-        </div>
-        <div onclick="selectRenewPay('or',this)" class="renew-pay-opt" style="border:2px solid var(--border);border-radius:12px;padding:0.7rem;cursor:pointer;text-align:center;">
-          <div style="font-size:1.3rem;">🟠</div><div style="font-size:0.8rem;font-weight:800;">Orange Money</div>
-        </div>
-      </div>
-    </div>
-
-    <button onclick="processRenewal()" style="width:100%;padding:0.95rem;border-radius:50px;border:none;background:linear-gradient(135deg,var(--peach),var(--peach-dark));color:white;font-weight:800;font-size:1rem;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 15px rgba(255,140,105,0.4);margin-bottom:0.75rem;">
-      🚀 Payer et réactiver mon abonnement
-    </button>
-    <div style="font-size:0.75rem;color:var(--text-soft);margin-bottom:0.75rem;">🔒 Paiement sécurisé via NotchPay</div>
-    <button onclick="document.getElementById('expired-modal').classList.add('hidden');logoutUser();" style="width:100%;padding:0.65rem;border-radius:50px;border:2px solid var(--border);background:white;color:var(--text-soft);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:0.88rem;">Se déconnecter</button>
-  </div>
-</div>
 
 <!-- MODAL -->
 <div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
