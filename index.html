@@ -1248,6 +1248,21 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 </div>
 </div>
 
+<!-- RESET PASSWORD -->
+<div id="s-reset" class="screen">
+<div class="fscr">
+<div class="fbox">
+  <div class="flogosm">Yo<span>●</span>Muna</div>
+  <div class="ftitle">Nouveau mot de passe 🔐</div>
+  <div class="fsub">Choisissez un nouveau mot de passe pour votre compte.</div>
+  <div class="error-msg" id="err-reset"></div>
+  <div class="fg"><label>Nouveau mot de passe</label><input type="password" id="new-pw1" placeholder="••••••••" /></div>
+  <div class="fg"><label>Confirmer le mot de passe</label><input type="password" id="new-pw2" placeholder="••••••••" /></div>
+  <button class="bfull bpm" onclick="submitNewPassword()">✅ Enregistrer le nouveau mot de passe</button>
+</div>
+</div>
+</div>
+
 <!-- LOGIN -->
 <div id="s-login" class="screen">
 <div class="fscr">
@@ -3039,6 +3054,58 @@ async function saveNewChild() {
   } finally { hideLoading(); }
 }
 
+let resetAccessToken = null;
+
+function showResetPasswordForm(token) {
+  resetAccessToken = token;
+  showS('reset');
+}
+
+async function submitNewPassword() {
+  const pw1 = document.getElementById('new-pw1')?.value;
+  const pw2 = document.getElementById('new-pw2')?.value;
+
+  if (!pw1 || pw1.length < 6) {
+    showErr('err-reset', 'Le mot de passe doit contenir au moins 6 caractères.');
+    return;
+  }
+  if (pw1 !== pw2) {
+    showErr('err-reset', 'Les deux mots de passe ne correspondent pas.');
+    return;
+  }
+  if (!resetAccessToken) {
+    showErr('err-reset', 'Token invalide. Refaites la procédure "Mot de passe oublié".');
+    return;
+  }
+
+  showLoading('Mise à jour du mot de passe...');
+  try {
+    const res = await fetch(`${CONFIG.SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: {
+        'apikey': CONFIG.SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${resetAccessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ password: pw1 })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.id) {
+      toast('✅ Mot de passe mis à jour ! Vous pouvez vous connecter.');
+      resetAccessToken = null;
+      showS('login');
+    } else {
+      showErr('err-reset', data.message || 'Erreur lors de la mise à jour. Réessayez.');
+    }
+  } catch(e) {
+    showErr('err-reset', 'Erreur de connexion. Vérifiez votre internet.');
+  } finally {
+    hideLoading();
+  }
+}
+
 async function resetPassword() {
   const em = document.getElementById('lem').value.trim();
   if (!em) { showErr('err-login', 'Entrez votre email pour réinitialiser votre mot de passe.'); return; }
@@ -3975,6 +4042,16 @@ window.addEventListener('load', async () => {
   if (hash === '#trial') { showS('home'); setTimeout(() => showTrial(), 400); return; }
   if (hash === '#mission') { showS('mission'); return; }
   if (hash === '#contact') { showS('contact'); return; }
+
+  // Retour reset mot de passe Supabase — le token est dans le hash
+  if (hash.includes('access_token') && hash.includes('type=recovery')) {
+    const params = new URLSearchParams(hash.substring(1));
+    const accessToken = params.get('access_token');
+    if (accessToken) {
+      showResetPasswordForm(accessToken);
+      return;
+    }
+  }
 
   // Retour depuis Stripe
   if (urlParams.get('stripe') === 'success') {
