@@ -1735,17 +1735,28 @@ async function loginUser() {
   showLoading('Connexion en cours...');
   try {
     const res = await sb.signIn(em, pw);
-    if (res.error) { showErr('err-login', 'Email ou mot de passe incorrect.'); return; }
+
+    // Vérifier explicitement la présence du token — pas juste res.error
+    if (!res || !res.access_token) {
+      const msg = res?.error?.message || res?.message || '';
+      if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('password') || msg.toLowerCase().includes('credentials')) {
+        showErr('err-login', '❌ Mot de passe incorrect. Vérifiez et réessayez.');
+      } else if (msg.toLowerCase().includes('email')) {
+        showErr('err-login', '❌ Aucun compte trouvé avec cet email.');
+      } else {
+        showErr('err-login', '❌ Email ou mot de passe incorrect.');
+      }
+      return;
+    }
 
     currentToken = res.access_token;
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
-    if (typeof res !== 'undefined' && res?.refresh_token) localStorage.setItem('yomuna_refresh_token', res.refresh_token);
-    if (typeof data !== 'undefined' && data?.refresh_token) localStorage.setItem('yomuna_refresh_token', data.refresh_token);
+    if (res.refresh_token) localStorage.setItem('yomuna_refresh_token', res.refresh_token);
+
     updateNav(true);
     showS('dashboard');
-    // S'assurer que la config est chargée avant de charger le dashboard
     if (!CONFIG.SUPABASE_URL) await loadConfig();
     await loadDashboard().catch(e => console.error('Dashboard error:', e));
 
