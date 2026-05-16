@@ -697,16 +697,27 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <div class="plano" id="po-ann" onclick="selPlan('ann','20000')"><div class="plbest">🎉 Meilleur deal</div><div class="pln">Annuel</div><div class="plp">20 000</div><div class="plper">FCFA/an • 4 enfants</div></div>
     </div>
     <label style="margin-bottom:0.6rem">Mode de paiement</label>
-    <div class="pmopts" style="grid-template-columns:1fr 1fr;">
-      <div class="pmo sel" id="pm-mtn" onclick="selPay('mtn')"><span class="pmico">📱</span><div class="pmn">MTN MoMo</div></div>
-      <div class="pmo" id="pm-or" onclick="selPay('or')"><span class="pmico">🟠</span><div class="pmn">Orange Money</div></div>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">
+      <div style="background:var(--cream);border-radius:14px;padding:0.75rem 1rem;">
+        <div style="font-size:0.75rem;font-weight:800;color:var(--text-soft);margin-bottom:0.5rem;">🇨🇲 AU CAMEROUN — Mobile Money</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+          <div class="pmo sel" id="pm-mtn" onclick="selPay('mtn')"><span class="pmico">📱</span><div class="pmn">MTN MoMo</div></div>
+          <div class="pmo" id="pm-or" onclick="selPay('or')"><span class="pmico">🟠</span><div class="pmn">Orange Money</div></div>
+        </div>
+      </div>
+      <div style="background:var(--blue-pale,#EBF3FC);border-radius:14px;padding:0.75rem 1rem;">
+        <div style="font-size:0.75rem;font-weight:800;color:#4A90D9;margin-bottom:0.5rem;">🌍 DIASPORA — Carte bancaire internationale</div>
+        <div class="pmo" id="pm-card" onclick="selPay('card')" style="border-color:var(--border);background:white;">
+          <span class="pmico">💳</span><div class="pmn">Visa / Mastercard</div>
+        </div>
+      </div>
     </div>
-    <div style="background:var(--cream);border-radius:12px;padding:0.85rem;margin-bottom:1rem;font-size:0.82rem;color:var(--text-soft);font-weight:600;text-align:center;">
+    <div style="background:var(--cream);border-radius:12px;padding:0.85rem;margin-bottom:1rem;font-size:0.82rem;color:var(--text-soft);font-weight:600;text-align:center;" id="pay-info-msg">
       💳 Vous serez redirigé vers NotchPay pour finaliser le paiement en toute sécurité
     </div>
     <button class="bfull bpm" onclick="initiatePayment()">🚀 Payer et activer mon abonnement</button>
     <button class="bfull bback" onclick="goStep(2)">← Retour</button>
-    <div style="text-align:center;margin-top:1rem;font-size:0.78rem;color:var(--text-soft);font-weight:700">🔒 Paiement 100% sécurisé via NotchPay • Résiliation en 1 clic</div>
+    <div style="text-align:center;margin-top:1rem;font-size:0.78rem;color:var(--text-soft);font-weight:700">🔒 Paiement 100% sécurisé • Résiliation en 1 clic</div>
   </div>
 </div>
 </div>
@@ -1444,59 +1455,89 @@ function selPlan(p, amount) {
 
 function selPay(p) {
   currentPayMethod = p;
-  ['mtn','or'].forEach(x => {
+  ['mtn','or','card'].forEach(x => {
     const el = document.getElementById('pm-' + x);
-    if (el) el.classList.remove('sel');
+    if (el) {
+      el.style.borderColor = 'var(--border)';
+      el.style.background = 'white';
+      el.classList.remove('sel');
+    }
   });
   const sel = document.getElementById('pm-' + p);
-  if (sel) sel.classList.add('sel');
+  if (sel) {
+    sel.style.borderColor = 'var(--peach)';
+    sel.style.background = 'rgba(255,140,105,0.07)';
+    sel.classList.add('sel');
+  }
+  // Mettre à jour le message informatif
+  const msg = document.getElementById('pay-info-msg');
+  if (msg) {
+    if (p === 'card') {
+      msg.innerHTML = '💳 Vous serez redirigé vers <strong>Stripe</strong> — paiement carte sécurisé pour la diaspora';
+      msg.style.color = '#4A90D9';
+    } else {
+      msg.innerHTML = '📱 Vous serez redirigé vers <strong>NotchPay</strong> pour finaliser le paiement Mobile Money';
+      msg.style.color = 'var(--text-soft)';
+    }
+  }
 }
 
 async function initiatePayment() {
   showLoading('Initialisation du paiement...');
   try {
-    const payRes = await fetch('/.netlify/functions/initiate-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        currency: 'XAF',
-        amount: parseInt(selectedAmount),
-        email: currentUser.email,
-        description: `YoMuna - Plan ${selectedPlan}`,
-        reference: `yomuna_${currentUser.id}_${Date.now()}`,
-        channel: currentPayMethod === 'or' ? 'cm.orange' : 'cm.mtn',
-        callback: window.location.origin + '/',
-        // Passer les données à confirmer après paiement
-        metadata: {
+    // Sauvegarder les données en attente
+    localStorage.setItem('yomuna_pending_payment', JSON.stringify({
+      plan: selectedPlan,
+      amount: selectedAmount,
+      children: currentChildren,
+      userId: currentUser.id,
+      email: currentUser.email
+    }));
+
+    // Routing selon le mode de paiement
+    if (currentPayMethod === 'card') {
+      // ===== STRIPE — Carte bancaire diaspora =====
+      const res = await fetch('/.netlify/functions/stripe-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           plan: selectedPlan,
-          amount: selectedAmount,
+          email: currentUser.email,
           userId: currentUser.id,
-          children: JSON.stringify(currentChildren)
-        }
-      })
-    });
+          children: currentChildren
+        })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast('Erreur Stripe : ' + (data.error || 'Réessayez.'));
+      }
 
-    const payData = await payRes.json();
-    const authUrl = payData.authorization_url || payData.transaction?.authorization_url;
-
-    if (authUrl) {
-      // Sauvegarder la référence de paiement en attente (pas l'abonnement complet)
-      localStorage.setItem('yomuna_pending_payment', JSON.stringify({
-        ref: payData.transaction?.reference || '',
-        plan: selectedPlan,
-        amount: selectedAmount,
-        children: currentChildren,
-        userId: currentUser.id,
-        email: currentUser.email
-      }));
-
-      // Redirection directe vers NotchPay
-      window.location.href = authUrl;
     } else {
-      const errMsg = payData.message || payData.error || 'Erreur lors de l\'initialisation du paiement.';
-      toast('Erreur : ' + errMsg);
-      console.error('NotchPay error:', payData);
+      // ===== NOTCHPAY — Mobile Money =====
+      const payRes = await fetch('/.netlify/functions/initiate-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currency: 'XAF',
+          amount: parseInt(selectedAmount),
+          email: currentUser.email,
+          description: `YoMuna - Plan ${selectedPlan}`,
+          reference: `yomuna_${currentUser.id}_${Date.now()}`,
+          channel: currentPayMethod === 'or' ? 'cm.orange' : 'cm.mtn',
+          callback: window.location.origin + '/'
+        })
+      });
+      const payData = await payRes.json();
+      const authUrl = payData.authorization_url || payData.transaction?.authorization_url;
+      if (authUrl) {
+        window.location.href = authUrl;
+      } else {
+        toast('Erreur NotchPay : ' + (payData.message || 'Réessayez.'));
+      }
     }
+
   } catch(e) {
     toast('Erreur de connexion. Vérifiez votre internet.');
     console.error('Payment error:', e);
@@ -3044,7 +3085,67 @@ window.addEventListener('load', async () => {
     return;
   }
 
-  // Si retour de paiement NotchPay
+  // Retour depuis Stripe
+  if (urlParams.get('stripe') === 'success') {
+    window.history.replaceState({}, document.title, '/');
+    const token = localStorage.getItem('yomuna_token');
+    const user = localStorage.getItem('yomuna_user');
+    const pendingStr = localStorage.getItem('yomuna_pending_payment');
+    if (token && user) {
+      currentToken = token;
+      currentUser = JSON.parse(user);
+      if (pendingStr) {
+        try {
+          const pending = JSON.parse(pendingStr);
+          localStorage.removeItem('yomuna_pending_payment');
+          // Créer abonnement après paiement Stripe confirmé
+          await sb.insert('subscriptions', {
+            user_id: currentUser.id,
+            plan: pending.plan,
+            amount: parseInt(pending.amount),
+            status: 'active',
+            notchpay_ref: 'stripe_' + Date.now()
+          }, currentToken).catch(() => {});
+          // Insérer les enfants
+          const children = typeof pending.children === 'string'
+            ? JSON.parse(pending.children) : (pending.children || []);
+          for (const child of children) {
+            const existing = await sb.select('children',
+              `user_id=eq.${currentUser.id}&name=eq.${encodeURIComponent(child.name)}`,
+              currentToken).catch(() => []);
+            if (!existing || existing.length === 0) {
+              await sb.insert('children', { ...child, user_id: currentUser.id }, currentToken).catch(() => {});
+            }
+          }
+          // Email de confirmation
+          await fetch('/.netlify/functions/send-confirmation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: currentUser.email,
+              firstName: pending.firstName || 'Cher parent',
+              plan: pending.plan,
+              amount: pending.amount,
+              type: 'payment'
+            })
+          }).catch(() => {});
+        } catch(e) { console.error('Stripe post-payment error:', e); }
+      }
+      updateNav(true);
+      if (!CONFIG.SUPABASE_URL) await loadConfig();
+      await loadDashboard().catch(() => {});
+      showS('dashboard');
+      toast('🎉 Paiement Stripe confirmé ! Bienvenue sur YoMuna !');
+    }
+    return;
+  }
+
+  if (urlParams.get('stripe') === 'cancel') {
+    window.history.replaceState({}, document.title, '/');
+    toast('Paiement annulé. Tu peux réessayer quand tu veux.');
+  }
+
+  // Retour depuis NotchPay
   if (paymentStatus === 'complete' && reference) {
     window.history.replaceState({}, document.title, '/');
     const token = localStorage.getItem('yomuna_token');
