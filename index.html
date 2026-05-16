@@ -1492,15 +1492,6 @@ const sb = {
     const opts = { method, headers: h };
     if (body) opts.body = JSON.stringify(body);
     const r = await fetch(CONFIG.SUPABASE_URL + path, opts);
-    // Si token expiré, tenter un refresh automatique
-    if (r.status === 401) {
-      const refreshed = await this.refreshToken();
-      if (refreshed) {
-        h['Authorization'] = `Bearer ${currentToken}`;
-        const r2 = await fetch(CONFIG.SUPABASE_URL + path, { method, headers: h, body: opts.body });
-        return r2.json();
-      }
-    }
     return r.json();
   },
 
@@ -1542,26 +1533,16 @@ const sb = {
     const h = {
       'apikey': CONFIG.SUPABASE_ANON_KEY,
       'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
+      'Prefer': 'return=minimal'
     };
     if (token) h['Authorization'] = `Bearer ${token}`;
     const r = await fetch(CONFIG.SUPABASE_URL + `/rest/v1/${table}`, {
       method: 'POST', headers: h, body: JSON.stringify(data)
     });
-    if (r.status === 401) {
-      const refreshed = await this.refreshToken();
-      if (refreshed) {
-        h['Authorization'] = `Bearer ${currentToken}`;
-        const r2 = await fetch(CONFIG.SUPABASE_URL + `/rest/v1/${table}`, {
-          method: 'POST', headers: h, body: JSON.stringify(data)
-        });
-        if (r2.status === 201 || r2.status === 200) return r2.json();
-      }
-    }
-    if (r.status === 201 || r.status === 200) return r.json();
-    const err = await r.json();
-    console.error('sb.insert error:', err);
-    throw new Error(err.message || 'Insert failed');
+    if (r.status === 201 || r.status === 204 || r.status === 200) return { success: true };
+    const err = await r.json().catch(() => ({}));
+    console.warn('sb.insert warning:', table, r.status, err);
+    return { success: false, error: err };
   },
   async select(table, query, token) {
     try {
@@ -2998,15 +2979,14 @@ async function saveNewChild() {
         'apikey': CONFIG.SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${currentToken}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
+        'Prefer': 'return=minimal'
       },
       body: JSON.stringify({ user_id: currentUser.id, name, gender, age, culture, interests, challenge })
     });
 
-    if (res.status === 200 || res.status === 201) {
-      const inserted = await res.json();
-      // Ajouter à currentChildren avec l'ID retourné
-      currentChildren.push(inserted[0] || { user_id: currentUser.id, name, gender, age, culture, interests, challenge });
+    if (res.status === 200 || res.status === 201 || res.status === 204) {
+      // Ajouter à currentChildren en mémoire
+      currentChildren.push({ user_id: currentUser.id, name, gender, age, culture, interests, challenge });
       document.getElementById('add-child-modal')?.remove();
       renderChildPills();
       renderAccountChildren();
