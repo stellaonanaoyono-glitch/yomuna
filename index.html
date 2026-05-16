@@ -3745,54 +3745,44 @@ window.addEventListener('load', async () => {
   // Retour depuis Stripe
   if (urlParams.get('stripe') === 'success') {
     window.history.replaceState({}, document.title, '/');
+    const sessionId = urlParams.get('session_id');
     const token = localStorage.getItem('yomuna_token');
     const user = localStorage.getItem('yomuna_user');
-    const pendingStr = localStorage.getItem('yomuna_pending_payment');
+
     if (token && user) {
       currentToken = token;
       currentUser = JSON.parse(user);
-      if (pendingStr) {
+      updateNav(true);
+
+      // Vérifier le paiement côté serveur — indépendant du localStorage
+      if (sessionId) {
+        showLoading('Confirmation du paiement...');
         try {
-          const pending = JSON.parse(pendingStr);
-          localStorage.removeItem('yomuna_pending_payment');
-          // Créer abonnement après paiement Stripe confirmé
-          await sb.insert('subscriptions', {
-            user_id: currentUser.id,
-            plan: pending.plan,
-            amount: parseInt(pending.amount),
-            status: 'active',
-            notchpay_ref: 'stripe_' + Date.now()
-          }, currentToken).catch(() => {});
-          // Insérer les enfants
-          const children = typeof pending.children === 'string'
-            ? JSON.parse(pending.children) : (pending.children || []);
-          for (const child of children) {
-            const existing = await sb.select('children',
-              `user_id=eq.${currentUser.id}&name=eq.${encodeURIComponent(child.name)}`,
-              currentToken).catch(() => []);
-            if (!existing || existing.length === 0) {
-              await sb.insert('children', { ...child, user_id: currentUser.id }, currentToken).catch(() => {});
-            }
-          }
-          // Email de confirmation
-          await fetch('/.netlify/functions/send-confirmation', {
+          const verifyRes = await fetch('/.netlify/functions/stripe-verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: currentUser.email,
-              firstName: pending.firstName || 'Cher parent',
-              plan: pending.plan,
-              amount: pending.amount,
-              type: 'payment'
-            })
-          }).catch(() => {});
-        } catch(e) { console.error('Stripe post-payment error:', e); }
+            body: JSON.stringify({ sessionId })
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            localStorage.removeItem('yomuna_pending_payment');
+          } else {
+            console.error('Stripe verify error:', verifyData.error);
+          }
+        } catch(e) {
+          console.error('Stripe verify error:', e);
+        } finally {
+          hideLoading();
+        }
       }
-      updateNav(true);
+
       if (!CONFIG.SUPABASE_URL) await loadConfig();
       await loadDashboard().catch(() => {});
       showS('dashboard');
-      toast('🎉 Paiement Stripe confirmé ! Bienvenue sur YoMuna !');
+      toast('\uD83C\uDF89 Paiement confirm\u00e9 ! Bienvenue sur YoMuna !');
+    } else {
+      showS('login');
+      toast('Paiement re\u00e7u ! Connectez-vous pour acc\u00e9der \u00e0 votre espace.');
     }
     return;
   }
