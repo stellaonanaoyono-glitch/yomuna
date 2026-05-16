@@ -352,8 +352,8 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <span style="font-size:1.6rem;background:var(--peach);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;margin-top:-16px;box-shadow:0 4px 15px var(--shadow-warm);" class="mnav-ico">🌙</span>
       <span class="mnav-lbl" style="color:var(--peach-dark);">Histoire</span>
     </button>
-    <button class="mnav-btn" id="mnav-history" onclick="mnavGo('history')">
-      <span class="mnav-ico">🕐</span><span class="mnav-lbl">Historique</span>
+    <button class="mnav-btn" id="mnav-subscription" onclick="mnavGo('subscription')">
+      <span class="mnav-ico">💳</span><span class="mnav-lbl">Abonnement</span>
     </button>
     <button class="mnav-btn" id="mnav-account" onclick="mnavGo('account')">
       <span class="mnav-ico">👤</span><span class="mnav-lbl">Compte</span>
@@ -388,9 +388,10 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <h1>Ce soir,<br><span class="ac">un rituel magique</span><br>pour ton enfant</h1>
       <p class="hero-promise">Fini les soirs où tu rentres épuisé(e) et ton enfant attend encore.<br><strong>YoMuna crée pour toi un moment unique — une histoire du soir, une activité et un conseil parental</strong> — personnalisés selon ton pays, ta culture et ta langue.</p>
       <p class="hero-sub">Tu remplis le profil une seule fois. YoMuna s'occupe du reste — pour chaque enfant, à chaque instant, partout dans le monde.</p>
-      <div class="hero-cta">
-        <button class="btn-cta" onclick="showS('signup')">🌙 Créer notre premier rituel</button>
-        <button class="btn-ghost" onclick="showTrial()" style="background:white;border:2.5px solid var(--peach);color:var(--peach-dark);">✨ Tester gratuitement</button>
+      <div class="hero-cta" style="flex-wrap:wrap;gap:0.65rem;">
+        <button class="btn-cta" onclick="showTrial()" style="background:white;border:2.5px solid var(--peach);color:var(--peach-dark);box-shadow:none;">✨ Tester gratuitement</button>
+        <button class="btn-cta" onclick="showS('signup')">📝 S'inscrire</button>
+        <button class="btn-ghost" onclick="showS('login')" style="padding:0.95rem 1.5rem;">Se connecter</button>
       </div>
       <div class="trust">
         <div class="trust-i">✅ Sans engagement</div>
@@ -715,15 +716,15 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <div style="background:linear-gradient(135deg,var(--dark),#6B4226);padding:1.75rem 2rem;">
         <div style="font-size:1.8rem;font-weight:900;color:var(--peach);">Yo<span style="color:var(--yellow);">●</span><span style="color:white;">Muna</span></div>
         <div style="color:white;font-weight:800;font-size:1.15rem;margin-top:0.5rem;">Teste YoMuna gratuitement ✨</div>
-        <div style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-top:0.25rem;">Aucun paiement requis — vois le résultat en 10 secondes</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-top:0.25rem;">Vois exactement ce que ton enfant recevra — sans payer</div>
       </div>
       <div style="padding:1.75rem 2rem;">
         <div class="error-msg" id="err-trial"></div>
-        <div class="fg">
-          <label>Prénom de ton enfant</label>
-          <input type="text" id="trial-name" placeholder="Amina, Noah, Sofia..." />
-        </div>
         <div class="frow">
+          <div class="fg">
+            <label>Prénom de ton enfant</label>
+            <input type="text" id="trial-name" placeholder="Amina, Noah..." />
+          </div>
           <div class="fg">
             <label>Âge</label>
             <select id="trial-age">
@@ -733,6 +734,8 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
               <option value="9-10 ans">9–10 ans</option>
             </select>
           </div>
+        </div>
+        <div class="frow">
           <div class="fg">
             <label>Genre</label>
             <select id="trial-gender">
@@ -740,82 +743,91 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
               <option value="garcon">👦 Garçon</option>
             </select>
           </div>
+          <div class="fg">
+            <label>Univers culturel</label>
+            <select id="trial-country">
+              <option value="Cameroun">🇨🇲 Cameroun</option>
+              <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+              <option value="Gabon">🇬🇦 Gabon</option>
+              <option value="Congo">🇨🇬 Congo</option>
+              <option value="Sénégal">🇸🇳 Sénégal</option>
+              <option value="France">🇫🇷 France</option>
+              <option value="monde">🌍 Monde entier</option>
+            </select>
+          </div>
         </div>
+
+        <!-- Choix du type de contenu -->
+        <label style="display:block;margin-bottom:0.6rem;">Que veux-tu générer ?</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.25rem;">
+          <div onclick="selectTrialType('story',this)" id="ttype-story" class="trial-type-opt" style="border:2px solid var(--peach);background:rgba(255,140,105,0.05);border-radius:12px;padding:0.75rem;cursor:pointer;text-align:center;">
+            <div style="font-size:1.4rem;">📖</div><div style="font-size:0.82rem;font-weight:800;color:var(--dark);">Histoire du soir</div>
+          </div>
+          <div onclick="selectTrialType('activity',this)" id="ttype-activity" class="trial-type-opt" style="border:2px solid var(--border);border-radius:12px;padding:0.75rem;cursor:pointer;text-align:center;">
+            <div style="font-size:1.4rem;">🎮</div><div style="font-size:0.82rem;font-weight:800;color:var(--dark);">Activité</div>
+          </div>
+          <div onclick="selectTrialType('advice',this)" id="ttype-advice" class="trial-type-opt" style="border:2px solid var(--border);border-radius:12px;padding:0.75rem;cursor:pointer;text-align:center;">
+            <div style="font-size:1.4rem;">💡</div><div style="font-size:0.82rem;font-weight:800;color:var(--dark);">Conseil parental</div>
+          </div>
+          <div onclick="selectTrialType('learning',this)" id="ttype-learning" class="trial-type-opt" style="border:2px solid var(--border);border-radius:12px;padding:0.75rem;cursor:pointer;text-align:center;">
+            <div style="font-size:1.4rem;">🧠</div><div style="font-size:0.82rem;font-weight:800;color:var(--dark);">Apprentissage</div>
+          </div>
+        </div>
+
         <div class="fg">
           <label>Ton email <span style="color:var(--text-soft);font-weight:600;">(pour recevoir le résultat)</span></label>
           <input type="email" id="trial-email" placeholder="ton@email.com" />
         </div>
-        <div class="fg">
-          <label>Pays</label>
-          <select id="trial-country">
-            <option value="Cameroun">🇨🇲 Cameroun</option>
-            <option value="France">🇫🇷 France</option>
-            <option value="Canada">🇨🇦 Canada</option>
-            <option value="Gabon">🇬🇦 Gabon</option>
-            <option value="Congo">🇨🇬 Congo</option>
-            <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
-            <option value="Sénégal">🇸🇳 Sénégal</option>
-            <option value="autre">🌍 Autre pays</option>
-          </select>
-        </div>
-        <button class="bfull bpm" onclick="runTrial()">✨ Générer mon aperçu gratuit</button>
-        <div style="text-align:center;margin-top:0.75rem;font-size:0.8rem;color:var(--text-soft);">Aucun paiement · Aucune carte requise · Résultat en 10 secondes</div>
+        <button class="bfull bpm" onclick="runTrial()">✨ Générer maintenant — c'est gratuit</button>
+        <div style="text-align:center;margin-top:0.75rem;font-size:0.8rem;color:var(--text-soft);">Aucun paiement · Aucune carte · Résultat immédiat</div>
       </div>
     </div>
 
-    <!-- Étape 2 : résultats -->
+    <!-- Étape 2 : résultat complet visible -->
     <div id="trial-step2" class="hidden">
       <div style="background:linear-gradient(135deg,var(--dark),#6B4226);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;">
         <div>
           <div style="font-size:1.4rem;font-weight:900;color:var(--peach);">Yo<span style="color:var(--yellow);">●</span><span style="color:white;">Muna</span></div>
-          <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;" id="trial-subtitle">Aperçu pour ton enfant</div>
+          <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;" id="trial-subtitle">Résultat pour ton enfant</div>
         </div>
-        <div style="background:rgba(255,255,255,0.15);border-radius:50px;padding:0.3rem 0.9rem;color:white;font-size:0.78rem;font-weight:800;">APERÇU GRATUIT</div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:50px;padding:0.3rem 0.9rem;color:white;font-size:0.78rem;font-weight:800;">ESSAI GRATUIT</div>
       </div>
 
-      <div style="padding:1.5rem 1.75rem;max-height:65vh;overflow-y:auto;">
+      <div style="padding:1.5rem 1.75rem;max-height:70vh;overflow-y:auto;">
 
-        <!-- Histoire -->
-        <div style="background:var(--light);border-radius:16px;padding:1.25rem;margin-bottom:1rem;border-left:4px solid var(--yellow);">
-          <div style="font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--yellow);margin-bottom:0.5rem;">📖 Histoire du soir</div>
-          <div style="font-weight:800;font-size:1rem;color:var(--dark);margin-bottom:0.5rem;" id="trial-story-title">Génération...</div>
-          <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;" id="trial-story-text">YoMuna crée une histoire unique...</div>
-          <!-- Effet flou sur la fin -->
-          <div id="trial-story-blur" class="hidden" style="position:relative;margin-top:0.5rem;">
-            <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;filter:blur(4px);user-select:none;" id="trial-story-blur-text"></div>
-            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,white 70%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:0.5rem;">
-              <span style="font-size:0.78rem;font-weight:800;color:var(--peach-dark);">🔒 Suite accessible avec l'abonnement</span>
-            </div>
+        <!-- Contenu généré — VISIBLE EN ENTIER -->
+        <div id="trial-result-card" style="background:var(--light);border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;border-left:4px solid var(--peach);">
+          <div style="font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--peach-dark);margin-bottom:0.5rem;" id="trial-result-type">📖 Histoire du soir</div>
+          <div style="font-weight:800;font-size:1.1rem;color:var(--dark);margin-bottom:0.85rem;" id="trial-result-title">Génération en cours...</div>
+          <div style="font-size:0.9rem;color:var(--mid);line-height:1.8;white-space:pre-wrap;" id="trial-result-content">YoMuna prépare quelque chose de spécial...</div>
+          <!-- Extras pour l'histoire -->
+          <div id="trial-edu" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(255,209,102,0.15);border-radius:10px;font-size:0.82rem;font-weight:700;color:#8B6914;">
+            ✨ Cette histoire développe : <span id="trial-edu-text"></span>
+          </div>
+          <div id="trial-question" style="display:none;margin-top:0.75rem;padding:0.75rem;background:rgba(123,94,167,0.1);border-radius:10px;font-size:0.85rem;font-weight:700;color:var(--purple);">
+            💬 Question du soir : <em id="trial-question-text"></em>
           </div>
         </div>
 
-        <!-- Activité -->
-        <div style="background:var(--light);border-radius:16px;padding:1.25rem;margin-bottom:1rem;border-left:4px solid var(--mint);">
-          <div style="font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#03A97A;margin-bottom:0.5rem;">🎮 Activité de la semaine</div>
-          <div style="font-weight:800;font-size:1rem;color:var(--dark);margin-bottom:0.5rem;" id="trial-activity-title">Génération...</div>
-          <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;filter:blur(3px);user-select:none;" id="trial-activity-text">Aperçu flou</div>
-          <div style="margin-top:0.5rem;font-size:0.78rem;font-weight:800;color:#03A97A;">🔒 Détails complets avec l'abonnement</div>
+        <!-- Message -->
+        <div style="background:white;border-radius:12px;padding:1rem;margin-bottom:1rem;border:2px solid var(--border);text-align:center;">
+          <div style="font-size:0.88rem;color:var(--mid);font-weight:600;line-height:1.6;">Ce n'est qu'un avant-goût. Avec YoMuna, ton enfant reçoit <strong>une nouvelle histoire, une activité, un conseil et un apprentissage chaque jour</strong> — tous différents, tous personnalisés.</div>
         </div>
 
-        <!-- Apprentissage -->
-        <div style="background:var(--light);border-radius:16px;padding:1.25rem;margin-bottom:1.5rem;border-left:4px solid var(--purple);">
-          <div style="font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--purple);margin-bottom:0.5rem;">🧠 Apprentissage du jour</div>
-          <div style="font-weight:800;font-size:1rem;color:var(--dark);margin-bottom:0.5rem;" id="trial-learning-title">Génération...</div>
-          <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;filter:blur(3px);user-select:none;" id="trial-learning-text">Aperçu flou</div>
-          <div style="margin-top:0.5rem;font-size:0.78rem;font-weight:800;color:var(--purple);">🔒 Contenu complet avec l'abonnement</div>
-        </div>
-
-        <!-- CTA abonnement -->
+        <!-- CTA -->
         <div style="background:linear-gradient(135deg,var(--dark),#6B4226);border-radius:16px;padding:1.5rem;text-align:center;">
-          <div style="color:var(--yellow);font-weight:800;font-size:1rem;margin-bottom:0.4rem;">Tu aimes ce que tu vois ? 🌙</div>
-          <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:1.25rem;">Débloquer tout le contenu, chaque jour, pour chaque enfant.</div>
-          <button onclick="closeTrial();showS('signup');" style="width:100%;padding:0.95rem;border-radius:50px;border:none;background:var(--peach);color:white;font-weight:800;font-size:1rem;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:0.6rem;">
-            🚀 S'abonner — dès 2 500 FCFA/mois
+          <div style="color:var(--yellow);font-weight:800;font-size:1.05rem;margin-bottom:0.3rem;">Tu aimes ? Abonne-toi ! 🌙</div>
+          <div style="color:rgba(255,255,255,0.75);font-size:0.83rem;margin-bottom:1.1rem;">Chaque soir, un rituel unique pour ton enfant — dès 2 500 FCFA/mois</div>
+          <button onclick="closeTrial();showS('signup');" style="width:100%;padding:0.95rem;border-radius:50px;border:none;background:var(--peach);color:white;font-weight:800;font-size:1rem;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:0.5rem;">
+            📝 S'inscrire et s'abonner →
           </button>
-          <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;">Sans engagement · MTN MoMo · Orange Money</div>
+          <button onclick="closeTrial();showS('login');" style="width:100%;padding:0.65rem;border-radius:50px;border:2px solid rgba(255,255,255,0.3);background:none;color:rgba(255,255,255,0.7);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:0.85rem;margin-bottom:0.5rem;">
+            Déjà inscrit ? Se connecter
+          </button>
+          <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;">Sans engagement · MTN MoMo · Orange Money</div>
         </div>
 
-        <button onclick="closeTrial()" style="width:100%;padding:0.65rem;border-radius:50px;border:2px solid var(--border);background:white;color:var(--text-soft);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:0.75rem;font-size:0.85rem;">Fermer</button>
+        <button onclick="goBackTrial()" style="width:100%;padding:0.65rem;border-radius:50px;border:2px solid var(--border);background:white;color:var(--text-soft);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:0.75rem;font-size:0.85rem;">← Essayer un autre type de contenu</button>
       </div>
     </div>
 
@@ -971,8 +983,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   <div class="dtabs">
     <button class="dtab on" onclick="swTab('today',this)">✨ Aujourd'hui</button>
     <button class="dtab" onclick="swTab('library',this)">📚 Bibliothèque</button>
-    <button class="dtab" onclick="swTab('history',this)">🕐 Historique</button>
-    <button class="dtab" onclick="swTab('report',this)">📊 Bilan</button>
+    <button class="dtab" onclick="swTab('subscription',this)">💳 Mon abonnement</button>
     <button class="dtab" onclick="swTab('account',this)">👤 Mon compte</button>
   </div>
   <div id="dt-today">
@@ -1020,16 +1031,48 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   </div>
 
   <!-- REPORT TAB -->
-  <div id="dt-report" class="hidden">
-    <div id="weekly-report-content">
-      <p style="color:var(--text-soft);font-weight:700;text-align:center;padding:2rem;">Chargement du bilan...</p>
+  <!-- SUBSCRIPTION TAB -->
+  <div id="dt-subscription" class="hidden">
+    <div class="asec">
+      <div class="astitle">💳 Mon abonnement</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div>
+          <div style="font-weight:800;font-size:1.1rem;" id="sub-plan-name">—</div>
+          <div style="font-size:0.85rem;color:var(--text-soft);font-weight:700;" id="sub-plan-detail">—</div>
+        </div>
+        <span class="planchip" id="sub-status-chip">✓ Actif</span>
+      </div>
+      <div style="margin-bottom:1.25rem;">
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:700;color:var(--text-soft);margin-bottom:0.4rem;">
+          <span id="sub-start-date">Début</span>
+          <span id="sub-end-date">Fin</span>
+        </div>
+        <div style="background:var(--border);border-radius:50px;height:10px;overflow:hidden;">
+          <div id="sub-progress-bar" style="background:linear-gradient(90deg,var(--peach),var(--peach-dark));height:100%;border-radius:50px;width:50%;transition:width 0.5s;"></div>
+        </div>
+        <div style="text-align:center;margin-top:0.6rem;font-size:1rem;font-weight:800;" id="sub-days-left">—</div>
+      </div>
+      <div style="background:var(--light);border-radius:14px;padding:1rem;margin-bottom:1.25rem;">
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:0.85rem;color:var(--text-soft);font-weight:700;">Plan</span>
+          <span style="font-size:0.85rem;font-weight:800;" id="sub-recap-plan">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:0.85rem;color:var(--text-soft);font-weight:700;">Montant</span>
+          <span style="font-size:0.85rem;font-weight:800;" id="sub-recap-amount">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;">
+          <span style="font-size:0.85rem;color:var(--text-soft);font-weight:700;">Enfants couverts</span>
+          <span style="font-size:0.85rem;font-weight:800;" id="sub-recap-children">—</span>
+        </div>
+      </div>
+      <button class="bsm" onclick="renewSubscription()" style="width:100%;">🔄 Renouveler mon abonnement</button>
     </div>
-  </div>
-
-  <!-- HISTORY -->
-  <div id="dt-history" class="hidden">
-    <div class="hlist" id="history-list">
-      <p style="font-size:0.88rem;color:var(--text-soft);font-weight:700;margin-bottom:0.5rem">Chargement...</p>
+    <div class="asec">
+      <div class="astitle">🕐 Historique des moments</div>
+      <div id="history-list">
+        <p style="color:var(--text-soft);font-weight:700;text-align:center;padding:1rem;">Chargement...</p>
+      </div>
     </div>
   </div>
 
@@ -1042,7 +1085,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="dash-footer-links">
       <a onclick="swTab('today',null)">Aujourd'hui</a>
       <a onclick="swTab('library',null)">Bibliothèque</a>
-      <a onclick="swTab('history',null)">Historique</a>
+      <a onclick="swTab('subscription',null)">Mon abonnement</a>
       <a onclick="swTab('account',null)">Mon compte</a>
       <a href="mailto:yomuna237@gmail.com">Contact</a>
     </div>
@@ -1337,16 +1380,7 @@ async function registerUser() {
       country: co, language: lg
     }, currentToken).catch(e => console.log('Profile insert:', e));
 
-    // Email de bienvenue
-    await fetch('/.netlify/functions/send-confirmation', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: em, firstName: fn, lastName: ln,
-        country: co, plan: 'welcome', amount: 0, type: 'welcome'
-      })
-    }).catch(e => console.log('Welcome email error:', e));
-
+    // NE PAS envoyer d'email avant le paiement — sera envoyé après confirmation
     goStep(2);
   } catch(e) {
     showErr('err-signup','Erreur de connexion. Vérifiez votre internet.');
@@ -1413,11 +1447,13 @@ async function saveChildren() {
     const name = card.querySelector('.kn')?.value?.trim();
     const age = card.querySelector('.ka')?.value;
     const gender = card.querySelector('.kg')?.value || 'fille';
-    const interests = card.querySelector('.ki')?.value?.trim();
-    const challenge = card.querySelector('.kc')?.value?.trim();
-    if (name) children.push({ user_id: currentUser.id, name, age, gender, interests, challenge });
+    const culture = card.querySelector('.kculture')?.value || 'Cameroun';
+    const interests = card.querySelector('.ki')?.value?.trim() || '';
+    const challenge = card.querySelector('.kc')?.value?.trim() || '';
+    if (name) children.push({ user_id: currentUser.id, name, age, gender, culture, interests, challenge });
   });
   if (children.length === 0) { toast('Ajoutez au moins un enfant.'); return; }
+  // Stocker en mémoire seulement — insertion Supabase uniquement après paiement confirmé
   currentChildren = children;
   goStep(3);
 }
@@ -1442,12 +1478,6 @@ function selPay(p) {
 async function initiatePayment() {
   showLoading('Initialisation du paiement...');
   try {
-    // Sauvegarder les enfants dans Supabase
-    for (const child of currentChildren) {
-      await sb.insert('children', child, currentToken).catch(() => {});
-    }
-
-    // Lancer paiement NotchPay via Netlify Function
     const payRes = await fetch('/.netlify/functions/initiate-payment', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1458,53 +1488,43 @@ async function initiatePayment() {
         description: `YoMuna - Plan ${selectedPlan}`,
         reference: `yomuna_${currentUser.id}_${Date.now()}`,
         channel: currentPayMethod === 'or' ? 'cm.orange' : 'cm.mtn',
-        callback: window.location.origin + '/'
+        callback: window.location.origin + '/',
+        // Passer les données à confirmer après paiement
+        metadata: {
+          plan: selectedPlan,
+          amount: selectedAmount,
+          userId: currentUser.id,
+          children: JSON.stringify(currentChildren)
+        }
       })
     });
 
     const payData = await payRes.json();
-    console.log('PayData received:', JSON.stringify(payData));
-    
     const authUrl = payData.authorization_url || payData.transaction?.authorization_url;
-    
+
     if (authUrl) {
-      // Sauvegarder l'abonnement
-      await sb.insert('subscriptions', {
-        user_id: currentUser.id,
+      // Sauvegarder la référence de paiement en attente (pas l'abonnement complet)
+      localStorage.setItem('yomuna_pending_payment', JSON.stringify({
+        ref: payData.transaction?.reference || '',
         plan: selectedPlan,
-        amount: parseInt(selectedAmount),
-        status: 'pending',
-        notchpay_ref: payData.transaction?.reference || ''
-      }, currentToken);
-      // Ouvrir la page de paiement NotchPay
-      const win = window.open(authUrl, '_blank');
+        amount: selectedAmount,
+        children: currentChildren,
+        userId: currentUser.id,
+        email: currentUser.email
+      }));
 
-      // Envoyer email de confirmation
-      const profile = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken).catch(() => []);
-      const firstName = profile && profile[0] ? profile[0].first_name : 'Client';
-      await fetch('/.netlify/functions/send-confirmation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: currentUser.email,
-          firstName: firstName,
-          plan: selectedPlan,
-          amount: selectedAmount
-        })
-      }).catch(e => console.log('Email error:', e));
-
-      if (!win) {
-        // Si le navigateur bloque le popup, afficher un bouton
-        const btn = document.createElement('a');
-        btn.href = authUrl;
-        btn.target = '_blank';
-        btn.style.cssText = 'display:block;text-align:center;background:#FF8C69;color:white;padding:1rem 2rem;border-radius:50px;font-weight:800;text-decoration:none;margin-top:1rem;font-family:Nunito,sans-serif';
-        btn.textContent = '💳 Cliquer ici pour payer';
-        document.getElementById('ss3').appendChild(btn);
-        toast('Cliquez sur le bouton pour accéder au paiement');
-      } else {
-        toast('Redirection vers le paiement en cours... ✓');
-      }
+      // Redirection directe vers NotchPay
+      window.location.href = authUrl;
+    } else {
+      const errMsg = payData.message || payData.error || 'Erreur lors de l\'initialisation du paiement.';
+      toast('Erreur : ' + errMsg);
+      console.error('NotchPay error:', payData);
+    }
+  } catch(e) {
+    toast('Erreur de connexion. Vérifiez votre internet.');
+    console.error('Payment error:', e);
+  } finally { hideLoading(); }
+}
     } else {
       console.log('No auth URL found:', JSON.stringify(payData));
       toast('Erreur lors de l\'initialisation du paiement. Réessayez.');
@@ -1547,21 +1567,27 @@ async function loadDashboard() {
       return;
     }
 
-    // Charger abonnement
+    // Charger abonnement — vérification stricte
     const subs = await sb.select('subscriptions', `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken).catch(() => []);
     if (subs && subs[0]) {
       const sub = subs[0];
+
+      // Bloquer si paiement pas encore confirmé
+      if (sub.status === 'pending' || sub.status === 'expired') {
+        showExpiredModal(); return;
+      }
+
       currentPlan = sub.plan;
       const planNames = { solo:'Plan Solo', fam:'Plan Famille', ann:'Plan Annuel' };
       const startDate = new Date(sub.created_at);
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + (sub.plan === 'ann' ? 365 : 30));
       const daysLeft = Math.max(0, Math.ceil((endDate - new Date()) / 86400000));
-      const isActive = daysLeft > 0 && sub.status !== 'expired';
+      const isActive = daysLeft > 0;
 
       const pn = document.getElementById('plan-name'); if (pn) pn.textContent = planNames[sub.plan] || 'Plan actif';
       const pd = document.getElementById('plan-detail');
-      if (pd) pd.innerHTML = `${sub.amount} FCFA • Expire le ${endDate.toLocaleDateString('fr-FR')}<br><span style="color:${daysLeft <= 5 ? '#E06840' : '#06D6A0'};font-weight:800;">${daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}` : '❌ Expiré'}</span>`;
+      if (pd) pd.innerHTML = `${sub.amount} FCFA · Expire le ${endDate.toLocaleDateString('fr-FR')}<br><span style="color:${daysLeft <= 5 ? '#E06840' : '#06D6A0'};font-weight:800;">${daysLeft > 0 ? `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}` : '❌ Expiré'}</span>`;
 
       const counter = document.getElementById('days-counter');
       if (counter) {
@@ -1571,10 +1597,10 @@ async function loadDashboard() {
 
       if (!isActive) { showExpiredModal(); return; }
     } else {
+      // Aucun abonnement actif
       showExpiredModal(); return;
     }
 
-    // Charger historique
     loadHistory().catch(() => {});
 
   } catch(e) {
@@ -1688,14 +1714,45 @@ function renderChildPills() {
     contents.appendChild(div);
   });
 
-  // Générer séquentiellement pour éviter les conflits multi-profils
+  // Générer séquentiellement avec cache journalier
   async function generateAll() {
+    const today = new Date().toISOString().split('T')[0];
+    const cacheKey = `yomuna_daily_${currentUser.id}_${today}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+      // Contenu déjà généré aujourd'hui — charger depuis le cache
+      try {
+        const cachedData = JSON.parse(cached);
+        for (let i = 0; i < currentChildren.length; i++) {
+          const child = currentChildren[i];
+          if (cachedData[i]) {
+            const d = cachedData[i];
+            // Restaurer depuis le cache
+            if (d.story) displayCachedContent(i, 'story', d.story);
+            if (d.activity) displayCachedContent(i, 'activity', d.activity);
+            if (d.advice) displayCachedContent(i, 'advice', d.advice);
+            if (d.learning) displayCachedContent(i, 'learning', d.learning);
+          } else {
+            // Nouveau profil enfant — générer
+            await generateContent(i, 'story', true);
+            await generateContent(i, 'activity', true);
+            await generateContent(i, 'advice', true);
+            await generateContent(i, 'learning', true);
+          }
+        }
+        return;
+      } catch(e) {
+        localStorage.removeItem(cacheKey);
+      }
+    }
+
+    // Première génération du jour
     for (let i = 0; i < currentChildren.length; i++) {
       await generateContent(i, 'story', true);
       await generateContent(i, 'activity', true);
       await generateContent(i, 'advice', true);
       await generateContent(i, 'learning', true);
-      // Petite pause entre chaque enfant pour éviter le rate limiting
       if (i < currentChildren.length - 1) {
         await new Promise(r => setTimeout(r, 800));
       }
@@ -1987,11 +2044,21 @@ async function generateContent(childIndex, type, autoLoad = false) {
       }
     }
 
-    // Historique
+    // Historique Supabase
     if (fullContent.length > 20) {
       if (!window.storyCache) window.storyCache = {};
       window.storyCache[type + '-' + childIndex] = parsed;
       await sb.insert('history', { user_id: currentUser.id, child_name: childName, type, title: parsed.title, content: fullContent }, currentToken).catch(() => {});
+
+      // Sauvegarder dans le cache journalier localStorage
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const cacheKey = `yomuna_daily_${currentUser.id}_${today}`;
+        const existing = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+        if (!existing[childIndex]) existing[childIndex] = {};
+        existing[childIndex][type] = { title: parsed.title, content: fullContent, extra: parsed };
+        localStorage.setItem(cacheKey, JSON.stringify(existing));
+      } catch(e) { /* cache non critique */ }
     }
 
   } catch(e) {
@@ -2245,21 +2312,131 @@ async function loadLibrary() {
 function swTab(name, btn) {
   document.querySelectorAll('.dtab').forEach(b => b.classList.remove('on'));
   if (btn) btn.classList.add('on');
-  const tabs = ['today','library','history','report','account'];
-  tabs.forEach(t => {
+  ['today','library','subscription','account'].forEach(t => {
     const el = document.getElementById(`dt-${t}`);
     if (el) el.classList.add('hidden');
   });
   const active = document.getElementById(`dt-${name}`);
   if (active) active.classList.remove('hidden');
-  if (name === 'history') loadHistory();
   if (name === 'library') loadLibrary();
-  if (name === 'report') loadWeeklyReport();
+  if (name === 'subscription') { loadHistory(); loadSubscriptionDetails(); }
 }
 
 function swTabById(name) {
   const btn = document.querySelector(`.dtab[onclick*="'${name}'"]`);
   swTab(name, btn);
+}
+
+// ===== CACHE JOURNALIER =====
+function displayCachedContent(childIndex, type, cached) {
+  const child = currentChildren[childIndex];
+  if (!child || !cached) return;
+  const titleEl = document.getElementById(type + '-title-' + childIndex);
+  const textEl = document.getElementById(type + '-text-' + childIndex);
+  const regenBtn = document.getElementById('regen-' + type + '-' + childIndex);
+  const badgeEl = document.getElementById(type + '-badge-' + childIndex);
+  if (titleEl) titleEl.textContent = cached.title || ('Contenu pour ' + child.name);
+  if (textEl && cached.content) {
+    const words = cached.content.split(' ');
+    textEl.textContent = words.slice(0, 60).join(' ') + (words.length > 60 ? '...' : '');
+    const oldBtn = document.getElementById('readmore-' + type + '-' + childIndex);
+    if (oldBtn) oldBtn.remove();
+    if (words.length > 60) {
+      const btn = document.createElement('button');
+      btn.id = 'readmore-' + type + '-' + childIndex;
+      btn.className = 'bregen';
+      btn.style.cssText = 'margin-top:0.85rem;display:block;width:100%;border-color:var(--peach);color:var(--peach-dark);font-weight:800;';
+      btn.textContent = 'Lire la suite complete';
+      const t = cached.title, c = cached.content;
+      btn.onclick = function() { showModal(t, c); };
+      textEl.parentNode.insertBefore(btn, textEl.nextSibling);
+    }
+  }
+  if (regenBtn) {
+    const labels = {story:'Nouvelle histoire',activity:'Nouvelle activite',advice:'Nouveau conseil',learning:'Autre apprentissage'};
+    regenBtn.textContent = labels[type] || 'Regenerer';
+    regenBtn.disabled = false;
+  }
+  const extra = cached.extra || {};
+  if (type === 'story' && badgeEl) {
+    const mins = Math.max(1, Math.ceil((cached.content || '').split(' ').length / 150));
+    badgeEl.textContent = child.age + ' . ~' + mins + ' min';
+  }
+  if (type === 'activity' && extra.duration && badgeEl) badgeEl.textContent = child.age + ' . ' + extra.duration;
+  if (type === 'story') {
+    const eduEl = document.getElementById('story-edu-' + childIndex);
+    const eduTxt = document.getElementById('story-edu-text-' + childIndex);
+    if (eduEl && eduTxt && extra.educational_value) { eduTxt.textContent = extra.educational_value; eduEl.style.display = 'block'; }
+    const qEl = document.getElementById('story-question-' + childIndex);
+    const qTxt = document.getElementById('story-q-text-' + childIndex);
+    if (qEl && qTxt && extra.emotional_question) { qTxt.textContent = extra.emotional_question; qEl.style.display = 'block'; }
+  }
+  if (type === 'learning') {
+    const emojiEl = document.getElementById('learning-emoji-' + childIndex);
+    if (emojiEl) emojiEl.textContent = extra.emoji || '🌍';
+    const factEl = document.getElementById('learning-fact-' + childIndex);
+    const factTxt = document.getElementById('learning-fact-text-' + childIndex);
+    if (factEl && factTxt && extra.fun_fact) { factTxt.textContent = extra.fun_fact; factEl.style.display = 'block'; }
+    const dqEl = document.getElementById('learning-question-' + childIndex);
+    const dqTxt = document.getElementById('learning-q-text-' + childIndex);
+    if (dqEl && dqTxt && extra.discussion_question) { dqTxt.textContent = extra.discussion_question; dqEl.style.display = 'block'; }
+  }
+  if (type === 'activity' && cached.title) {
+    const imgEl = document.getElementById('activity-img-' + childIndex);
+    if (imgEl) {
+      const q = encodeURIComponent('children craft activity ' + cached.title.split(' ').slice(0,3).join(' '));
+      imgEl.innerHTML = '<img src="https://source.unsplash.com/400x220/?' + q + '" style="width:100%;height:160px;object-fit:cover;border-radius:12px;" onerror="this.parentNode.style.display=\'none\'">';
+      imgEl.style.display = 'block';
+    }
+  }
+  if (!window.storyCache) window.storyCache = {};
+  window.storyCache[type + '-' + childIndex] = Object.assign({}, extra, {title: cached.title, content: cached.content});
+}
+
+
+function loadSubscriptionDetails() {
+  // Remplir les détails d'abonnement dans l'onglet Mon abonnement
+  const planNames = { solo:'Plan Solo', fam:'Plan Famille', ann:'Plan Annuel' };
+  const planChildren = { solo:'1 enfant', fam:'Jusqu\'à 4 enfants', ann:'Jusqu\'à 4 enfants' };
+
+  const planName = document.getElementById('sub-plan-name');
+  const planDetail = document.getElementById('sub-plan-detail');
+  const statusChip = document.getElementById('sub-status-chip');
+  const progressBar = document.getElementById('sub-progress-bar');
+  const daysLeft = document.getElementById('sub-days-left');
+  const startDate = document.getElementById('sub-start-date');
+  const endDate = document.getElementById('sub-end-date');
+  const recapPlan = document.getElementById('sub-recap-plan');
+  const recapAmount = document.getElementById('sub-recap-amount');
+  const recapChildren = document.getElementById('sub-recap-children');
+
+  // Lire depuis le plan-name et plan-detail du compte (déjà chargés)
+  const existingPlanName = document.getElementById('plan-name')?.textContent || '—';
+  const existingPlanDetail = document.getElementById('plan-detail')?.textContent || '—';
+  const existingDaysLeft = document.getElementById('days-counter')?.textContent || '';
+
+  if (planName) planName.textContent = existingPlanName;
+  if (planDetail) planDetail.textContent = existingPlanDetail;
+
+  // Extraire les jours restants pour la barre
+  const daysMatch = existingDaysLeft.match(/(\d+)\s*jour/);
+  const days = daysMatch ? parseInt(daysMatch[1]) : 0;
+  const totalDays = currentPlan === 'ann' ? 365 : 30;
+  const pct = Math.max(5, Math.min(100, (days / totalDays) * 100));
+
+  if (progressBar) progressBar.style.width = pct + '%';
+  if (progressBar) progressBar.style.background = days <= 5 ? 'linear-gradient(90deg,#E06840,#CC3333)' : 'linear-gradient(90deg,var(--peach),var(--peach-dark))';
+  if (daysLeft) {
+    daysLeft.textContent = days > 0 ? `⏳ ${days} jour${days > 1 ? 's' : ''} restant${days > 1 ? 's' : ''}` : '❌ Expiré';
+    daysLeft.style.color = days <= 5 ? 'var(--peach-dark)' : 'var(--dark)';
+  }
+
+  if (recapPlan) recapPlan.textContent = planNames[currentPlan] || existingPlanName;
+  if (recapChildren) recapChildren.textContent = planChildren[currentPlan] || '—';
+
+  // Montant depuis plan-detail
+  const amountMatch = existingPlanDetail.match(/[\d\s]+FCFA/);
+  if (recapAmount) recapAmount.textContent = amountMatch ? amountMatch[0] : '—';
 }
 
 // ===== DATE & GREETING =====
@@ -2650,14 +2827,33 @@ async function processRenewal() {
 }
 
 // ===== TRIAL GRATUIT =====
+let currentTrialType = 'story';
+
 function showTrial() {
   document.getElementById('trial-modal').classList.remove('hidden');
   document.getElementById('trial-step1').classList.remove('hidden');
   document.getElementById('trial-step2').classList.add('hidden');
+  // Sélectionner Histoire par défaut
+  selectTrialType('story', document.getElementById('ttype-story'));
 }
 
 function closeTrial() {
   document.getElementById('trial-modal').classList.add('hidden');
+}
+
+function goBackTrial() {
+  document.getElementById('trial-step1').classList.remove('hidden');
+  document.getElementById('trial-step2').classList.add('hidden');
+}
+
+function selectTrialType(type, el) {
+  currentTrialType = type;
+  document.querySelectorAll('.trial-type-opt').forEach(e => {
+    e.style.borderColor = 'var(--border)';
+    e.style.background = 'white';
+  });
+  el.style.borderColor = 'var(--peach)';
+  el.style.background = 'rgba(255,140,105,0.05)';
 }
 
 async function runTrial() {
@@ -2673,81 +2869,75 @@ async function runTrial() {
   // Passer à l'étape résultats
   document.getElementById('trial-step1').classList.add('hidden');
   document.getElementById('trial-step2').classList.remove('hidden');
-  document.getElementById('trial-subtitle').textContent = `Aperçu pour ${name}, ${age}`;
+  document.getElementById('trial-subtitle').textContent = `Résultat pour ${name}, ${age}`;
 
-  // Générer les 3 contenus en parallèle
+  // Afficher le type dans la carte
+  const typeLabels = {
+    story: '📖 Histoire du soir',
+    activity: '🎮 Activité de la semaine',
+    advice: '💡 Conseil parental',
+    learning: '🧠 Apprentissage du jour'
+  };
+  const typeColors = {
+    story: 'var(--yellow)', activity: '#03A97A',
+    advice: 'var(--peach-dark)', learning: 'var(--purple)'
+  };
+  document.getElementById('trial-result-type').textContent = typeLabels[currentTrialType];
+  document.getElementById('trial-result-card').style.borderLeftColor = typeColors[currentTrialType];
+  document.getElementById('trial-result-title').textContent = 'Génération en cours...';
+  document.getElementById('trial-result-content').textContent = 'YoMuna prépare quelque chose de spécial pour ' + name + '...';
+  document.getElementById('trial-edu').style.display = 'none';
+  document.getElementById('trial-question').style.display = 'none';
+
   const genreLabel = gender === 'garcon' ? 'garçon' : 'fille';
-  const pronoun = gender === 'garcon' ? 'il' : 'elle';
 
   const prompts = {
-    story: `Ecris une histoire du soir douce et apaisante pour ${name} (${genreLabel}, ${age}, ${country}). Minimum 300 mots. Debut, milieu, fin. Le prenom ${name} apparait souvent. Decors de ${country}. Une valeur morale. Reponds avec du JSON valide: {"title":"le titre","content":"toute l histoire ici"}`,
-    activity: `Propose une activite creative courte pour ${name} (${genreLabel}, ${age}). Faisable a la maison. Reponds avec du JSON valide: {"title":"nom activite","content":"description courte de l activite et du materiel"}`,
-    learning: `Cree un apprentissage court et amusant pour ${name} (${age}). Un animal fascinant ou un fait culturel. 80 mots max. Reponds avec du JSON valide: {"title":"titre","content":"texte court"}`
+    story: 'Ecris une histoire du soir douce et apaisante pour ' + name + ' (' + genreLabel + ', ' + age + ', univers culturel: ' + country + '). Minimum 350 mots. Debut, milieu, fin. Le prenom ' + name + ' apparait souvent. Decors de ' + country + '. Une valeur morale. Reponds avec du JSON valide: {"title":"le titre","content":"toute l histoire ici","educational_value":"valeur apprise","emotional_question":"question pour l enfant"}',
+    activity: 'Propose une activite creative complete pour ' + name + ' (' + genreLabel + ', ' + age + '). Faisable a la maison. Materiel simple. 5 etapes minimum. Reponds avec du JSON valide: {"title":"nom activite","content":"MATERIEL:\\n- items\\n\\nETAPES:\\n1. etape\\n2. etape\\n3. etape\\n4. etape\\n5. etape","duration":"X minutes"}',
+    advice: 'Donne un conseil parental pratique pour accompagner un(e) ' + genreLabel + ' de ' + age + ' prenom ' + name + '. 200 mots minimum. 4 strategies concretes. Reponds avec du JSON valide: {"title":"titre conseil","content":"conseil complet"}',
+    learning: 'Cree un apprentissage du jour amusant pour ' + name + ' (' + age + '). Sujet: un animal fascinant ou un fait culturel de ' + country + '. 150 mots max. Reponds avec du JSON valide: {"title":"titre","content":"texte amusant","fun_fact":"anecdote surprenante","discussion_question":"question pour le parent"}'
   };
 
-  // Lancer les 3 générations en parallèle
-  const [storyRes, activityRes, learningRes] = await Promise.allSettled([
-    fetchTrialContent(prompts.story),
-    fetchTrialContent(prompts.activity),
-    fetchTrialContent(prompts.learning)
-  ]);
+  const result = await fetchTrialContent(prompts[currentTrialType], currentTrialType);
 
-  // Afficher histoire
-  if (storyRes.status === 'fulfilled' && storyRes.value) {
-    const s = storyRes.value;
-    document.getElementById('trial-story-title').textContent = s.title || `L'histoire de ${name}`;
-    const words = (s.content || '').split(' ');
-    const preview = words.slice(0, 60).join(' ');
-    const rest = words.slice(60).join(' ');
-    document.getElementById('trial-story-text').textContent = preview + '...';
-    if (rest) {
-      const blurEl = document.getElementById('trial-story-blur');
-      const blurText = document.getElementById('trial-story-blur-text');
-      blurEl.classList.remove('hidden');
-      blurText.textContent = rest;
+  if (result && result.content) {
+    document.getElementById('trial-result-title').textContent = result.title || typeLabels[currentTrialType];
+    document.getElementById('trial-result-content').textContent = result.content;
+
+    if (currentTrialType === 'story') {
+      if (result.educational_value) {
+        document.getElementById('trial-edu-text').textContent = result.educational_value;
+        document.getElementById('trial-edu').style.display = 'block';
+      }
+      if (result.emotional_question) {
+        document.getElementById('trial-question-text').textContent = result.emotional_question;
+        document.getElementById('trial-question').style.display = 'block';
+      }
     }
   } else {
-    document.getElementById('trial-story-title').textContent = `Une histoire pour ${name}`;
-    document.getElementById('trial-story-text').textContent = 'Réessayez dans quelques instants.';
+    document.getElementById('trial-result-title').textContent = 'Oups — réessaie !';
+    document.getElementById('trial-result-content').textContent = 'La génération a échoué. Clique sur "← Essayer un autre type" pour réessayer.';
   }
 
-  // Afficher activité (titre visible, contenu flou)
-  if (activityRes.status === 'fulfilled' && activityRes.value) {
-    const a = activityRes.value;
-    document.getElementById('trial-activity-title').textContent = a.title || 'Activité créative';
-    document.getElementById('trial-activity-text').textContent = a.content || '';
-  } else {
-    document.getElementById('trial-activity-title').textContent = 'Activité créative adaptée';
-    document.getElementById('trial-activity-text').textContent = 'Contenu disponible avec l\'abonnement.';
-  }
-
-  // Afficher apprentissage (titre visible, contenu flou)
-  if (learningRes.status === 'fulfilled' && learningRes.value) {
-    const l = learningRes.value;
-    document.getElementById('trial-learning-title').textContent = l.title || 'Apprentissage du jour';
-    document.getElementById('trial-learning-text').textContent = l.content || '';
-  } else {
-    document.getElementById('trial-learning-title').textContent = 'Découverte du jour';
-    document.getElementById('trial-learning-text').textContent = 'Contenu disponible avec l\'abonnement.';
-  }
-
-  // Envoyer email avec le résultat + invitation à s'inscrire
-  sendTrialEmail(email, name, age, country).catch(() => {});
+  // Email de suivi
+  sendTrialEmail(email, name, age, country, currentTrialType).catch(() => {});
 }
 
-async function fetchTrialContent(prompt) {
+async function fetchTrialContent(prompt, type = 'story') {
   try {
     const res = await fetch('/.netlify/functions/generate-content', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, type: 'story' })
+      body: JSON.stringify({ prompt, type })
     });
     const data = await res.json();
     const text = (data.text || '').replace(/```json/gi,'').replace(/```/g,'').trim();
     const m = text.match(/\{[\s\S]*\}/);
     if (m) {
       try { return JSON.parse(m[0]); } catch(e) {
-        return { title: 'Contenu généré', content: text.replace(/[{}"]/g,' ').trim() };
+        try { return JSON.parse(m[0].replace(/[\r\n]+/g,' ')); } catch(e2) {
+          return { title: 'Contenu généré', content: text.replace(/[{}"]/g,' ').replace(/\s+/g,' ').trim() };
+        }
       }
     }
     return { title: 'Contenu généré', content: text };
@@ -2756,23 +2946,19 @@ async function fetchTrialContent(prompt) {
   }
 }
 
-async function sendTrialEmail(email, name, age, country) {
+async function sendTrialEmail(email, name, age, country, type) {
   return fetch('/.netlify/functions/send-confirmation', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      email,
-      firstName: 'Cher parent',
-      lastName: '',
-      country,
-      plan: 'trial',
-      amount: 0,
-      type: 'trial',
-      childName: name,
-      childAge: age
+      email, firstName: 'Cher parent', lastName: '',
+      country, plan: 'trial', amount: 0, type: 'trial',
+      childName: name, childAge: age
     })
   }).catch(() => {});
 }
+
+
 
 function showExpiredModal() {
   document.getElementById('expired-modal').classList.remove('hidden');
@@ -2812,27 +2998,17 @@ async function startRenew(plan, amount) {
 
 // ===== MOBILE NAV =====
 function mnavGo(tab) {
-  // Mettre à jour les boutons mobile
   document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('on'));
   const activeBtn = document.getElementById(`mnav-${tab}`);
   if (activeBtn) activeBtn.classList.add('on');
-
-  // Cacher tous les onglets
-  ['today','library','history','report','account'].forEach(t => {
+  ['today','library','subscription','account'].forEach(t => {
     const el = document.getElementById(`dt-${t}`);
     if (el) el.classList.add('hidden');
   });
-
-  // Afficher l'onglet cible
   const target = document.getElementById(`dt-${tab}`);
   if (target) target.classList.remove('hidden');
-
-  // Charger si nécessaire
-  if (tab === 'history') loadHistory();
   if (tab === 'library') loadLibrary();
-  if (tab === 'report') loadWeeklyReport();
-
-  // Scroll en haut
+  if (tab === 'subscription') { loadHistory(); loadSubscriptionDetails(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -2910,21 +3086,67 @@ window.addEventListener('load', async () => {
 
   // Si retour de paiement NotchPay
   if (paymentStatus === 'complete' && reference) {
-    // Nettoyer l'URL
     window.history.replaceState({}, document.title, '/');
-    // Vérifier session
     const token = localStorage.getItem('yomuna_token');
     const user = localStorage.getItem('yomuna_user');
+    const pendingStr = localStorage.getItem('yomuna_pending_payment');
+
     if (token && user) {
       currentToken = token;
       currentUser = JSON.parse(user);
-      // Mettre à jour statut abonnement
-      await sb.update('subscriptions',
-        `user_id=eq.${currentUser.id}&status=eq.pending`,
-        { status: 'complete' },
-        currentToken
-      ).catch(() => {});
-      await loadDashboard();
+
+      if (pendingStr) {
+        try {
+          const pending = JSON.parse(pendingStr);
+          localStorage.removeItem('yomuna_pending_payment');
+
+          // 1 — Créer l'abonnement maintenant (paiement confirmé)
+          await sb.insert('subscriptions', {
+            user_id: currentUser.id,
+            plan: pending.plan,
+            amount: parseInt(pending.amount),
+            status: 'active',
+            notchpay_ref: reference
+          }, currentToken).catch(() => {});
+
+          // 2 — Insérer les enfants (une seule fois, après paiement)
+          if (pending.children) {
+            const children = typeof pending.children === 'string'
+              ? JSON.parse(pending.children) : pending.children;
+            for (const child of children) {
+              // Vérifier que l'enfant n'existe pas déjà
+              const existing = await sb.select('children',
+                `user_id=eq.${currentUser.id}&name=eq.${encodeURIComponent(child.name)}`,
+                currentToken
+              ).catch(() => []);
+              if (!existing || existing.length === 0) {
+                await sb.insert('children', { ...child, user_id: currentUser.id }, currentToken).catch(() => {});
+              }
+            }
+          }
+
+          // 3 — Envoyer email de confirmation (paiement réel uniquement)
+          const profiles = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken).catch(() => []);
+          const firstName = profiles?.[0]?.first_name || 'Cher parent';
+          await fetch('/.netlify/functions/send-confirmation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: currentUser.email,
+              firstName,
+              plan: pending.plan,
+              amount: pending.amount,
+              type: 'payment'
+            })
+          }).catch(() => {});
+
+        } catch(e) {
+          console.error('Post-payment error:', e);
+        }
+      }
+
+      updateNav(true);
+      await loadDashboard().catch(() => {});
       showS('dashboard');
       toast('🎉 Paiement confirmé ! Bienvenue sur YoMuna !');
     } else {
