@@ -657,59 +657,80 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 
 
 
-<footer class="yomuna-footer">
+<footer class="yomuna-footer" style="background:#2D1B00;color:rgba(255,255,255,0.85);padding:4rem 3rem 2rem;">
+  <div style="max-width:1150px;margin:0 auto;">
+
+    <!-- 3 colonnes -->
+    <div style="display:grid;grid-template-columns:1.6fr 1fr 1.4fr;gap:3rem;margin-bottom:2.5rem;align-items:start;">
+
+      <!-- COL 1 : Marque -->
       <div>
-        <div class="flogo">Yo<span>●</span>Muna</div>
-        <div class="ftag">YoMuna crée chaque jour des rituels uniques pour vos enfants — histoires personnalisées, activités créatives, conseils parentaux et apprentissages — ancrés dans votre culture. Pour toutes les familles du monde.</div>
-        <div class="fsoc">
-          <a class="sb" href="https://www.instagram.com/_yomuna" target="_blank" title="Instagram">📸</a>
-          <a class="sb" href="https://wa.me/237672908137" target="_blank" title="WhatsApp">💬</a>
-          <a class="sb" href="mailto:yomuna237@gmail.com" title="Email">✉️</a>
+        <div style="font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:white;margin-bottom:0.75rem;">Yo<span style="color:#FFD166;">●</span>Muna</div>
+        <p style="font-size:0.9rem;line-height:1.75;font-weight:600;margin-bottom:1.5rem;color:rgba(255,255,255,0.6);">YoMuna crée chaque jour des rituels uniques pour vos enfants — histoires personnalisées, activités créatives, conseils parentaux et apprentissages — ancrés dans votre culture.</p>
+        <div style="display:flex;gap:0.6rem;margin-bottom:1.5rem;">
+          <a href="https://www.instagram.com/_yomuna" target="_blank" style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;text-decoration:none;border:1px solid rgba(255,255,255,0.15);">📸</a>
+          <a href="https://wa.me/237672908137" target="_blank" style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;text-decoration:none;border:1px solid rgba(255,255,255,0.15);">💬</a>
+          <a href="mailto:yomuna237@gmail.com" style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;text-decoration:none;border:1px solid rgba(255,255,255,0.15);">✉️</a>
+        </div>
+        <p style="font-size:0.78rem;color:rgba(255,255,255,0.3);line-height:1.7;">
+          ✨ Contenu généré par Intelligence Artificielle<br>
+          🔒 Paiements sécurisés via NotchPay &amp; Stripe
+        </p>
+      </div>
+
+      <!-- COL 2 : Navigation + Légal -->
+      <div>
+        <div style="font-weight:900;font-size:0.82rem;text-transform:uppercase;letter-spacing:1px;color:white;margin-bottom:1rem;">Navigation</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.55rem;margin-bottom:1.5rem;">
+          <li><a onclick="showS('home')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">Accueil</a></li>
+          <li><a href="#features" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;">Comment ça marche</a></li>
+          <li><a href="#pricing" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;">Tarifs</a></li>
+          <li><a href="#faq" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;">FAQ</a></li>
+          <li><a onclick="showS('login')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">Se connecter</a></li>
+          <li><a onclick="showS('signup')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">S'inscrire</a></li>
+          <li><a onclick="showS('mission')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">Notre mission</a></li>
+        </ul>
+        <div style="font-weight:900;font-size:0.82rem;text-transform:uppercase;letter-spacing:1px;color:white;margin-bottom:1rem;">Légal</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.55rem;">
+          <li><a onclick="showLegal('cgu')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">Conditions d'utilisation</a></li>
+          <li><a onclick="showLegal('privacy')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">Confidentialité</a></li>
+          <li><a onclick="showLegal('legal')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">Mentions légales</a></li>
+          <li><a onclick="showS('contact')" style="color:rgba(255,255,255,0.6);text-decoration:none;font-size:0.9rem;font-weight:600;cursor:pointer;">Contact &amp; Assistance</a></li>
+        </ul>
+      </div>
+
+      <!-- COL 3 : Contact + Société -->
+      <div>
+        <div style="font-weight:900;font-size:0.82rem;text-transform:uppercase;letter-spacing:1px;color:white;margin-bottom:1rem;">Nous contacter</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:0.6rem;">📧 <a href="mailto:yomuna237@gmail.com" style="color:rgba(255,255,255,0.6);text-decoration:none;">yomuna237@gmail.com</a></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:0.6rem;">📞 <a href="tel:+237672908137" style="color:rgba(255,255,255,0.6);text-decoration:none;">+237 6 72 90 81 37</a></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:0.6rem;">📍 Nkolfoulou, Yaoundé, Cameroun</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:0.6rem;">🕐 Lun–Ven, 8h–18h WAT</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:1.25rem;">📸 <a href="https://www.instagram.com/_yomuna" target="_blank" style="color:rgba(255,255,255,0.6);text-decoration:none;">@_yomuna</a></div>
+        <div style="padding:1rem;background:rgba(255,255,255,0.06);border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+          <div style="font-size:0.75rem;font-weight:800;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;">Éditeur</div>
+          <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);font-weight:600;line-height:1.7;">
+            AELI SERVICES SARL<br>
+            N° RCCM : RC/YAE/2020/A/2762<br>
+            N° Contribuable : P1971509742L<br>
+            Gérante : G. Stella Onana Oyono<br>
+            <a href="mailto:aeliservicescmr@gmail.com" style="color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.82rem;">aeliservicescmr@gmail.com</a>
+          </div>
         </div>
       </div>
-      <!-- Col 2 : Navigation -->
-      <div>
-        <div class="fct">Navigation</div>
-        <ul class="flinks">
-          <li><a onclick="showS('home')">Accueil</a></li>
-          <li><a href="#features">Comment ça marche</a></li>
-          <li><a href="#pricing">Tarifs</a></li>
-          <li><a href="#faq">FAQ</a></li>
-          <li><a onclick="showS('login')">Se connecter</a></li>
-          <li><a onclick="showS('signup')">S'inscrire</a></li>
-        </ul>
-      </div>
-      <!-- Col 3 : À propos -->
-      <div>
-        <div class="fct">À propos</div>
-        <ul class="flinks">
-          <li><a onclick="showS('mission')">Notre mission</a></li>
-          <li><a onclick="showS('contact')">Contact & Assistance</a></li>
-          <li><a onclick="showLegal('cgu')">CGU</a></li>
-          <li><a onclick="showLegal('privacy')">Confidentialité</a></li>
-          <li><a onclick="showLegal('legal')">Mentions légales</a></li>
-        </ul>
-      </div>
-      <!-- Col 4 : Contact -->
-      <div>
-        <div class="fct">Nous contacter</div>
-        <div class="fci">📧 <a href="mailto:yomuna237@gmail.com" style="color:rgba(255,255,255,0.7);text-decoration:none;">yomuna237@gmail.com</a></div>
-        <div class="fci">📞 <a href="tel:+237672908137" style="color:rgba(255,255,255,0.7);text-decoration:none;">+237 6 72 90 81 37</a></div>
-        <div class="fci">📍 Nkolfoulou, Yaoundé, Cameroun</div>
-        <div class="fci">🕐 Lun–Ven, 8h–18h WAT</div>
-        <div class="fci" style="margin-top:0.75rem;">📸 <a href="https://www.instagram.com/_yomuna" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;">@_yomuna</a></div>
-        <div class="fci" style="margin-top:0.25rem;font-size:0.78rem;color:rgba(255,255,255,0.4);">AELI SERVICES SARL<br>RC/YAE/2020/A/2762</div>
+
+    </div><!-- end grid -->
+
+    <!-- Bas -->
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+      <div style="font-size:0.8rem;color:rgba(255,255,255,0.3);font-weight:600;">© 2026 YoMuna — AELI SERVICES SARL, Cameroun. Tous droits réservés.</div>
+      <div style="display:flex;gap:1.25rem;flex-wrap:wrap;">
+        <a onclick="showLegal('privacy')" style="font-size:0.8rem;color:rgba(255,255,255,0.3);cursor:pointer;text-decoration:none;font-weight:600;">Confidentialité</a>
+        <a onclick="showLegal('cgu')" style="font-size:0.8rem;color:rgba(255,255,255,0.3);cursor:pointer;text-decoration:none;font-weight:600;">CGU</a>
+        <a onclick="showLegal('legal')" style="font-size:0.8rem;color:rgba(255,255,255,0.3);cursor:pointer;text-decoration:none;font-weight:600;">Mentions légales</a>
       </div>
     </div>
-    <div class="ft-bot">
-      <div class="fcp">© 2026 YoMuna — AELI SERVICES SARL, Nkolfoulou Yaoundé, Cameroun. Tous droits réservés.</div>
-      <div class="flegal">
-        <a onclick="showLegal('privacy')">Confidentialité</a>
-        <a onclick="showLegal('cgu')">CGU</a>
-        <a onclick="showLegal('legal')">Mentions légales</a>
-      </div>
-    </div>
-    <div class="ftech">✨ Contenu généré par Intelligence Artificielle • Paiements sécurisés via NotchPay & Stripe • AELI SERVICES SARL</div>
+
   </div>
 </footer>
 </div><!-- end s-home -->
@@ -1822,20 +1843,6 @@ async function loadDashboard() {
       );
       if (Array.isArray(subs) && subs.length > 0) {
         const sub = subs[0];
-
-        // Compte avec paiement en attente (pending) = pas encore payé
-        if (sub.status === 'pending') {
-          hideLoading();
-          toast('Finalisez votre abonnement pour accéder à YoMuna.');
-          // Remettre les données en mémoire et aller au paiement
-          selectedPlan = sub.plan || 'solo';
-          selectedAmount = String(sub.amount || 2500);
-          currentPayMethod = 'mtn';
-          showS('signup');
-          goStep(3);
-          return;
-        }
-
         currentPlan = sub.plan || 'solo';
         const planNames = { solo:'Plan Solo', fam:'Plan Famille', ann:'Plan Annuel' };
         const startDate = new Date(sub.created_at);
@@ -1851,14 +1858,6 @@ async function loadDashboard() {
           counter.textContent = `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}`;
           counter.style.color = daysLeft <= 5 ? 'var(--peach-dark)' : 'var(--text-soft)';
         }
-      } else {
-        // Aucun abonnement — compte créé mais pas payé
-        // Rediriger vers l'étape paiement sans bloquer
-        hideLoading();
-        toast('Bienvenue ! Finalisez votre abonnement pour accéder à YoMuna.');
-        showS('signup');
-        goStep(3);
-        return;
       }
     } catch(e) {
       console.log('Sub info error (non-blocking):', e);
