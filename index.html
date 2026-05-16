@@ -3540,14 +3540,15 @@ async function processRenewal() {
     const authUrl = payData.authorization_url || payData.transaction?.authorization_url;
 
     if (authUrl) {
-      // Enregistrer le renouvellement en attente
-      await sb.insert('subscriptions', {
-        user_id: currentUser.id,
+      // Sauvegarder les données en attente côté localStorage uniquement
+      localStorage.setItem('yomuna_pending_payment', JSON.stringify({
         plan: renewPlan,
-        amount: parseInt(renewAmount),
-        status: 'pending',
+        amount: renewAmount,
+        userId: currentUser.id,
+        email: currentUser.email,
+        children: [],
         notchpay_ref: payData.transaction?.reference || ''
-      }, currentToken).catch(() => {});
+      }));
       window.location.href = authUrl;
     } else {
       toast('Erreur lors du paiement. Réessayez.');
@@ -4125,63 +4126,51 @@ window.addEventListener('load', async () => {
       currentToken = token;
       currentUser = JSON.parse(user);
 
-      if (pendingStr) {
-        try {
-          const pending = JSON.parse(pendingStr);
+      showLoading('Vérification du paiement...');
+      try {
+        // Vérifier le paiement côté serveur NotchPay
+        const pending = pendingStr ? JSON.parse(pendingStr) : {};
+        const verifyRes = await fetch('/.netlify/functions/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reference,
+            plan: pending.plan || selectedPlan || 'solo',
+            amount: pending.amount || selectedAmount || 2500,
+            userId: currentUser.id,
+            email: currentUser.email,
+            children: JSON.stringify(pending.children || currentChildren || [])
+          })
+        });
+        const verifyData = await verifyRes.json();
+
+        if (verifyData.verified) {
+          // Paiement confirmé côté serveur
           localStorage.removeItem('yomuna_pending_payment');
-
-          // 1 — Créer l'abonnement maintenant (paiement confirmé)
-          await sb.insert('subscriptions', {
-            user_id: currentUser.id,
-            plan: pending.plan,
-            amount: parseInt(pending.amount),
-            status: 'active',
-            notchpay_ref: reference
-          }, currentToken).catch(() => {});
-
-          // 2 — Insérer les enfants (une seule fois, après paiement)
-          if (pending.children) {
-            const children = typeof pending.children === 'string'
-              ? JSON.parse(pending.children) : pending.children;
-            for (const child of children) {
-              // Vérifier que l'enfant n'existe pas déjà
-              const existing = await sb.select('children',
-                `user_id=eq.${currentUser.id}&name=eq.${encodeURIComponent(child.name)}`,
-                currentToken
-              ).catch(() => []);
-              if (!existing || existing.length === 0) {
-                await sb.insert('children', { ...child, user_id: currentUser.id }, currentToken).catch(() => {});
-              }
-            }
-          }
-
-          // 3 — Envoyer email de confirmation (paiement réel uniquement)
-          const profiles = await sb.select('profiles', `id=eq.${currentUser.id}`, currentToken).catch(() => []);
-          const firstName = profiles?.[0]?.first_name || 'Cher parent';
-          await fetch('/.netlify/functions/send-confirmation', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: currentUser.email,
-              firstName,
-              plan: pending.plan,
-              amount: pending.amount,
-              type: 'payment'
-            })
-          }).catch(() => {});
-
-        } catch(e) {
-          console.error('Post-payment error:', e);
+          if (!CONFIG.SUPABASE_URL) await loadConfig();
+          await loadDashboard().catch(() => {});
+          showS('dashboard');
+          toast('🎉 Paiement confirmé ! Bienvenue sur YoMuna !');
+        } else {
+          // Paiement non confirmé — rediriger vers paiement
+          hideLoading();
+          console.warn('Paiement non confirmé:', verifyData);
+          showS('signup');
+          goStep(3);
+          toast('⚠️ Votre paiement n\'a pas été finalisé. Veuillez réessayer.');
         }
+      } catch(e) {
+        console.error('Verify error:', e);
+        // En cas d'erreur réseau — laisser accéder sans bloquer
+        if (!CONFIG.SUPABASE_URL) await loadConfig();
+        await loadDashboard().catch(() => {});
+        showS('dashboard');
+      } finally {
+        hideLoading();
       }
-
-      updateNav(true);
-      await loadDashboard().catch(() => {});
-      showS('dashboard');
-      toast('🎉 Paiement confirmé ! Bienvenue sur YoMuna !');
     } else {
       showS('login');
-      toast('Paiement reçu ! Connectez-vous pour accéder à votre espace.');
+      toast('Connectez-vous pour accéder à votre espace.');
     }
     return;
   }
