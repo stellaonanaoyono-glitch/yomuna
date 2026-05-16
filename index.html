@@ -321,6 +321,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 
 @media(max-width:900px){
   nav{padding:0 1.25rem}.nav-links{display:none}
+  #mob-nav-btn{display:block!important}
   .hero-in{grid-template-columns:1fr;gap:2rem}.phone-mock{display:none}
   .hero-wrap{padding:3rem 1.25rem 4rem}
   .hero h1{font-size:2.3rem}
@@ -371,13 +372,13 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 </div>
 
 <!-- BANDEAU COOKIES -->
-<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:600;background:var(--dark);color:white;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;box-shadow:0 -4px 20px rgba(0,0,0,0.3);">
-  <p style="margin:0;font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;flex:1;min-width:200px;">
-    🍪 YoMuna utilise le stockage local (localStorage) pour maintenir votre session et sauvegarder vos préférences. Aucun cookie publicitaire. <a onclick="showLegal('privacy')" style="color:var(--peach);cursor:pointer;font-weight:800;">En savoir plus</a>
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:600;background:white;border-top:2px solid var(--border);padding:1rem 1.5rem;flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;box-shadow:0 -4px 20px rgba(0,0,0,0.1);">
+  <p style="margin:0;font-size:0.9rem;color:var(--text-mid);font-weight:600;flex:1;min-width:200px;">
+    🍪 YoMuna utilise le stockage local pour maintenir votre session et sauvegarder vos préférences. Aucun cookie publicitaire. <a onclick="showLegal('privacy')" style="color:var(--peach-dark);cursor:pointer;font-weight:800;text-decoration:underline;">En savoir plus</a>
   </p>
-  <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+  <div style="display:flex;gap:0.5rem;flex-shrink:0;margin-top:0.5rem;">
     <button onclick="acceptCookies()" style="background:var(--peach);border:none;color:white;padding:0.6rem 1.25rem;border-radius:50px;font-weight:800;font-size:0.85rem;cursor:pointer;font-family:'Nunito',sans-serif;">Accepter</button>
-    <button onclick="document.getElementById('cookie-banner').style.display='none'" style="background:none;border:2px solid rgba(255,255,255,0.3);color:white;padding:0.6rem 1.25rem;border-radius:50px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:'Nunito',sans-serif;">Refuser</button>
+    <button onclick="document.getElementById('cookie-banner').style.display='none'" style="background:none;border:2px solid var(--border);color:var(--text-soft);padding:0.6rem 1.25rem;border-radius:50px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:'Nunito',sans-serif;">Refuser</button>
   </div>
 </div>
 
@@ -453,7 +454,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">Yo<span>●</span>Muna</div>
+  <div class="nav-logo" onclick="showS('home')" style="cursor:pointer;">Yo<span>●</span>Muna</div>
   <ul class="nav-links">
     <li><a onclick="showS('home')">Accueil</a></li>
     <li><a href="#features">Comment ça marche</a></li>
@@ -462,6 +463,8 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <li id="nav-signup-btn"><a class="btn-nav" onclick="showS('signup')">Commencer gratuitement</a></li>
     <li id="nav-dashboard-btn" style="display:none"><a class="btn-nav" onclick="showS('dashboard')">Mon espace</a></li>
   </ul>
+  <!-- Bouton mobile uniquement -->
+  <button id="mob-nav-btn" onclick="showS('signup')" style="display:none;background:var(--peach);border:none;color:white;padding:0.5rem 1.1rem;border-radius:50px;font-weight:800;font-size:0.85rem;cursor:pointer;font-family:'Nunito',sans-serif;">S'inscrire</button>
 </nav>
 
 <!-- HOME -->
@@ -648,6 +651,9 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   </div>
 </section>
 
+
+</div><!-- end s-home -->
+
 <footer>
   <div class="ft-in">
     <div class="ft-top">
@@ -706,9 +712,9 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="ftech">✨ Contenu généré par Intelligence Artificielle • Paiements sécurisés via NotchPay & Stripe • AELI SERVICES SARL</div>
   </div>
 </footer>
-</div>
 
-<!-- MISSION -->
+
+
 <div id="s-mission" class="screen">
 <div style="max-width:820px;margin:0 auto;padding:3rem 1.5rem 5rem;">
 
@@ -758,7 +764,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       </div>
       <div style="flex:1;min-width:220px;">
         <div style="font-weight:800;font-size:1.2rem;color:var(--dark);margin-bottom:0.2rem;">Gaëlle Stella Onana Oyono</div>
-        <div style="color:var(--peach-dark);font-weight:700;font-size:0.9rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;"><span>Fondatrice & Gérante</span><span style="background:var(--light);color:var(--text-soft);padding:0.15rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:700;">AELI SERVICES SARL</span></div>
+        <div style="color:var(--peach-dark);font-weight:700;font-size:0.9rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;"><span>Co-Fondatrice & Business Developer YoMuna</span><span style="background:var(--light);color:var(--text-soft);padding:0.15rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:700;">AELI SERVICES SARL</span></div>
         <p style="color:var(--text-mid);line-height:1.8;font-size:0.95rem;">Entrepreneuse camerounaise, Gaëlle Stella est convaincue que la technologie doit servir les familles africaines avec autant d'attention et de personnalisation qu'elle en accorde aux autres marchés du monde.</p>
         <p style="color:var(--text-mid);line-height:1.8;font-size:0.95rem;margin-top:0.75rem;">YoMuna est son engagement concret pour que chaque parent — qu'il soit à Douala, Paris, Montréal ou Londres — puisse offrir à son enfant des rituels du soir qui lui ressemblent vraiment.</p>
         <div style="margin-top:1.25rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
@@ -1813,6 +1819,20 @@ async function loadDashboard() {
       );
       if (Array.isArray(subs) && subs.length > 0) {
         const sub = subs[0];
+
+        // Compte avec paiement en attente (pending) = pas encore payé
+        if (sub.status === 'pending') {
+          hideLoading();
+          toast('Finalisez votre abonnement pour accéder à YoMuna.');
+          // Remettre les données en mémoire et aller au paiement
+          selectedPlan = sub.plan || 'solo';
+          selectedAmount = String(sub.amount || 2500);
+          currentPayMethod = 'mtn';
+          showS('signup');
+          goStep(3);
+          return;
+        }
+
         currentPlan = sub.plan || 'solo';
         const planNames = { solo:'Plan Solo', fam:'Plan Famille', ann:'Plan Annuel' };
         const startDate = new Date(sub.created_at);
@@ -1828,6 +1848,14 @@ async function loadDashboard() {
           counter.textContent = `⏳ ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''}`;
           counter.style.color = daysLeft <= 5 ? 'var(--peach-dark)' : 'var(--text-soft)';
         }
+      } else {
+        // Aucun abonnement — compte créé mais pas payé
+        // Rediriger vers l'étape paiement sans bloquer
+        hideLoading();
+        toast('Bienvenue ! Finalisez votre abonnement pour accéder à YoMuna.');
+        showS('signup');
+        goStep(3);
+        return;
       }
     } catch(e) {
       console.log('Sub info error (non-blocking):', e);
