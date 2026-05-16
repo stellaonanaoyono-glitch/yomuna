@@ -174,7 +174,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(255,248,240,
 .fi.open .fa{display:block;}
 
 /* FOOTER */
-footer{background:var(--text);color:rgba(255,255,255,0.85);padding:4rem 3rem 2rem;}
+/* Footer visible uniquement sur la page d'accueil */
+footer { display: none; }
+#s-home.active footer { display: block; }
+
+.yomuna-footer{background:var(--text);color:rgba(255,255,255,0.85);padding:4rem 3rem 2rem;}
 .ft-in{max-width:1150px;margin:0 auto;}
 .ft-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1.4fr;gap:2rem;margin-bottom:3rem;align-items:start;}
 .flogo{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:white;margin-bottom:0.75rem;}
@@ -652,12 +656,8 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 </section>
 
 
-</div><!-- end s-home -->
 
-<footer>
-  <div class="ft-in">
-    <div class="ft-top">
-      <!-- Col 1 : Logo + tagline + réseaux -->
+<footer class="yomuna-footer">
       <div>
         <div class="flogo">Yo<span>●</span>Muna</div>
         <div class="ftag">YoMuna crée chaque jour des rituels uniques pour vos enfants — histoires personnalisées, activités créatives, conseils parentaux et apprentissages — ancrés dans votre culture. Pour toutes les familles du monde.</div>
@@ -712,6 +712,9 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="ftech">✨ Contenu généré par Intelligence Artificielle • Paiements sécurisés via NotchPay & Stripe • AELI SERVICES SARL</div>
   </div>
 </footer>
+</div><!-- end s-home -->
+
+
 
 
 
