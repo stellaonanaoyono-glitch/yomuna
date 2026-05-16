@@ -1,20 +1,88 @@
 [build]
   publish = "."
   functions = "netlify/functions"
- 
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Servir les fichiers statiques en priorité avant le redirect SPA
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Content-Type = "image/png"
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/favicon.ico"
+  [headers.values]
+    Content-Type = "image/x-icon"
+    Cache-Control = "public, max-age=604800"
+
+# Redirect SPA — exclure les fichiers statiques
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/apple-touch-icon.png"
+  to = "/apple-touch-icon.png"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/icon-192.png"
+  to = "/icon-192.png"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/icon-512.png"
+  to = "/icon-512.png"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/favicon.ico"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/og-image.png"
+  to = "/og-image.png"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/gaelle.jpg"
+  to = "/gaelle.jpg"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/muna.png"
+  to = "/muna.png"
+  status = 200
+  force = false
+
+# SPA fallback — toujours en dernier
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
- 
-[build.environment]
-  NODE_VERSION = "18"
- 
+
 # Email de rappel quotidien à 18h WAT (17h UTC)
 [functions."daily-reminder"]
   schedule = "0 17 * * *"
- 
+
 # Emails rappel expiration abonnement — tous les jours à 9h WAT (8h UTC)
 [functions."subscription-reminder"]
   schedule = "0 8 * * *"
- 
