@@ -98,20 +98,27 @@ exports.handler = async (event) => {
             <h2 style="color:#2D1B00;">Paiement confirmé, ${firstName} ! 🎉</h2>
             <p style="color:#6B4226;line-height:1.7;">Votre abonnement YoMuna est maintenant actif. La magie peut commencer !</p>
             <div style="background:white;border-radius:12px;padding:1.5rem;margin:1.5rem 0;border-left:4px solid #FF8C69;">
-              <h3 style="color:#2D1B00;margin-bottom:0.5rem;">Récapitulatif</h3>
+              <h3 style="color:#2D1B00;margin-bottom:0.5rem;">Récapitulatif de votre abonnement</h3>
               <p style="color:#6B4226;margin:0.3rem 0;">📦 <strong>${planNames[plan] || plan}</strong></p>
               <p style="color:#6B4226;margin:0.3rem 0;">💰 <strong>${amount} FCFA</strong></p>
               <p style="color:#6B4226;margin:0.3rem 0;">✅ <strong>Statut : Actif</strong></p>
               <p style="color:#6B4226;margin:0.3rem 0;">📅 <strong>Durée : ${plan === 'ann' ? '12 mois' : '30 jours'}</strong></p>
+              <p style="color:#6B4226;margin:0.3rem 0;">📆 <strong>Date : ${new Date().toLocaleDateString('fr-FR')}</strong></p>
             </div>
-            <div style="background:#CFFAEA;border-radius:12px;padding:1rem;margin-bottom:1.5rem;">
-              <p style="color:#03A97A;font-weight:700;margin:0;">💡 Pensez à renseigner le profil de vos enfants pour obtenir des contenus personnalisés !</p>
+            <div style="background:#CFFAEA;border-radius:12px;padding:1rem;margin-bottom:1rem;">
+              <p style="color:#03A97A;font-weight:700;margin:0;">💡 Renseignez le profil de vos enfants pour obtenir des contenus personnalisés !</p>
             </div>
-            <a href="https://yo-muna.com" style="display:inline-block;background:#FF8C69;color:white;padding:1rem 2rem;border-radius:50px;text-decoration:none;font-weight:bold;">
-              Accéder à mon espace →
+            <div style="background:#F5F0EB;border-radius:12px;padding:1rem;margin-bottom:1.5rem;border:1px solid #EAD5C0;">
+              <p style="color:#6B4226;font-size:0.82rem;margin:0;line-height:1.6;">
+                ✅ En finalisant votre abonnement, vous avez accepté les <strong>Conditions Générales d'Utilisation</strong> et la <strong>Politique de Confidentialité</strong> de YoMuna, éditée par <strong>AELI SERVICES SARL</strong> (RC/YAE/2020/A/2762), Nkolfoulou, Yaoundé, Cameroun. 
+                <a href="https://yo-muna.com/#signup" style="color:#E06840;">Consulter les CGU</a>
+              </p>
+            </div>
+            <a href="https://yo-muna.com" style="display:inline-block;background:#FF8C69;color:white;padding:1rem 2rem;border-radius:50px;text-decoration:none;font-weight:bold;margin-bottom:1.5rem;">
+              Accéder à mon espace YoMuna →
             </a>
-            <p style="color:#A0714F;font-size:0.85rem;margin-top:2rem;">Questions ? WhatsApp : +226 03 11 88 88 ou yomuna237@gmail.com</p>
-            <p style="color:#A0714F;font-size:0.75rem;">© 2025 YoMuna • Yaoundé, Cameroun</p>
+            <p style="color:#A0714F;font-size:0.85rem;margin-top:1rem;">Questions ? Email : yomuna237@gmail.com | Tél : +237 6 72 90 81 37</p>
+            <p style="color:#A0714F;font-size:0.75rem;">© 2026 YoMuna — AELI SERVICES SARL • Yaoundé, Cameroun • yo-muna.com</p>
           </div>`
       });
 
