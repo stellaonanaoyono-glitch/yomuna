@@ -370,7 +370,66 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   <div class="loading-text" id="loading-text">Génération en cours...</div>
 </div>
 
-<!-- MOBILE BOTTOM NAV (visible uniquement dans le dashboard sur mobile) -->
+<!-- BANDEAU COOKIES -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:600;background:var(--dark);color:white;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;box-shadow:0 -4px 20px rgba(0,0,0,0.3);">
+  <p style="margin:0;font-size:0.85rem;color:rgba(255,255,255,0.85);font-weight:600;flex:1;min-width:200px;">
+    🍪 YoMuna utilise le stockage local (localStorage) pour maintenir votre session et sauvegarder vos préférences. Aucun cookie publicitaire. <a onclick="showLegal('privacy')" style="color:var(--peach);cursor:pointer;font-weight:800;">En savoir plus</a>
+  </p>
+  <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+    <button onclick="acceptCookies()" style="background:var(--peach);border:none;color:white;padding:0.6rem 1.25rem;border-radius:50px;font-weight:800;font-size:0.85rem;cursor:pointer;font-family:'Nunito',sans-serif;">Accepter</button>
+    <button onclick="document.getElementById('cookie-banner').style.display='none'" style="background:none;border:2px solid rgba(255,255,255,0.3);color:white;padding:0.6rem 1.25rem;border-radius:50px;font-weight:700;font-size:0.85rem;cursor:pointer;font-family:'Nunito',sans-serif;">Refuser</button>
+  </div>
+</div>
+
+<!-- ECRAN CONTACT -->
+<div id="s-contact" class="screen">
+<div style="max-width:700px;margin:0 auto;padding:3rem 1.5rem;">
+  <div style="text-align:center;margin-bottom:2.5rem;">
+    <div style="font-size:3rem;margin-bottom:0.75rem;">💬</div>
+    <h1 style="font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;color:var(--dark);margin-bottom:0.5rem;">Contactez-nous</h1>
+    <p style="color:var(--text-soft);font-weight:600;">Notre équipe est là pour vous aider.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;">
+    <div style="background:white;border-radius:20px;padding:1.5rem;border:2px solid var(--border);text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">📧</div>
+      <div style="font-weight:800;color:var(--dark);margin-bottom:0.25rem;">Email général</div>
+      <a href="mailto:yomuna237@gmail.com" style="color:var(--peach-dark);font-weight:700;font-size:0.9rem;">yomuna237@gmail.com</a>
+      <div style="font-size:0.8rem;color:var(--text-soft);margin-top:0.4rem;">Réponse sous 24-48h</div>
+    </div>
+    <div style="background:white;border-radius:20px;padding:1.5rem;border:2px solid var(--border);text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">📱</div>
+      <div style="font-weight:800;color:var(--dark);margin-bottom:0.25rem;">Téléphone</div>
+      <a href="tel:+237672908137" style="color:var(--peach-dark);font-weight:700;font-size:0.9rem;">+237 6 72 90 81 37</a>
+      <div style="font-size:0.8rem;color:var(--text-soft);margin-top:0.4rem;">Lun–Ven 8h–18h WAT</div>
+    </div>
+    <div style="background:white;border-radius:20px;padding:1.5rem;border:2px solid var(--border);text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">📸</div>
+      <div style="font-weight:800;color:var(--dark);margin-bottom:0.25rem;">Instagram</div>
+      <a href="https://instagram.com/_yomuna" target="_blank" style="color:var(--peach-dark);font-weight:700;font-size:0.9rem;">@_yomuna</a>
+      <div style="font-size:0.8rem;color:var(--text-soft);margin-top:0.4rem;">Messages directs</div>
+    </div>
+    <div style="background:white;border-radius:20px;padding:1.5rem;border:2px solid var(--border);text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">🏢</div>
+      <div style="font-weight:800;color:var(--dark);margin-bottom:0.25rem;">Adresse</div>
+      <div style="color:var(--text-mid);font-weight:600;font-size:0.88rem;">Nkolfoulou, Yaoundé<br>Champs de Cacao, Cameroun</div>
+    </div>
+  </div>
+  <div style="background:var(--light);border-radius:20px;padding:1.5rem;border:2px solid var(--border);margin-bottom:1.5rem;">
+    <div style="font-weight:800;color:var(--dark);margin-bottom:1rem;">📋 Informations légales</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.88rem;">
+      <div><span style="color:var(--text-soft);font-weight:700;">Société :</span> <span style="color:var(--text-mid);font-weight:600;">AELI SERVICES SARL</span></div>
+      <div><span style="color:var(--text-soft);font-weight:700;">RCCM :</span> <span style="color:var(--text-mid);font-weight:600;">RC/YAE/2020/A/2762</span></div>
+      <div><span style="color:var(--text-soft);font-weight:700;">N° Contribuable :</span> <span style="color:var(--text-mid);font-weight:600;">P1971509742L</span></div>
+      <div><span style="color:var(--text-soft);font-weight:700;">Gérante :</span> <span style="color:var(--text-mid);font-weight:600;">Gaëlle Stella Onana Oyono</span></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+    <button onclick="showS('home')" class="bsm">← Retour à l'accueil</button>
+    <button onclick="showLegal('cgu')" class="bsm">Lire les CGU</button>
+    <button onclick="showLegal('privacy')" class="bsm">Confidentialité</button>
+  </div>
+</div>
+</div>
 <div class="mobile-nav" id="mobile-nav" style="display:none;">
   <div class="mobile-nav-items">
     <button class="mnav-btn on" id="mnav-today" onclick="mnavGo('today')">
@@ -571,13 +630,16 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   <div class="faq-in">
     <div class="stag">❓ Questions fréquentes</div>
     <h2 class="sh" style="margin-bottom:2rem">Tout ce que tu veux savoir</h2>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Comment YoMuna personnalise les rituels pour mon enfant ?<span class="ftog">+</span></div><div class="fa">Tu remplis le profil de ton enfant une seule fois : prénom, âge, centres d'intérêt, défi parental et ton pays. YoMuna utilise ces informations pour créer un univers unique chaque jour — les histoires mentionnent le prénom de ton enfant, les lieux de ton pays, et les activités sont calibrées pour son stade de développement exact.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Est-ce que ça marche si je vis en France mais veux un univers différent pour mon enfant ?<span class="ftog">+</span></div><div class="fa">Absolument. Tu choisis ton pays de résidence ET l'ancrage culturel de ton choix pour les histoires. YoMuna s'adapte à ta famille, pas l'inverse.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">YoMuna convient pour quel âge ?<span class="ftog">+</span></div><div class="fa">YoMuna est conçu pour les enfants de 3 à 10 ans — l'âge où les rituels du soir construisent les fondations émotionnelles et culturelles de l'enfant. Pour les 3-6 ans : histoires courtes, jeux d'éveil, langage. Pour les 7-10 ans : aventures, activités créatives, autonomie.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Comment se passe le paiement ?<span class="ftog">+</span></div><div class="fa">YoMuna accepte MTN Mobile Money et Orange Money via NotchPay. Après avoir choisi votre mode de paiement, vous serez redirigé vers une page sécurisée NotchPay pour finaliser la transaction.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Puis-je résilier à tout moment ?<span class="ftog">+</span></div><div class="fa">Oui, sans justification et sans frais. Tu peux résilier depuis ton espace membre en un clic. Tu continues à avoir accès à YoMuna jusqu'à la fin de ta période payée.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Le plan annuel à 20 000 FCFA — pour combien d'enfants ?<span class="ftog">+</span></div><div class="fa">Le plan annuel inclut jusqu'à 4 enfants pendant 12 mois complets. Que tu aies 1 ou 4 enfants, tu paies le même prix. Comparé au plan Famille mensuel (4 000 FCFA × 12 = 48 000 FCFA), tu économises 28 000 FCFA sur l'année.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Combien de moments puis-je créer par jour ?<span class="ftog">+</span></div><div class="fa">Chaque plan inclut un quota journalier : Solo 4 créations/jour, Famille 6 créations/jour, Annuel 12 créations/jour. Une "création" c'est une nouvelle histoire, activité, conseil ou apprentissage. Les contenus déjà générés restent toujours accessibles même si le quota est atteint. Le compteur se remet à zéro chaque nuit à minuit.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Comment YoMuna personnalise les rituels pour mon enfant ?<span class="ftog">+</span></div><div class="fa">Tu remplis le profil de ton enfant une seule fois : prénom, âge, genre, centres d'intérêt, défi parental et univers culturel souhaité. YoMuna utilise ces informations pour créer un contenu unique chaque jour — les histoires mentionnent le prénom de ton enfant, les décors de ton pays choisi, et les activités sont calibrées pour son âge exact. <em>Note : tous les contenus sont générés par intelligence artificielle.</em></div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Est-ce que ça marche si je vis en France mais veux un univers africain pour mon enfant ?<span class="ftog">+</span></div><div class="fa">Absolument. Tu choisis ton pays de résidence ET l'ancrage culturel de ton choix pour les histoires — ils sont indépendants. Tu peux vivre à Paris et avoir des histoires ancrées au Cameroun, en Côte d'Ivoire ou ailleurs. YoMuna s'adapte à ta famille, pas l'inverse.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">YoMuna convient pour quel âge ?<span class="ftog">+</span></div><div class="fa">YoMuna est conçu pour les enfants de 3 à 10 ans — l'âge où les rituels du soir construisent les fondations émotionnelles et culturelles. Pour les 3-6 ans : histoires courtes, jeux d'éveil. Pour les 7-10 ans : aventures, activités créatives, apprentissages culturels.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Comment se passe le paiement ?<span class="ftog">+</span></div><div class="fa">YoMuna accepte MTN Mobile Money et Orange Money (via NotchPay) pour les paiements au Cameroun, et Visa/Mastercard (via Stripe) pour la diaspora. Tu seras redirigé vers une page sécurisée pour finaliser. <strong>Aucun remboursement n'est accordé une fois l'abonnement activé</strong>, sauf dysfonctionnement majeur imputable à YoMuna.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Puis-je résilier à tout moment ?<span class="ftog">+</span></div><div class="fa">Oui, sans justification et sans frais depuis ton espace personnel. La résiliation prend effet à la fin de la période d'abonnement en cours. Tes données et historique restent accessibles jusqu'à la fin de la période payée.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Le plan annuel à 20 000 FCFA — pour combien d'enfants ?<span class="ftog">+</span></div><div class="fa">Le plan annuel inclut jusqu'à 4 enfants pendant 12 mois complets. Comparé au plan Famille mensuel (4 000 FCFA × 12 = 48 000 FCFA), tu économises 28 000 FCFA sur l'année.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Le contenu est-il généré par intelligence artificielle ?<span class="ftog">+</span></div><div class="fa">Oui. Tous les contenus YoMuna (histoires, activités, conseils parentaux, apprentissages) sont générés automatiquement par intelligence artificielle, personnalisés selon le profil de chaque enfant. Ils sont fournis à titre récréatif et éducatif, et ne remplacent pas un avis médical ou psychologique professionnel.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Comment supprimer mon compte et mes données ?<span class="ftog">+</span></div><div class="fa">Tu peux demander la suppression complète de ton compte et de tes données personnelles à tout moment en contactant notre équipe à yomuna237@gmail.com. Nous procédons à la suppression dans un délai de 48 heures ouvrables.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Mes données et celles de mes enfants sont-elles sécurisées ?<span class="ftog">+</span></div><div class="fa">Oui. YoMuna ne vend jamais vos données à des tiers et ne les utilise pas à des fins publicitaires. Les données des enfants (prénom, âge, centres d'intérêt) servent uniquement à personnaliser le contenu. Les paiements sont traités exclusivement par NotchPay et Stripe — nous ne stockons aucune donnée bancaire. Pour plus de détails, consultez notre <a onclick="showLegal('privacy')" style="color:var(--peach-dark);cursor:pointer;font-weight:700;">Politique de Confidentialité</a>.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Qui contacter en cas de problème ?<span class="ftog">+</span></div><div class="fa">Notre équipe est disponible à <strong>yomuna237@gmail.com</strong> — réponse sous 24-48h les jours ouvrables. YoMuna est édité par AELI SERVICES SARL, Nkolfoulou, Yaoundé, Cameroun. Vous pouvez également nous joindre sur Instagram <strong>@_yomuna</strong> ou par téléphone au <strong>+237 6 72 90 81 37</strong>.</div></div>
   </div>
 </section>
 
@@ -625,10 +687,10 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="ft-bot">
       <div class="fcp">© 2026 YoMuna — AELI SERVICES SARL, Cameroun. Tous droits réservés.</div>
       <div class="flegal">
+        <a onclick="showS('contact')">Contact & Assistance</a>
         <a onclick="showLegal('privacy')">Confidentialité</a>
         <a onclick="showLegal('cgu')">CGU</a>
         <a onclick="showLegal('legal')">Mentions légales</a>
-        <a href="mailto:yomuna237@gmail.com">Assistance</a>
       </div>
     </div>
     <div class="ftech">✨ Propulsé par l'Intelligence Artificielle • Paiements sécurisés via NotchPay & Stripe</div>
@@ -1709,7 +1771,7 @@ function renderChildPills() {
       <div class="cg">
         <div class="cc cc-s" id="story-card-${i}">
           <div class="cct">📖 Histoire du soir
-            <span style="margin-left:auto;">
+            <span style="margin-left:auto;display:flex;align-items:center;gap:0.35rem;"><span style="background:rgba(123,94,167,0.1);color:var(--purple);font-size:0.6rem;font-weight:800;padding:0.1rem 0.4rem;border-radius:50px;">✨ IA</span>
               <button onclick="toggleFavorite(${i},'story')" id="fav-story-${i}" style="background:none;border:none;cursor:pointer;font-size:1.1rem;" title="Ajouter aux favoris">🤍</button>
             </span>
           </div>
@@ -1758,7 +1820,7 @@ function renderChildPills() {
           </div>
         </div>
         <div class="cc cc-c cgf" id="advice-card-${i}">
-          <div class="cct">💡 Conseil parental du jour</div>
+          <div class="cct">💡 Conseil parental du jour <span style="background:rgba(123,94,167,0.1);color:var(--purple);font-size:0.6rem;font-weight:800;padding:0.1rem 0.4rem;border-radius:50px;margin-left:0.3rem;">✨ IA</span></div>
           <div class="ccti" id="advice-title-${i}">Création en cours...</div>
           <div class="cctx" id="advice-text-${i}">YoMuna prépare un conseil personnalisé...</div>
           <div class="ccf">
@@ -2945,6 +3007,19 @@ async function processRenewal() {
   } finally { hideLoading(); }
 }
 
+// ===== COOKIES =====
+function initCookieBanner() {
+  if (!localStorage.getItem('yomuna_cookies_accepted')) {
+    const banner = document.getElementById('cookie-banner');
+    if (banner) banner.style.display = 'flex';
+  }
+}
+function acceptCookies() {
+  localStorage.setItem('yomuna_cookies_accepted', '1');
+  const banner = document.getElementById('cookie-banner');
+  if (banner) banner.style.display = 'none';
+}
+
 // ===== MENTIONS LEGALES =====
 const LEGAL_CONTENT = {
   cgu: {
@@ -3007,28 +3082,27 @@ const LEGAL_CONTENT = {
   legal: {
     title: 'Mentions Légales — YoMuna',
     content: `
-      <h3 style="color:var(--peach-dark);">Éditeur</h3>
-      <p><strong>AELI SERVICES SARL</strong><br>
-      Société à Responsabilité Limitée<br>
-      République du Cameroun<br>
-      Email : yomuna237@gmail.com<br>
-      Site : yo-muna.com</p>
-
+      <h3 style="color:var(--peach-dark);">Éditeur de la plateforme</h3>
+      <p>
+        <strong>AELI SERVICES SARL</strong><br>
+        Société à Responsabilité Limitée<br>
+        <strong>N° RCCM :</strong> RC/YAE/2020/A/2762<br>
+        <strong>N° Contribuable :</strong> P1971509742L<br>
+        <strong>Adresse :</strong> Nkolfoulou, Yaoundé — Lieu-dit Champs de Cacao, Cameroun<br>
+        <strong>Représentant légal :</strong> Gaëlle Stella Onana Oyono, Gérante<br>
+        <strong>Email société :</strong> aeliservicescmr@gmail.com<br>
+        <strong>Téléphone :</strong> +237 6 72 90 81 37<br>
+        <strong>Email YoMuna :</strong> yomuna237@gmail.com<br>
+        <strong>Site :</strong> yo-muna.com
+      </p>
       <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Hébergeur</h3>
-      <p><strong>Netlify Inc.</strong><br>
-      44 Montgomery Street, Suite 300<br>
-      San Francisco, CA 94104, USA<br>
-      netlify.com</p>
-
+      <p><strong>Netlify Inc.</strong> — 44 Montgomery Street, Suite 300, San Francisco, CA 94104, USA</p>
       <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Base de données</h3>
       <p><strong>Supabase</strong> — supabase.com</p>
-
-      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Responsable de la publication</h3>
-      <p>La Direction d'AELI SERVICES SARL<br>
-      Contact : yomuna237@gmail.com</p>
-
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Intelligence artificielle</h3>
+      <p>Les contenus sont générés par des modèles d'IA fournis par <strong>Groq Inc.</strong> (USA), à titre récréatif et éducatif uniquement.</p>
       <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Propriété intellectuelle</h3>
-      <p>L'ensemble des éléments de la plateforme YoMuna (logo, code, contenus) est la propriété exclusive d'AELI SERVICES SARL et est protégé par les lois relatives à la propriété intellectuelle.</p>
+      <p>L'ensemble des éléments de YoMuna est la propriété exclusive d'AELI SERVICES SARL, protégé par les lois relatives à la propriété intellectuelle au Cameroun.</p>
     `
   }
 };
@@ -3285,6 +3359,8 @@ async function loadWeeklyReport() {
 window.addEventListener('load', async () => {
   // Charger la config Supabase en premier
   await loadConfig();
+  // Bandeau cookies
+  initCookieBanner();
 
   const urlParams = new URLSearchParams(window.location.search);
   const paymentStatus = urlParams.get('status');
