@@ -623,15 +623,15 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       </div>
     </div>
     <div class="ft-bot">
-      <div class="fcp">© 2025 YoMuna. Tous droits réservés.</div>
+      <div class="fcp">© 2026 YoMuna — AELI SERVICES SARL, Cameroun. Tous droits réservés.</div>
       <div class="flegal">
-        <a href="#">Confidentialité</a>
-        <a href="#">Conditions d'utilisation</a>
-        <a href="#">Mentions légales</a>
-        <a href="#">Cookies</a>
+        <a onclick="showLegal('privacy')">Confidentialité</a>
+        <a onclick="showLegal('cgu')">CGU</a>
+        <a onclick="showLegal('legal')">Mentions légales</a>
+        <a href="mailto:yomuna237@gmail.com">Assistance</a>
       </div>
     </div>
-    <div class="ftech">✨ Propulsé par l'Intelligence Artificielle • Paiements sécurisés via NotchPay</div>
+    <div class="ftech">✨ Propulsé par l'Intelligence Artificielle • Paiements sécurisés via NotchPay & Stripe</div>
   </div>
 </footer>
 </div>
@@ -740,6 +740,12 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     </div>
     <div style="background:var(--cream);border-radius:12px;padding:0.85rem;margin-bottom:1rem;font-size:0.82rem;color:var(--text-soft);font-weight:600;text-align:center;" id="pay-info-msg">
       💳 Vous serez redirigé vers NotchPay pour finaliser le paiement en toute sécurité
+    </div>
+    <div style="background:var(--light);border-radius:12px;padding:1rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:0.75rem;">
+      <input type="checkbox" id="cgu-check" style="margin-top:0.2rem;width:18px;height:18px;cursor:pointer;accent-color:var(--peach);" />
+      <label for="cgu-check" style="font-size:0.82rem;color:var(--text-mid);font-weight:600;cursor:pointer;line-height:1.5;">
+        J'ai lu et j'accepte les <a onclick="showLegal('cgu')" style="color:var(--peach-dark);font-weight:800;cursor:pointer;text-decoration:underline;">Conditions Générales d'Utilisation</a> et la <a onclick="showLegal('privacy')" style="color:var(--peach-dark);font-weight:800;cursor:pointer;text-decoration:underline;">Politique de Confidentialité</a> de YoMuna, éditée par <strong>AELI SERVICES SARL</strong>.
+      </label>
     </div>
     <button class="bfull bpm" onclick="initiatePayment()">🚀 Payer et activer mon abonnement</button>
     <button class="bfull bback" onclick="goStep(2)">← Retour</button>
@@ -1145,6 +1151,20 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 </div><!-- end s-dashboard -->
 
 
+<!-- LEGAL MODAL -->
+<div class="modal-overlay hidden" id="legal-modal" onclick="if(event.target===this)document.getElementById('legal-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:680px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div class="modal-title" id="legal-title" style="margin-bottom:0;"></div>
+      <button onclick="document.getElementById('legal-modal').classList.add('hidden')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-soft);">✕</button>
+    </div>
+    <div id="legal-content" style="font-size:0.9rem;color:var(--text-mid);line-height:1.8;max-height:70vh;overflow-y:auto;"></div>
+    <div style="margin-top:1.5rem;text-align:center;">
+      <button onclick="document.getElementById('legal-modal').classList.add('hidden')" class="bsm">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal-box">
@@ -1523,6 +1543,13 @@ function selPay(p) {
 }
 
 async function initiatePayment() {
+  // Vérifier l'acceptation des CGU
+  const cguCheck = document.getElementById('cgu-check');
+  if (cguCheck && !cguCheck.checked) {
+    toast('Veuillez accepter les Conditions Générales d\'Utilisation pour continuer.');
+    cguCheck.focus();
+    return;
+  }
   showLoading('Initialisation du paiement...');
   try {
     // Sauvegarder les données en attente
@@ -2918,7 +2945,103 @@ async function processRenewal() {
   } finally { hideLoading(); }
 }
 
-// ===== TRIAL GRATUIT =====
+// ===== MENTIONS LEGALES =====
+const LEGAL_CONTENT = {
+  cgu: {
+    title: 'Conditions Générales d\'Utilisation — YoMuna',
+    content: `
+      <p><strong>Éditeur :</strong> AELI SERVICES SARL — Cameroun<br>
+      <strong>Plateforme :</strong> YoMuna — yo-muna.com<br>
+      <strong>Contact :</strong> yomuna237@gmail.com<br>
+      <strong>Version :</strong> Mai 2026</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Article 1 — Objet du service</h3>
+      <p>YoMuna est une plateforme numérique d'assistance parentale propulsée par intelligence artificielle. Elle génère des contenus personnalisés pour les enfants de 3 à 10 ans : histoires du soir, activités créatives, conseils parentaux et apprentissages culturels.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Article 2 — Accès au service</h3>
+      <p>L'accès est réservé aux personnes majeures (18 ans et plus) agissant en qualité de parent ou tuteur légal. L'utilisateur s'engage à fournir des informations exactes lors de la création de son compte.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Article 3 — Nature du contenu généré</h3>
+      <p>Les contenus produits par YoMuna sont générés automatiquement par intelligence artificielle à titre informatif et récréatif. Ils ne remplacent en aucun cas un avis médical ou psychologique professionnel.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Article 4 — Propriété intellectuelle</h3>
+      <p>L'ensemble des éléments de la plateforme YoMuna est la propriété exclusive d'AELI SERVICES SARL. Les contenus personnalisés générés sont destinés à un usage strictement privé et familial.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Article 5 — Obligations de l'utilisateur</h3>
+      <p>L'utilisateur s'engage à utiliser la plateforme conformément à sa finalité parentale, à ne pas tenter de contourner les mesures de sécurité, et à signaler tout contenu inapproprié à yomuna237@gmail.com.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Article 6 — Paiement et résiliation</h3>
+      <p>L'abonnement est activé uniquement après confirmation du paiement. L'utilisateur peut résilier à tout moment depuis son espace personnel. La résiliation prend effet à la fin de la période en cours.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Article 7 — Droit applicable</h3>
+      <p>Les présentes CGU sont soumises au droit camerounais. Pour tout litige, les parties s'engagent à rechercher une solution amiable avant tout recours judiciaire.</p>
+
+      <p style="margin-top:1.5rem;font-size:0.85rem;color:var(--text-soft);">Document complet disponible sur demande à yomuna237@gmail.com</p>
+    `
+  },
+  privacy: {
+    title: 'Politique de Confidentialité — YoMuna',
+    content: `
+      <p><strong>Éditeur :</strong> AELI SERVICES SARL — Cameroun<br>
+      <strong>Contact :</strong> yomuna237@gmail.com</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Données collectées</h3>
+      <p>YoMuna collecte : adresse email, numéro WhatsApp (optionnel), pays de résidence, prénom/âge/genre des enfants bénéficiaires. Ces données sont utilisées uniquement pour personnaliser le service.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Protection des données enfants</h3>
+      <p>Les données des enfants ne sont jamais partagées avec des tiers, jamais utilisées à des fins commerciales ou publicitaires. Seules les informations strictement nécessaires à la génération de contenu sont collectées.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Paiements</h3>
+      <p>AELI SERVICES SARL ne stocke jamais les données bancaires ou Mobile Money. Les paiements sont traités exclusivement par NotchPay (Cameroun) et Stripe (international), conformément à leurs politiques de sécurité.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Vos droits</h3>
+      <p>Vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité de vos données. Pour exercer ces droits : yomuna237@gmail.com</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Sous-traitants</h3>
+      <p>Supabase (base de données), Groq (IA), Netlify (hébergement), Brevo (emails), NotchPay et Stripe (paiements). Chacun est soumis à des obligations contractuelles de confidentialité.</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Conservation des données</h3>
+      <p>Les données sont conservées pendant la durée du compte + 1 an. Vous pouvez demander la suppression complète de votre compte et de vos données à tout moment.</p>
+    `
+  },
+  legal: {
+    title: 'Mentions Légales — YoMuna',
+    content: `
+      <h3 style="color:var(--peach-dark);">Éditeur</h3>
+      <p><strong>AELI SERVICES SARL</strong><br>
+      Société à Responsabilité Limitée<br>
+      République du Cameroun<br>
+      Email : yomuna237@gmail.com<br>
+      Site : yo-muna.com</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Hébergeur</h3>
+      <p><strong>Netlify Inc.</strong><br>
+      44 Montgomery Street, Suite 300<br>
+      San Francisco, CA 94104, USA<br>
+      netlify.com</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Base de données</h3>
+      <p><strong>Supabase</strong> — supabase.com</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Responsable de la publication</h3>
+      <p>La Direction d'AELI SERVICES SARL<br>
+      Contact : yomuna237@gmail.com</p>
+
+      <h3 style="color:var(--peach-dark);margin-top:1.25rem;">Propriété intellectuelle</h3>
+      <p>L'ensemble des éléments de la plateforme YoMuna (logo, code, contenus) est la propriété exclusive d'AELI SERVICES SARL et est protégé par les lois relatives à la propriété intellectuelle.</p>
+    `
+  }
+};
+
+function showLegal(type) {
+  const legal = LEGAL_CONTENT[type];
+  if (!legal) return;
+  document.getElementById('legal-title').textContent = legal.title;
+  document.getElementById('legal-content').innerHTML = legal.content;
+  document.getElementById('legal-modal').classList.remove('hidden');
+}
+
+
 let currentTrialType = 'story';
 
 function showTrial() {
