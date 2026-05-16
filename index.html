@@ -3825,8 +3825,21 @@ function getStoryText(childIndex) {
 }
 
 function startAudio(childIndex) {
+  // iOS nécessite que speechSynthesis soit démarré dans un handler d'événement direct
+  // C'est le cas ici car startAudio est appelé par onclick
+
   speechSynthesis.cancel();
   Object.keys(audioState).forEach(k => stopAudio(parseInt(k)));
+
+  // Sur iOS, recharger les voix au moment du clic
+  if (window.speechSynthesis) {
+    const v = speechSynthesis.getVoices();
+    if (!v || v.length === 0) {
+      // iOS - les voix ne sont pas encore chargées, réessayer dans 100ms
+      setTimeout(() => startAudio(childIndex), 150);
+      return;
+    }
+  }
 
   const text = getStoryText(childIndex);
   if (!text || text.length < 10) {
@@ -3834,23 +3847,32 @@ function startAudio(childIndex) {
     return;
   }
   if (!window.speechSynthesis) {
-    toast("La lecture audio n'est pas supportée par ce navigateur.");
+    toast("La lecture audio n'est pas supportée par ce navigateur. Utilisez Chrome ou Safari.");
     return;
   }
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'fr-FR';
-  utterance.rate = 0.9;
-  utterance.pitch = 1.05;
+  utterance.rate = 0.88;  // Légèrement plus lent pour les histoires enfants
+  utterance.pitch = 1.08; // Voix un peu plus douce
   utterance.volume = 1;
+
   const voice = getBestVoice();
-  if (voice) utterance.voice = voice;
+  if (voice) {
+    utterance.voice = voice;
+    console.log('[YoMuna Audio] Voix sélectionnée:', voice.name, voice.lang);
+  }
 
   const words = text.split(' ').length;
-  const totalSec = Math.ceil(words / 2.2);
+  const totalSec = Math.ceil(words / 2.0); // ~120 mots/min pour les histoires
 
-  audioState[childIndex] = { utterance, playing: true, text, totalChars: text.length, startTime: Date.now(), totalSec };
+  audioState[childIndex] = {
+    utterance, playing: true,
+    text, totalChars: text.length,
+    startTime: Date.now(), totalSec
+  };
 
+  // Afficher le lecteur
   const player = document.getElementById('audio-player-' + childIndex);
   const listenBtn = document.getElementById('listen-btn-' + childIndex);
   const audioBtn = document.getElementById('audio-btn-' + childIndex);
@@ -3858,11 +3880,22 @@ function startAudio(childIndex) {
   if (listenBtn) listenBtn.style.display = 'none';
   if (audioBtn) audioBtn.textContent = '⏸️';
 
+  // Barre de progression
   const interval = setInterval(() => {
     const st = audioState[childIndex];
-    if (!st || !st.playing) { clearInterval(interval); return; }
+    if (!st) { clearInterval(interval); return; }
+
+    // Vérifier si la synthèse est toujours active
+    if (!speechSynthesis.speaking && !speechSynthesis.paused) {
+      clearInterval(interval);
+      stopAudio(childIndex);
+      return;
+    }
+
+    if (!st.playing) return;
+
     const elapsed = (Date.now() - st.startTime) / 1000;
-    const pct = Math.min(100, (elapsed / totalSec) * 100);
+    const pct = Math.min(99, (elapsed / totalSec) * 100);
     const bar = document.getElementById('audio-bar-' + childIndex);
     const timeEl = document.getElementById('audio-time-' + childIndex);
     if (bar) bar.style.width = pct + '%';
@@ -3875,14 +3908,35 @@ function startAudio(childIndex) {
 
   audioState[childIndex].interval = interval;
 
-  utterance.onend = () => { clearInterval(interval); setTimeout(() => stopAudio(childIndex), 500); };
-  utterance.onerror = (e) => {
+  utterance.onend = () => {
     clearInterval(interval);
-    stopAudio(childIndex);
-    if (e.error !== 'interrupted') toast('Erreur audio. Essayez Chrome ou Safari.');
+    const bar = document.getElementById('audio-bar-' + childIndex);
+    if (bar) bar.style.width = '100%';
+    setTimeout(() => stopAudio(childIndex), 1000);
+    toast('🌙 Histoire terminée ! Bonne nuit !');
   };
 
+  utterance.onerror = (e) => {
+    console.error('[YoMuna Audio] Erreur:', e.error);
+    clearInterval(interval);
+    if (e.error !== 'interrupted' && e.error !== 'canceled') {
+      stopAudio(childIndex);
+      toast("Erreur audio. Vérifiez que le son n'est pas coupé.");
+    }
+  };
+
+  // iOS fix — parfois speechSynthesis se bloque, on le relance
   speechSynthesis.speak(utterance);
+
+  // Keepalive iOS — speechSynthesis se pause parfois après 15s sur iOS
+  const iosKeepAlive = setInterval(() => {
+    if (!audioState[childIndex]?.playing) { clearInterval(iosKeepAlive); return; }
+    if (speechSynthesis.speaking) {
+      speechSynthesis.pause();
+      speechSynthesis.resume();
+    }
+  }, 10000);
+  audioState[childIndex].iosKeepAlive = iosKeepAlive;
 }
 
 function toggleAudio(childIndex) {
@@ -3904,6 +3958,7 @@ function stopAudio(childIndex) {
   speechSynthesis.cancel();
   const st = audioState[childIndex];
   if (st?.interval) clearInterval(st.interval);
+  if (st?.iosKeepAlive) clearInterval(st.iosKeepAlive);
   delete audioState[childIndex];
   const player = document.getElementById('audio-player-' + childIndex);
   const listenBtn = document.getElementById('listen-btn-' + childIndex);
