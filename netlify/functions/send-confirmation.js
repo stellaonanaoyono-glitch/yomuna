@@ -7,7 +7,7 @@ exports.handler = async (event) => {
   const ADMIN_EMAIL = 'yomuna237@gmail.com';
 
   try {
-    const { email, firstName, lastName, country, plan, amount, type } = JSON.parse(event.body);
+    const { email, firstName, lastName, country, plan, amount, type, childName, childAge } = JSON.parse(event.body);
 
     const planNames = {
       solo: 'Plan Solo — 1 enfant • 2 500 FCFA/mois',
@@ -24,7 +24,27 @@ exports.handler = async (event) => {
     const emails = [];
 
     // ===== EMAIL À L'UTILISATEUR =====
-    if (type === 'welcome') {
+    if (type === 'trial') {
+      // ===== ESSAI GRATUIT — email d'invitation uniquement =====
+      emails.push({
+        to: [{ email, name: 'Cher parent' }],
+        subject: `🌙 Votre essai YoMuna pour ${childName || 'votre enfant'} est prêt !`,
+        htmlContent: `
+          <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;background:#FFF8F0;padding:2rem;border-radius:16px;">
+            <h1 style="color:#E06840;font-size:2rem;margin-bottom:0.5rem;">Yo<span style="color:#FFD166">●</span>Muna</h1>
+            <h2 style="color:#2D1B00;">Vous venez de voir la magie YoMuna ✨</h2>
+            <p style="color:#6B4226;line-height:1.7;">Vous avez généré un aperçu pour <strong>${childName || 'votre enfant'}</strong> (${childAge || ''}). C'était juste un avant-goût.</p>
+            <p style="color:#6B4226;line-height:1.7;">Avec un abonnement, votre enfant reçoit chaque jour : une histoire complète, une activité, un conseil parental et un apprentissage — tous personnalisés.</p>
+            <div style="text-align:center;margin:1.5rem 0;">
+              <a href="https://yo-muna.com" style="display:inline-block;background:#FF8C69;color:white;padding:1rem 2.5rem;border-radius:50px;text-decoration:none;font-weight:800;">
+                S'abonner — dès 2 500 FCFA/mois →
+              </a>
+            </div>
+            <p style="color:#A0714F;font-size:0.82rem;text-align:center;">Sans engagement · MTN MoMo · Orange Money · yo-muna.com</p>
+          </div>`
+      });
+
+    } else if (type === 'welcome') {
       // Email de bienvenue à l'utilisateur
       emails.push({
         to: [{ email, name: firstName }],
@@ -68,7 +88,7 @@ exports.handler = async (event) => {
       });
 
     } else {
-      // ===== EMAIL DE CONFIRMATION PAIEMENT À L'UTILISATEUR =====
+      // ===== EMAIL DE CONFIRMATION PAIEMENT =====
       emails.push({
         to: [{ email, name: firstName }],
         subject: '✅ YoMuna — Votre paiement est confirmé !',
