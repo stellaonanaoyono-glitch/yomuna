@@ -1191,31 +1191,35 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 
   <!-- OUTIL DE RECUPERATION STRIPE -->
   <div class="asec" style="margin-bottom:2rem;border:2.5px solid var(--peach);">
-    <div class="astitle" style="color:var(--peach-dark);">🔧 Récupération paiements Stripe</div>
-    <p style="font-size:0.88rem;color:var(--text-soft);margin-bottom:1.25rem;line-height:1.6;">Pour les utilisateurs qui ont payé via Stripe mais dont l'abonnement n'apparaît pas. Entrer l'email OU le Stripe Session ID.</p>
+    <div class="astitle" style="color:var(--peach-dark);">🔧 Outil de récupération utilisateurs</div>
+    <p style="font-size:0.88rem;color:var(--text-soft);margin-bottom:1.25rem;line-height:1.6;">
+      Diagnostique et répare le compte d'un utilisateur qui a payé mais n'a pas accès.
+    </p>
 
-    <!-- Méthode 1 : par email -->
-    <div style="background:var(--cream);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
-      <div style="font-weight:800;font-size:0.9rem;margin-bottom:0.75rem;">Méthode 1 — Créer manuellement un abonnement</div>
-      <div class="frow" style="margin-bottom:0.75rem;">
-        <div class="fg"><label>Email de l'utilisateur</label><input type="email" id="rec-email" placeholder="parent@email.com" /></div>
-        <div class="fg"><label>Plan</label>
-          <select id="rec-plan">
-            <option value="solo">Solo — 2 500 FCFA/mois</option>
-            <option value="fam">Famille — 4 000 FCFA/mois</option>
-            <option value="ann">Annuel — 20 000 FCFA/an</option>
-          </select>
-        </div>
-      </div>
-      <button class="bsm" onclick="adminCreateSub()" style="background:var(--peach);color:white;border-color:var(--peach);">✅ Créer l'abonnement</button>
-      <div id="rec-result-1" style="margin-top:0.75rem;font-size:0.88rem;font-weight:700;"></div>
+    <!-- Recherche par email -->
+    <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+      <input type="email" id="rec-email" placeholder="Email de l'utilisateur" style="flex:1;min-width:200px;" />
+      <select id="rec-plan" style="width:220px;">
+        <option value="solo">Solo — 2 500 FCFA/mois</option>
+        <option value="fam">Famille — 4 000 FCFA/mois</option>
+        <option value="ann">Annuel — 20 000 FCFA/an</option>
+      </select>
+      <button class="bsm" onclick="adminDiagnose()" style="background:var(--dark);color:white;border-color:var(--dark);">🔍 Diagnostiquer</button>
     </div>
 
-    <!-- Méthode 2 : par Session ID Stripe -->
-    <div style="background:var(--cream);border-radius:14px;padding:1.25rem;">
-      <div style="font-weight:800;font-size:0.9rem;margin-bottom:0.75rem;">Méthode 2 — Récupérer via Session ID Stripe</div>
-      <div class="fg" style="margin-bottom:0.75rem;"><label>Stripe Session ID (commence par cs_live_...)</label><input type="text" id="rec-session" placeholder="cs_live_..." /></div>
-      <button class="bsm" onclick="adminRecoverStripe()" style="background:var(--purple);color:white;border-color:var(--purple);">🔄 Récupérer depuis Stripe</button>
+    <!-- Résultat diagnostic -->
+    <div id="rec-diagnostic" style="display:none;background:var(--cream);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+      <div id="rec-diag-content"></div>
+      <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;" id="rec-actions"></div>
+    </div>
+
+    <!-- Méthode Stripe Session ID -->
+    <div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem;">
+      <div style="font-size:0.82rem;font-weight:800;color:var(--text-soft);margin-bottom:0.75rem;">RÉCUPÉRATION VIA STRIPE SESSION ID</div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <input type="text" id="rec-session" placeholder="cs_live_..." style="flex:1;min-width:200px;" />
+        <button class="bsm" onclick="adminRecoverStripe()" style="background:var(--purple);color:white;border-color:var(--purple);">🔄 Récupérer depuis Stripe</button>
+      </div>
       <div id="rec-result-2" style="margin-top:0.75rem;font-size:0.88rem;font-weight:700;"></div>
     </div>
   </div>
@@ -3086,63 +3090,165 @@ const ADMIN_EMAIL = 'yomuna237@gmail.com';
 
 // ===== OUTILS ADMIN RECUPERATION =====
 
-async function adminCreateSub() {
+let diagUserId = null; // Stocker l'ID pour les actions suivantes
+
+async function adminDiagnose() {
   const email = document.getElementById('rec-email')?.value?.trim();
-  const plan = document.getElementById('rec-plan')?.value || 'solo';
-  const resultEl = document.getElementById('rec-result-1');
+  const diagEl = document.getElementById('rec-diagnostic');
+  const contentEl = document.getElementById('rec-diag-content');
+  const actionsEl = document.getElementById('rec-actions');
 
-  if (!email) { if (resultEl) resultEl.innerHTML = '<span style="color:red">❌ Entrez un email.</span>'; return; }
+  if (!email) { toast('Entrez un email.'); return; }
 
-  if (resultEl) resultEl.innerHTML = '⏳ Recherche de l\'utilisateur...';
+  diagEl.style.display = 'block';
+  contentEl.innerHTML = '⏳ Diagnostic en cours...';
+  actionsEl.innerHTML = '';
+  diagUserId = null;
 
   try {
-    // Chercher l'utilisateur par email dans profiles
+    // 1. Chercher le profil
     const profiles = await sb.select('profiles', `email=eq.${encodeURIComponent(email)}`, currentToken);
+
     if (!Array.isArray(profiles) || profiles.length === 0) {
-      if (resultEl) resultEl.innerHTML = `<span style="color:red">❌ Aucun compte trouvé pour ${email}. Vérifiez l'email.</span>`;
+      contentEl.innerHTML = `<span style="color:red;font-weight:800;">❌ Aucun compte trouvé pour ${email}</span><br>
+        <span style="color:var(--text-soft);font-size:0.85rem;">L'utilisateur ne s'est peut-être pas encore inscrit.</span>`;
       return;
     }
 
-    const userId = profiles[0].id;
-    const firstName = profiles[0].first_name || 'Parent';
-    const planAmounts = { solo: 2500, fam: 4000, ann: 20000 };
-    const amount = planAmounts[plan];
+    const profile = profiles[0];
+    diagUserId = profile.id;
+    const firstName = profile.first_name || '?';
+    const lastName = profile.last_name || '';
+    const plan = document.getElementById('rec-plan')?.value || 'solo';
 
-    if (resultEl) resultEl.innerHTML = `⏳ Création de l'abonnement pour ${firstName}...`;
+    // 2. Chercher les abonnements
+    const subs = await sb.select('subscriptions', `user_id=eq.${profile.id}&order=created_at.desc`, currentToken);
 
-    // Vérifier si abonnement existe déjà
-    const existingSubs = await sb.select('subscriptions', `user_id=eq.${userId}&status=eq.active`, currentToken);
-    if (Array.isArray(existingSubs) && existingSubs.length > 0) {
-      if (resultEl) resultEl.innerHTML = `<span style="color:orange">⚠️ ${firstName} a déjà un abonnement actif (${existingSubs[0].plan}).</span>`;
-      return;
+    // 3. Chercher les enfants
+    const children = await sb.select('children', `user_id=eq.${profile.id}`, currentToken);
+
+    // 4. Afficher le diagnostic
+    const subCount = Array.isArray(subs) ? subs.length : 0;
+    const childCount = Array.isArray(children) ? children.length : 0;
+    const activeSub = Array.isArray(subs) ? subs.find(s => s.status === 'active') : null;
+
+    let html = `
+      <div style="font-weight:800;font-size:1rem;margin-bottom:0.75rem;">👤 ${firstName} ${lastName} — ${email}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+        <div style="background:${subCount > 0 ? '#CFFAEA' : '#FFE4E4'};border-radius:10px;padding:0.75rem;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:800;">${subCount}</div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--text-soft);">Abonnement(s)</div>
+        </div>
+        <div style="background:${activeSub ? '#CFFAEA' : '#FFE4E4'};border-radius:10px;padding:0.75rem;text-align:center;">
+          <div style="font-size:1.5rem;">${activeSub ? '✅' : '❌'}</div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--text-soft);">Abonnement actif</div>
+        </div>
+        <div style="background:${childCount > 0 ? '#CFFAEA' : '#FFF3E0'};border-radius:10px;padding:0.75rem;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:800;">${childCount}</div>
+          <div style="font-size:0.78rem;font-weight:700;color:var(--text-soft);">Enfant(s)</div>
+        </div>
+      </div>`;
+
+    if (activeSub) {
+      const start = new Date(activeSub.created_at);
+      const end = new Date(start);
+      end.setDate(end.getDate() + (activeSub.plan === 'ann' ? 365 : 30));
+      const daysLeft = Math.max(0, Math.ceil((end - new Date()) / 86400000));
+      html += `<div style="background:white;border-radius:10px;padding:0.75rem;margin-bottom:0.75rem;font-size:0.85rem;">
+        <strong>Abonnement actif :</strong> ${activeSub.plan} — ${activeSub.amount} FCFA — Expire dans ${daysLeft} jour(s)
+      </div>`;
     }
 
-    // Créer l'abonnement
+    if (childCount > 0) {
+      html += `<div style="font-size:0.85rem;color:var(--text-mid);margin-bottom:0.5rem;"><strong>Enfants :</strong> ${children.map(c => c.name + ' (' + c.age + ')').join(', ')}</div>`;
+    }
+
+    // Problèmes détectés
+    const problems = [];
+    if (!activeSub) problems.push('❌ Pas d\'abonnement actif — la personne ne peut pas accéder au dashboard');
+    if (childCount === 0) problems.push('⚠️ Aucun enfant enregistré — le dashboard sera vide');
+
+    if (problems.length > 0) {
+      html += `<div style="background:#FFF3E0;border-radius:10px;padding:0.75rem;margin-bottom:0.5rem;">
+        <strong style="color:var(--peach-dark);">Problèmes détectés :</strong><br>
+        ${problems.map(p => `<div style="font-size:0.85rem;margin-top:0.3rem;">${p}</div>`).join('')}
+      </div>`;
+    } else {
+      html += `<div style="background:#CFFAEA;border-radius:10px;padding:0.75rem;color:#03A97A;font-weight:700;">
+        ✅ Tout semble correct. Si la personne ne peut toujours pas accéder, le problème est peut-être son mot de passe ou son token expiré.
+      </div>`;
+    }
+
+    contentEl.innerHTML = html;
+
+    // Actions selon les problèmes
+    actionsEl.innerHTML = '';
+    if (!activeSub) {
+      const planAmounts = { solo: 2500, fam: 4000, ann: 20000 };
+      const planNames = { solo: 'Solo', fam: 'Famille', ann: 'Annuel' };
+      const btn1 = document.createElement('button');
+      btn1.className = 'bsm';
+      btn1.style.cssText = 'background:var(--peach);color:white;border-color:var(--peach);';
+      btn1.textContent = `✅ Créer abonnement ${planNames[plan]} (${planAmounts[plan]} FCFA)`;
+      btn1.onclick = () => adminFixSub(profile.id, email, firstName, plan, planAmounts[plan]);
+      actionsEl.appendChild(btn1);
+    }
+    if (childCount === 0) {
+      const btn2 = document.createElement('button');
+      btn2.className = 'bsm';
+      btn2.style.cssText = 'background:var(--mint);color:white;border-color:var(--mint);';
+      btn2.textContent = '👶 Ouvrir formulaire ajout enfant';
+      btn2.onclick = () => {
+        toast('Demandez à la personne de se connecter et d\'ajouter son enfant via Mon Compte → + Ajouter un enfant');
+      };
+      actionsEl.appendChild(btn2);
+    }
+
+    // Toujours proposer de renvoyer l'email de confirmation
+    const btnEmail = document.createElement('button');
+    btnEmail.className = 'bsm';
+    btnEmail.textContent = '📧 Renvoyer email de confirmation';
+    btnEmail.onclick = () => adminResendEmail(email, firstName, plan);
+    actionsEl.appendChild(btnEmail);
+
+  } catch(e) {
+    console.error('adminDiagnose error:', e);
+    contentEl.innerHTML = `<span style="color:red;">❌ Erreur : ${e.message}</span>`;
+  }
+}
+
+async function adminFixSub(userId, email, firstName, plan, amount) {
+  try {
     await sb.insert('subscriptions', {
       user_id: userId,
       plan,
       amount,
       status: 'active',
-      notchpay_ref: `admin_recovery_${Date.now()}`
+      notchpay_ref: `admin_fix_${Date.now()}`
     }, currentToken);
 
-    // Envoyer email de confirmation
-    await fetch('/.netlify/functions/send-confirmation', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, firstName, plan, amount, type: 'payment' })
-    }).catch(() => {});
-
-    if (resultEl) resultEl.innerHTML = `<span style="color:green">✅ Abonnement ${plan} créé pour ${firstName} (${email}). Email de confirmation envoyé.</span>`;
+    await adminResendEmail(email, firstName, plan, amount);
     toast(`✅ Abonnement créé pour ${email}`);
-
-    // Refresh stats
-    loadAdminData();
-
+    adminDiagnose(); // Re-diagnostiquer
   } catch(e) {
-    console.error('adminCreateSub error:', e);
-    if (resultEl) resultEl.innerHTML = `<span style="color:red">❌ Erreur : ${e.message}</span>`;
+    toast('Erreur création abonnement : ' + e.message);
   }
+}
+
+async function adminResendEmail(email, firstName, plan, amount) {
+  const planAmounts = { solo: 2500, fam: 4000, ann: 20000 };
+  await fetch('/.netlify/functions/send-confirmation', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      firstName: firstName || 'Cher parent',
+      plan,
+      amount: amount || planAmounts[plan] || 2500,
+      type: 'payment'
+    })
+  }).catch(() => {});
+  toast(`📧 Email envoyé à ${email}`);
 }
 
 async function adminRecoverStripe() {
@@ -3166,16 +3272,16 @@ async function adminRecoverStripe() {
 
     if (data.success) {
       const msg = data.already_exists
-        ? `⚠️ Abonnement déjà existant pour ce paiement.`
-        : `✅ Abonnement récupéré — Plan ${data.plan}, ${data.amount} FCFA, email ${data.email}`;
-      if (resultEl) resultEl.innerHTML = `<span style="color:${data.already_exists ? 'orange' : 'green'}">${msg}</span>`;
+        ? `⚠️ Abonnement déjà existant. Email : ${data.email}`
+        : `✅ Récupéré — Plan ${data.plan}, ${data.amount} FCFA, ${data.email}`;
+      if (resultEl) resultEl.innerHTML = `<span style="color:${data.already_exists ? 'orange' : 'green'};font-weight:800;">${msg}</span>`;
       toast('Récupération Stripe réussie ✅');
       loadAdminData();
     } else {
-      if (resultEl) resultEl.innerHTML = `<span style="color:red">❌ Échec : ${data.error || 'Paiement non confirmé'}</span>`;
+      if (resultEl) resultEl.innerHTML = `<span style="color:red;font-weight:800;">❌ ${data.error || 'Paiement non confirmé'}</span>`;
     }
   } catch(e) {
-    if (resultEl) resultEl.innerHTML = `<span style="color:red">❌ Erreur réseau : ${e.message}</span>`;
+    if (resultEl) resultEl.innerHTML = `<span style="color:red;">❌ Erreur : ${e.message}</span>`;
   }
 }
 
