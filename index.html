@@ -390,7 +390,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <p class="hero-sub">Tu remplis le profil une seule fois. YoMuna s'occupe du reste — pour chaque enfant, à chaque instant, partout dans le monde.</p>
       <div class="hero-cta">
         <button class="btn-cta" onclick="showS('signup')">🌙 Créer notre premier rituel</button>
-        <button class="btn-ghost" onclick="showS('login')">Se connecter</button>
+        <button class="btn-ghost" onclick="showTrial()" style="background:white;border:2.5px solid var(--peach);color:var(--peach-dark);">✨ Tester gratuitement</button>
       </div>
       <div class="trust">
         <div class="trust-i">✅ Sans engagement</div>
@@ -408,7 +408,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
         </div>
         <div class="phone-body">
           <div class="notif n1"><div class="ntype">📖 Histoire du soir</div><div class="ntitle">Amina et le génie du Mont Cameroun</div><div class="nprev">Il était une fois une petite fille courageuse qui trouva une lampe dorée...</div></div>
-          <div class="notif n2"><div class="ntype">🎮 Activité demain</div><div class="ntitle">L'orchestre de la cuisine</div><div class="nprev">Canettes, casserole et riz — crée des instruments de musique !</div></div>
+          <div class="notif n2"><div class="ntype">🎮 Activité de la semaine</div><div class="ntitle">L'orchestre de la cuisine</div><div class="nprev">Canettes, casserole et riz — crée des instruments de musique !</div></div>
           <div class="notif n3"><div class="ntype">💡 Conseil du jour</div><div class="ntitle">Gérer les caprices au coucher</div><div class="nprev">Un rituel fixe de 20 min aide ton enfant à anticiper...</div></div>
         </div>
         <div class="phone-ft">❤️ Ajouter aux favoris · 🔄 Nouvelle histoire</div>
@@ -426,7 +426,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="steps">
       <div class="step"><div class="snum">1</div><span class="sico">📝</span><div class="stitle">Tu crées ton profil</div><div class="sdesc">Ton pays, ta langue (FR ou EN). 2 minutes chrono.</div></div>
       <div class="step"><div class="snum">2</div><span class="sico">👶</span><div class="stitle">Tu présentes tes enfants</div><div class="sdesc">Prénom, âge, centres d'intérêt, défi du moment. Jusqu'à 4 enfants de 3 à 10 ans.</div></div>
-      <div class="step"><div class="snum">3</div><span class="sico">✅</span><div class="stitle">Tu choisis ton plan</div><div class="sdesc">Mensuel ou annuel. Mobile Money, Wave ou carte. Résiliable à tout moment.</div></div>
+      <div class="step"><div class="snum">3</div><span class="sico">✅</span><div class="stitle">Tu choisis ton plan</div><div class="sdesc">Mensuel ou annuel. MTN MoMo ou Orange Money. Résiliable à tout moment.</div></div>
       <div class="step"><div class="snum">4</div><span class="sico">🌙</span><div class="stitle">Vos rituels commencent</div><div class="sdesc">Histoire du soir, activité, conseil parental — personnalisés pour chaque enfant, chaque jour.</div></div>
     </div>
   </div>
@@ -445,27 +445,46 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   </div>
 </section>
 
-<section class="sec">
+<section class="sec" style="background:var(--cream-dark);">
   <div class="sec-in">
     <div class="cult-in">
       <div>
-        <div class="flags">
-          <div class="flag"><span class="fem">🇨🇲</span><div class="fn">Cameroun</div></div>
-          <div class="flag"><span class="fem">🇫🇷</span><div class="fn">France</div></div>
-          <div class="flag"><span class="fem">🇨🇦</span><div class="fn">Canada</div></div>
-          <div class="flag"><span class="fem">🇬🇧</span><div class="fn">UK</div></div>
-          <div class="flag"><span class="fem">🇬🇦</span><div class="fn">Gabon</div></div>
-          <div class="flag"><span class="fem">🇨🇬</span><div class="fn">Congo</div></div>
-          <div class="flag"><span class="fem">🇨🇮</span><div class="fn">Côte d'Ivoire</div></div>
-          <div class="flag"><span class="fem">🌍</span><div class="fn">& Plus</div></div>
-        </div>
+        <div class="stag">🌍 Un monde adapté à VOUS</div>
+        <h2 class="sh">Votre pays de résidence.<br>La culture de votre choix.</h2>
+        <p style="color:var(--text-soft);font-size:0.95rem;line-height:1.7;margin-bottom:1.5rem;font-weight:600;">Tu vis à Paris mais tu veux que ton enfant grandisse avec les décors du Cameroun ? Tu es à Douala mais tu veux des histoires ancrées en Côte d'Ivoire ? YoMuna s'adapte à toi — pas l'inverse.</p>
+        <div class="cf"><div class="cf-i">🗺️</div><div><div class="cf-t">Tu choisis l'univers culturel</div><div class="cf-d">Pour chaque enfant, tu sélectionnes le pays dont tu veux que les histoires s'inspirent — indépendamment de ton pays de résidence.</div></div></div>
+        <div class="cf"><div class="cf-i">🗣️</div><div><div class="cf-t">Français & Anglais</div><div class="cf-d">Choisis la langue ou les deux. Parfait pour les familles bilingues et la diaspora.</div></div></div>
+        <div class="cf"><div class="cf-i">🔄</div><div><div class="cf-t">Modifiable à tout moment</div><div class="cf-d">Tu peux changer l'ancrage culturel de chaque enfant quand tu veux depuis ton espace membre.</div></div></div>
       </div>
       <div>
-        <div class="stag">🌍 Un monde adapté à VOUS</div>
-        <h2 class="sh">YoMuna parle votre langue et connaît votre culture</h2>
-        <div class="cf"><div class="cf-i">🗺️</div><div><div class="cf-t">Histoires ancrées localement</div><div class="cf-d">Les lieux, les noms, les traditions de ton pays apparaissent dans les histoires.</div></div></div>
-        <div class="cf"><div class="cf-i">🗣️</div><div><div class="cf-t">Français & Anglais</div><div class="cf-d">Choisis la langue ou les deux. Parfait pour les familles bilingues.</div></div></div>
-        <div class="cf"><div class="cf-i">🌏</div><div><div class="cf-t">Tu vis en France mais veux l'univers africain ?</div><div class="cf-d">Tu personnalises l'ancrage culturel de ton choix, peu importe où tu es.</div></div></div>
+        <div style="background:white;border-radius:24px;padding:1.75rem;box-shadow:0 15px 40px rgba(0,0,0,0.08);border:2px solid var(--border);">
+          <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:0.5rem;">🌍 Univers culturel de l'histoire</div>
+          <div style="font-size:0.85rem;color:var(--text-soft);font-weight:600;margin-bottom:1.25rem;">Choisis le pays qui inspire les histoires de ton enfant</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+            <div style="background:var(--cream);border-radius:12px;padding:0.75rem;display:flex;align-items:center;gap:0.5rem;border:2px solid var(--peach);cursor:default;">
+              <span style="font-size:1.4rem;">🇨🇲</span><span style="font-weight:800;font-size:0.85rem;color:var(--dark);">Cameroun</span>
+              <span style="margin-left:auto;background:var(--peach);color:white;font-size:0.65rem;font-weight:800;padding:0.15rem 0.45rem;border-radius:50px;">Sélectionné</span>
+            </div>
+            <div style="background:var(--cream);border-radius:12px;padding:0.75rem;display:flex;align-items:center;gap:0.5rem;cursor:default;">
+              <span style="font-size:1.4rem;">🇨🇮</span><span style="font-weight:700;font-size:0.85rem;color:var(--mid);">Côte d'Ivoire</span>
+            </div>
+            <div style="background:var(--cream);border-radius:12px;padding:0.75rem;display:flex;align-items:center;gap:0.5rem;cursor:default;">
+              <span style="font-size:1.4rem;">🇬🇦</span><span style="font-weight:700;font-size:0.85rem;color:var(--mid);">Gabon</span>
+            </div>
+            <div style="background:var(--cream);border-radius:12px;padding:0.75rem;display:flex;align-items:center;gap:0.5rem;cursor:default;">
+              <span style="font-size:1.4rem;">🇸🇳</span><span style="font-weight:700;font-size:0.85rem;color:var(--mid);">Sénégal</span>
+            </div>
+            <div style="background:var(--cream);border-radius:12px;padding:0.75rem;display:flex;align-items:center;gap:0.5rem;cursor:default;">
+              <span style="font-size:1.4rem;">🇨🇬</span><span style="font-weight:700;font-size:0.85rem;color:var(--mid);">Congo</span>
+            </div>
+            <div style="background:var(--cream);border-radius:12px;padding:0.75rem;display:flex;align-items:center;gap:0.5rem;cursor:default;">
+              <span style="font-size:1.4rem;">🌍</span><span style="font-weight:700;font-size:0.85rem;color:var(--mid);">Autre pays...</span>
+            </div>
+          </div>
+          <div style="margin-top:1rem;padding:0.85rem;background:var(--orange-pale);border-radius:12px;font-size:0.82rem;color:var(--peach-dark);font-weight:700;text-align:center;">
+            ✨ Les histoires s'adaptent automatiquement au pays choisi
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -473,8 +492,8 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 
 <section class="sec testi-bg">
   <div class="sec-in">
-    <div class="stag">❤️ Elles l'adorent</div>
-    <h2 class="sh">Des mamans qui ont retrouvé la magie du soir</h2>
+    <div class="stag">❤️ Ils l'adorent</div>
+    <h2 class="sh">Des parents qui ont retrouvé la magie du soir</h2>
     <div class="testi-grid">
       <div class="tc"><div class="ts">★★★★★</div><div class="tq">"</div><div class="tt">Avant YoMuna, je répétais les mêmes 3 histoires depuis des mois. Maintenant ma fille attend le soir avec impatience ! Le fait que ça soit ancré dans notre culture camerounaise, c'est ce qui fait toute la différence.</div><div class="ta"><div class="tav">👩🏾</div><div><div class="tn">Christelle N.</div><div class="td">Maman de 2 enfants · Douala</div></div></div></div>
       <div class="tc"><div class="ts">★★★★★</div><div class="tq">"</div><div class="tt">Je vis en France mais je voulais que mon fils grandisse avec des références africaines. YoMuna est exactement ça. Les personnages ont des noms africains, les histoires se passent au Cameroun. Mon fils est fier de ses racines.</div><div class="ta"><div class="tav">👩🏾‍💼</div><div><div class="tn">Sandra M.</div><div class="td">Maman de 1 enfant · Paris, France</div></div></div></div>
@@ -487,13 +506,13 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
   <div class="sec-in">
     <div class="stag">💳 Tarifs simples</div>
     <h2 class="sh">Investis dans les moments magiques</h2>
-    <p class="sp">Moins cher qu'un livre pour enfant. Mobile Money, Wave ou carte bancaire. Sans engagement.</p>
+    <p class="sp">Moins cher qu'un livre pour enfant. MTN Mobile Money ou Orange Money. Sans engagement.</p>
     <div class="price-grid">
       <div class="pc">
         <div class="pname">Solo</div>
         <div class="pamt"><span class="pcur">FCFA </span>2 500</div>
         <div class="pper">par mois</div>
-        <ul class="pf"><li>1 enfant · 3 à 10 ans</li><li>Histoire du soir personnalisée</li><li>Activité créative adaptée</li><li>Conseil parental ciblé</li><li>3 moments/jour</li><li>Favoris & bibliothèque enfant</li></ul>
+        <ul class="pf"><li>1 enfant · 3 à 10 ans</li><li>Histoire du soir personnalisée</li><li>Activité créative adaptée</li><li>Conseil parental ciblé</li><li>Apprentissage du jour</li><li>Favoris & bibliothèque enfant</li></ul>
         <button class="btn-p btn-po" onclick="showS('signup')">Commencer</button>
       </div>
       <div class="pc feat">
@@ -501,7 +520,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
         <div class="pname">Famille</div>
         <div class="pamt"><span class="pcur">FCFA </span>4 000</div>
         <div class="pper">par mois</div>
-        <ul class="pf"><li>Jusqu'à 4 enfants</li><li>Tout le plan Solo</li><li>Profil unique par enfant</li><li>5 moments/jour</li><li>Bilan hebdomadaire famille</li><li>Accès prioritaire nouveautés</li></ul>
+        <ul class="pf"><li>Jusqu'à 4 enfants</li><li>Tout le plan Solo</li><li>Profil unique par enfant</li><li>Choix culturel par enfant</li><li>Bilan hebdomadaire famille</li><li>Accès prioritaire nouveautés</li></ul>
         <button class="btn-p btn-pm" onclick="showS('signup')">Choisir ce plan</button>
       </div>
       <div class="pc">
@@ -509,7 +528,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
         <div class="pamt"><span class="pcur">FCFA </span>20 000</div>
         <div class="pper">pour 12 mois complets</div>
         <div class="psave">🎉 Économise jusqu'à 28 000 FCFA/an</div>
-        <ul class="pf"><li>Jusqu'à 4 enfants inclus</li><li>12 mois d'accès complet</li><li>10 moments/jour</li><li>Badge "Famille YoMuna" exclusif</li><li>Support prioritaire</li><li>Avant-première sur les nouveautés</li></ul>
+        <ul class="pf"><li>Jusqu'à 4 enfants inclus</li><li>12 mois d'accès complet</li><li>Tout le plan Famille</li><li>Badge "Famille YoMuna" exclusif</li><li>Support prioritaire</li><li>Avant-première sur les nouveautés</li></ul>
         <button class="btn-p btn-po" onclick="showS('signup')">Prendre l'annuel</button>
       </div>
     </div>
@@ -523,7 +542,7 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
     <div class="fi"><div class="fq" onclick="faqT(this)">Comment YoMuna personnalise les rituels pour mon enfant ?<span class="ftog">+</span></div><div class="fa">Tu remplis le profil de ton enfant une seule fois : prénom, âge, centres d'intérêt, défi parental et ton pays. YoMuna utilise ces informations pour créer un univers unique chaque jour — les histoires mentionnent le prénom de ton enfant, les lieux de ton pays, et les activités sont calibrées pour son stade de développement exact.</div></div>
     <div class="fi"><div class="fq" onclick="faqT(this)">Est-ce que ça marche si je vis en France mais veux un univers différent pour mon enfant ?<span class="ftog">+</span></div><div class="fa">Absolument. Tu choisis ton pays de résidence ET l'ancrage culturel de ton choix pour les histoires. YoMuna s'adapte à ta famille, pas l'inverse.</div></div>
     <div class="fi"><div class="fq" onclick="faqT(this)">YoMuna convient pour quel âge ?<span class="ftog">+</span></div><div class="fa">YoMuna est conçu pour les enfants de 3 à 10 ans — l'âge où les rituels du soir construisent les fondations émotionnelles et culturelles de l'enfant. Pour les 3-6 ans : histoires courtes, jeux d'éveil, langage. Pour les 7-10 ans : aventures, activités créatives, autonomie.</div></div>
-    <div class="fi"><div class="fq" onclick="faqT(this)">Comment se passe le paiement ? Je n'ai pas de carte bancaire.<span class="ftog">+</span></div><div class="fa">Aucun problème ! YoMuna accepte MTN Mobile Money, Orange Money, Wave et toutes les cartes bancaires. Le prélèvement est automatique chaque mois — tu n'as rien à faire.</div></div>
+    <div class="fi"><div class="fq" onclick="faqT(this)">Comment se passe le paiement ?<span class="ftog">+</span></div><div class="fa">YoMuna accepte MTN Mobile Money et Orange Money via NotchPay. Après avoir choisi votre mode de paiement, vous serez redirigé vers une page sécurisée NotchPay pour finaliser la transaction.</div></div>
     <div class="fi"><div class="fq" onclick="faqT(this)">Puis-je résilier à tout moment ?<span class="ftog">+</span></div><div class="fa">Oui, sans justification et sans frais. Tu peux résilier depuis ton espace membre en un clic. Tu continues à avoir accès à YoMuna jusqu'à la fin de ta période payée.</div></div>
     <div class="fi"><div class="fq" onclick="faqT(this)">Le plan annuel à 20 000 FCFA — pour combien d'enfants ?<span class="ftog">+</span></div><div class="fa">Le plan annuel inclut jusqu'à 4 enfants pendant 12 mois complets. Que tu aies 1 ou 4 enfants, tu paies le même prix. Comparé au plan Famille mensuel (4 000 FCFA × 12 = 48 000 FCFA), tu économises 28 000 FCFA sur l'année.</div></div>
     <div class="fi"><div class="fq" onclick="faqT(this)">Combien de moments puis-je créer par jour ?<span class="ftog">+</span></div><div class="fa">Chaque plan inclut un quota journalier : Solo 4 créations/jour, Famille 6 créations/jour, Annuel 12 créations/jour. Une "création" c'est une nouvelle histoire, activité, conseil ou apprentissage. Les contenus déjà générés restent toujours accessibles même si le quota est atteint. Le compteur se remet à zéro chaque nuit à minuit.</div></div>
@@ -637,7 +656,23 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
           <div class="fg"><label>Prénom</label><input type="text" class="kn" placeholder="Amina" /></div>
           <div class="fg"><label>Sexe</label><select class="kg"><option value="fille">👧 Fille</option><option value="garcon">👦 Garçon</option></select></div>
         </div>
-        <div class="fg"><label>Âge</label><select class="ka"><option>0–1 an</option><option>2–3 ans</option><option selected>4–6 ans</option><option>7–9 ans</option><option>10–12 ans</option><option>13–17 ans</option></select></div>
+        <div class="fg"><label>Âge</label><select class="ka"><option>3–4 ans</option><option selected>5–6 ans</option><option>7–8 ans</option><option>9–10 ans</option></select></div>
+        <div class="fg">
+          <label>🌍 Univers culturel des histoires</label>
+          <select class="kculture">
+            <option value="Cameroun">🇨🇲 Cameroun</option>
+            <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+            <option value="Gabon">🇬🇦 Gabon</option>
+            <option value="Congo">🇨🇬 Congo</option>
+            <option value="Sénégal">🇸🇳 Sénégal</option>
+            <option value="Mali">🇲🇱 Mali</option>
+            <option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="Canada">🇨🇦 Canada</option>
+            <option value="monde">🌍 Monde entier</option>
+          </select>
+          <span style="font-size:0.75rem;color:var(--text-soft);font-weight:600;display:block;margin-top:0.3rem;">Les histoires s'inspireront de ce pays — indépendamment de ton lieu de résidence</span>
+        </div>
         <div class="fg"><label>Centres d'intérêt (optionnel)</label><input type="text" class="ki" placeholder="danse, foot, dessin..." /></div>
         <div class="fg"><label>Défi parental du moment (optionnel)</label><input type="text" class="kc" placeholder="caprices, sommeil, devoirs..." /></div>
       </div>
@@ -656,19 +691,135 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
       <div class="plano" id="po-ann" onclick="selPlan('ann','20000')"><div class="plbest">🎉 Meilleur deal</div><div class="pln">Annuel</div><div class="plp">20 000</div><div class="plper">FCFA/an • 4 enfants</div></div>
     </div>
     <label style="margin-bottom:0.6rem">Mode de paiement</label>
-    <div class="pmopts">
+    <div class="pmopts" style="grid-template-columns:1fr 1fr;">
       <div class="pmo sel" id="pm-mtn" onclick="selPay('mtn')"><span class="pmico">📱</span><div class="pmn">MTN MoMo</div></div>
       <div class="pmo" id="pm-or" onclick="selPay('or')"><span class="pmico">🟠</span><div class="pmn">Orange Money</div></div>
-      <div class="pmo" id="pm-wave" onclick="selPay('wave')"><span class="pmico">🌊</span><div class="pmn">Wave</div></div>
-      <div class="pmo" id="pm-card" onclick="selPay('card')"><span class="pmico">💳</span><div class="pmn">Carte bancaire</div></div>
     </div>
-    <div class="fg"><label id="plbl">Numéro MTN MoMo</label><input type="tel" id="pnum" placeholder="+237 6XX XXX XXX" /></div>
-    <button class="bfull bpm" onclick="initiatePayment()">🚀 Activer mon abonnement YoMuna</button>
+    <div style="background:var(--cream);border-radius:12px;padding:0.85rem;margin-bottom:1rem;font-size:0.82rem;color:var(--text-soft);font-weight:600;text-align:center;">
+      💳 Vous serez redirigé vers NotchPay pour finaliser le paiement en toute sécurité
+    </div>
+    <button class="bfull bpm" onclick="initiatePayment()">🚀 Payer et activer mon abonnement</button>
     <button class="bfull bback" onclick="goStep(2)">← Retour</button>
     <div style="text-align:center;margin-top:1rem;font-size:0.78rem;color:var(--text-soft);font-weight:700">🔒 Paiement 100% sécurisé via NotchPay • Résiliation en 1 clic</div>
   </div>
 </div>
 </div>
+</div>
+
+<!-- TRIAL MODAL -->
+<div class="modal-overlay hidden" id="trial-modal" onclick="if(event.target===this)closeTrial()">
+  <div class="modal-box" style="max-width:520px;padding:0;overflow:hidden;">
+
+    <!-- Étape 1 : formulaire -->
+    <div id="trial-step1">
+      <div style="background:linear-gradient(135deg,var(--dark),#6B4226);padding:1.75rem 2rem;">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--peach);">Yo<span style="color:var(--yellow);">●</span><span style="color:white;">Muna</span></div>
+        <div style="color:white;font-weight:800;font-size:1.15rem;margin-top:0.5rem;">Teste YoMuna gratuitement ✨</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-top:0.25rem;">Aucun paiement requis — vois le résultat en 10 secondes</div>
+      </div>
+      <div style="padding:1.75rem 2rem;">
+        <div class="error-msg" id="err-trial"></div>
+        <div class="fg">
+          <label>Prénom de ton enfant</label>
+          <input type="text" id="trial-name" placeholder="Amina, Noah, Sofia..." />
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label>Âge</label>
+            <select id="trial-age">
+              <option value="3-4 ans">3–4 ans</option>
+              <option value="5-6 ans" selected>5–6 ans</option>
+              <option value="7-8 ans">7–8 ans</option>
+              <option value="9-10 ans">9–10 ans</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Genre</label>
+            <select id="trial-gender">
+              <option value="fille">👧 Fille</option>
+              <option value="garcon">👦 Garçon</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Ton email <span style="color:var(--text-soft);font-weight:600;">(pour recevoir le résultat)</span></label>
+          <input type="email" id="trial-email" placeholder="ton@email.com" />
+        </div>
+        <div class="fg">
+          <label>Pays</label>
+          <select id="trial-country">
+            <option value="Cameroun">🇨🇲 Cameroun</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="Canada">🇨🇦 Canada</option>
+            <option value="Gabon">🇬🇦 Gabon</option>
+            <option value="Congo">🇨🇬 Congo</option>
+            <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+            <option value="Sénégal">🇸🇳 Sénégal</option>
+            <option value="autre">🌍 Autre pays</option>
+          </select>
+        </div>
+        <button class="bfull bpm" onclick="runTrial()">✨ Générer mon aperçu gratuit</button>
+        <div style="text-align:center;margin-top:0.75rem;font-size:0.8rem;color:var(--text-soft);">Aucun paiement · Aucune carte requise · Résultat en 10 secondes</div>
+      </div>
+    </div>
+
+    <!-- Étape 2 : résultats -->
+    <div id="trial-step2" class="hidden">
+      <div style="background:linear-gradient(135deg,var(--dark),#6B4226);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:1.4rem;font-weight:900;color:var(--peach);">Yo<span style="color:var(--yellow);">●</span><span style="color:white;">Muna</span></div>
+          <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;" id="trial-subtitle">Aperçu pour ton enfant</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:50px;padding:0.3rem 0.9rem;color:white;font-size:0.78rem;font-weight:800;">APERÇU GRATUIT</div>
+      </div>
+
+      <div style="padding:1.5rem 1.75rem;max-height:65vh;overflow-y:auto;">
+
+        <!-- Histoire -->
+        <div style="background:var(--light);border-radius:16px;padding:1.25rem;margin-bottom:1rem;border-left:4px solid var(--yellow);">
+          <div style="font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--yellow);margin-bottom:0.5rem;">📖 Histoire du soir</div>
+          <div style="font-weight:800;font-size:1rem;color:var(--dark);margin-bottom:0.5rem;" id="trial-story-title">Génération...</div>
+          <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;" id="trial-story-text">YoMuna crée une histoire unique...</div>
+          <!-- Effet flou sur la fin -->
+          <div id="trial-story-blur" class="hidden" style="position:relative;margin-top:0.5rem;">
+            <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;filter:blur(4px);user-select:none;" id="trial-story-blur-text"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent,white 70%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:0.5rem;">
+              <span style="font-size:0.78rem;font-weight:800;color:var(--peach-dark);">🔒 Suite accessible avec l'abonnement</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activité -->
+        <div style="background:var(--light);border-radius:16px;padding:1.25rem;margin-bottom:1rem;border-left:4px solid var(--mint);">
+          <div style="font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#03A97A;margin-bottom:0.5rem;">🎮 Activité de la semaine</div>
+          <div style="font-weight:800;font-size:1rem;color:var(--dark);margin-bottom:0.5rem;" id="trial-activity-title">Génération...</div>
+          <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;filter:blur(3px);user-select:none;" id="trial-activity-text">Aperçu flou</div>
+          <div style="margin-top:0.5rem;font-size:0.78rem;font-weight:800;color:#03A97A;">🔒 Détails complets avec l'abonnement</div>
+        </div>
+
+        <!-- Apprentissage -->
+        <div style="background:var(--light);border-radius:16px;padding:1.25rem;margin-bottom:1.5rem;border-left:4px solid var(--purple);">
+          <div style="font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--purple);margin-bottom:0.5rem;">🧠 Apprentissage du jour</div>
+          <div style="font-weight:800;font-size:1rem;color:var(--dark);margin-bottom:0.5rem;" id="trial-learning-title">Génération...</div>
+          <div style="font-size:0.88rem;color:var(--mid);line-height:1.7;filter:blur(3px);user-select:none;" id="trial-learning-text">Aperçu flou</div>
+          <div style="margin-top:0.5rem;font-size:0.78rem;font-weight:800;color:var(--purple);">🔒 Contenu complet avec l'abonnement</div>
+        </div>
+
+        <!-- CTA abonnement -->
+        <div style="background:linear-gradient(135deg,var(--dark),#6B4226);border-radius:16px;padding:1.5rem;text-align:center;">
+          <div style="color:var(--yellow);font-weight:800;font-size:1rem;margin-bottom:0.4rem;">Tu aimes ce que tu vois ? 🌙</div>
+          <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:1.25rem;">Débloquer tout le contenu, chaque jour, pour chaque enfant.</div>
+          <button onclick="closeTrial();showS('signup');" style="width:100%;padding:0.95rem;border-radius:50px;border:none;background:var(--peach);color:white;font-weight:800;font-size:1rem;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:0.6rem;">
+            🚀 S'abonner — dès 2 500 FCFA/mois
+          </button>
+          <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;">Sans engagement · MTN MoMo · Orange Money</div>
+        </div>
+
+        <button onclick="closeTrial()" style="width:100%;padding:0.65rem;border-radius:50px;border:2px solid var(--border);background:white;color:var(--text-soft);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:0.75rem;font-size:0.85rem;">Fermer</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <!-- ADMIN LOGIN -->
@@ -903,12 +1054,48 @@ input:focus,select:focus{border-color:var(--peach);background:white;}
 
 <!-- EXPIRED MODAL -->
 <div class="modal-overlay hidden" id="expired-modal">
-  <div class="modal-box" style="text-align:center;">
-    <div style="font-size:3rem;margin-bottom:1rem;">⏰</div>
-    <div class="modal-title">Votre abonnement a expiré</div>
-    <p style="color:var(--text-mid);margin-bottom:1.5rem;line-height:1.7;">Pour continuer à accéder à YoMuna et générer des contenus pour vos enfants, renouvelez votre abonnement.</p>
-    <button class="modal-close" onclick="renewSubscription()">🚀 Renouveler mon abonnement</button>
-    <button onclick="logoutUser()" style="width:100%;padding:0.7rem;border-radius:50px;border:2px solid var(--border);background:white;color:var(--text-soft);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:0.75rem;">Se déconnecter</button>
+  <div class="modal-box" style="text-align:center;max-width:480px;">
+    <div style="font-size:3rem;margin-bottom:0.75rem;">⏰</div>
+    <div class="modal-title" style="margin-bottom:0.5rem;">Votre abonnement a expiré</div>
+    <p style="color:var(--text-mid);margin-bottom:1.5rem;line-height:1.7;font-size:0.9rem;">Vos enfants vous attendent ! Renouvelez en quelques secondes pour retrouver vos histoires du soir.</p>
+
+    <!-- Sélection du plan -->
+    <div style="margin-bottom:1.25rem;">
+      <div style="font-size:0.8rem;font-weight:800;color:var(--text-soft);margin-bottom:0.6rem;text-align:left;">Choisissez votre plan :</div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div onclick="selectRenewPlan('solo','2500',this)" class="renew-plan-opt renew-sel" style="border:2px solid var(--peach);border-radius:14px;padding:0.85rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:rgba(255,140,105,0.05);">
+          <div style="text-align:left;"><div style="font-weight:800;font-size:0.9rem;">Solo</div><div style="font-size:0.78rem;color:var(--text-soft);">1 enfant</div></div>
+          <div style="font-weight:800;color:var(--peach-dark);">2 500 FCFA/mois</div>
+        </div>
+        <div onclick="selectRenewPlan('fam','4000',this)" class="renew-plan-opt" style="border:2px solid var(--border);border-radius:14px;padding:0.85rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div style="text-align:left;"><div style="font-weight:800;font-size:0.9rem;">⭐ Famille</div><div style="font-size:0.78rem;color:var(--text-soft);">Jusqu'à 4 enfants</div></div>
+          <div style="font-weight:800;color:var(--peach-dark);">4 000 FCFA/mois</div>
+        </div>
+        <div onclick="selectRenewPlan('ann','20000',this)" class="renew-plan-opt" style="border:2px solid var(--border);border-radius:14px;padding:0.85rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div style="text-align:left;"><div style="font-weight:800;font-size:0.9rem;">🎉 Annuel</div><div style="font-size:0.78rem;color:var(--text-soft);">4 enfants · 12 mois</div></div>
+          <div style="font-weight:800;color:var(--peach-dark);">20 000 FCFA/an</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode de paiement -->
+    <div style="margin-bottom:1.25rem;">
+      <div style="font-size:0.8rem;font-weight:800;color:var(--text-soft);margin-bottom:0.6rem;text-align:left;">Mode de paiement :</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+        <div onclick="selectRenewPay('mtn',this)" class="renew-pay-opt renew-pay-sel" style="border:2px solid var(--peach);border-radius:12px;padding:0.7rem;cursor:pointer;text-align:center;background:rgba(255,140,105,0.05);">
+          <div style="font-size:1.3rem;">📱</div><div style="font-size:0.8rem;font-weight:800;">MTN MoMo</div>
+        </div>
+        <div onclick="selectRenewPay('or',this)" class="renew-pay-opt" style="border:2px solid var(--border);border-radius:12px;padding:0.7rem;cursor:pointer;text-align:center;">
+          <div style="font-size:1.3rem;">🟠</div><div style="font-size:0.8rem;font-weight:800;">Orange Money</div>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="processRenewal()" style="width:100%;padding:0.95rem;border-radius:50px;border:none;background:linear-gradient(135deg,var(--peach),var(--peach-dark));color:white;font-weight:800;font-size:1rem;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 15px rgba(255,140,105,0.4);margin-bottom:0.75rem;">
+      🚀 Payer et réactiver mon abonnement
+    </button>
+    <div style="font-size:0.75rem;color:var(--text-soft);margin-bottom:0.75rem;">🔒 Paiement sécurisé via NotchPay</div>
+    <button onclick="logoutUser()" style="width:100%;padding:0.65rem;border-radius:50px;border:2px solid var(--border);background:white;color:var(--text-soft);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:0.88rem;">Se déconnecter</button>
   </div>
 </div>
 
@@ -975,13 +1162,29 @@ function closeModal(event) {
 }
 
 // ============================================================
-// CONFIGURATION — REMPLACE CES VALEURS PAR LES TIENNES
+// CONFIGURATION — chargée automatiquement depuis Netlify
+// Plus besoin de modifier ce fichier à chaque déploiement
 // ============================================================
 const CONFIG = {
-  SUPABASE_URL: 'https://cszvvbqyttsxjlrnrizi.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzenZ2YnF5dHRzeGpscm5yaXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MDM5NzgsImV4cCI6MjA5MzM3OTk3OH0.t1L-JpsDDcxpx4z31TIzJPJDmln5dnlsRRIfqolG4Ww',
+  SUPABASE_URL: '',
+  SUPABASE_ANON_KEY: '',
   NOTCHPAY_PUBLIC_KEY: ''
 };
+
+// Charger la config depuis la Netlify Function au démarrage
+async function loadConfig() {
+  try {
+    const res = await fetch('/.netlify/functions/get-config');
+    if (res.ok) {
+      const data = await res.json();
+      CONFIG.SUPABASE_URL = data.supabaseUrl || '';
+      CONFIG.SUPABASE_ANON_KEY = data.supabaseKey || '';
+      console.log('[YoMuna] Config chargée avec succès');
+    }
+  } catch(e) {
+    console.error('[YoMuna] Erreur chargement config:', e);
+  }
+}
 // ============================================================
 
 // Supabase client léger (sans SDK)
@@ -1034,6 +1237,7 @@ let currentChildren = [];
 let selectedPlan = 'solo';
 let selectedAmount = '2500';
 let selectedPay = 'mtn';
+let currentPayMethod = 'mtn';
 
 // ===== AUTH =====
 async function registerUser() {
@@ -1051,31 +1255,95 @@ async function registerUser() {
   showLoading('Création de votre compte...');
   try {
     const res = await sb.signUp(em, pw, { first_name:fn, last_name:ln, whatsapp:wa, country:co, language:lg });
+
+    // Email déjà utilisé — connecter directement et reprendre là où on s'était arrêté
+    if (res.error && (
+      res.error.message?.toLowerCase().includes('already') ||
+      res.error.message?.toLowerCase().includes('registered') ||
+      res.error.message?.toLowerCase().includes('exist') ||
+      res.error.status === 400
+    )) {
+      showLoading('Email déjà enregistré — connexion en cours...');
+      const loginRes = await sb.signIn(em, pw);
+
+      if (loginRes.error) {
+        // Mauvais mot de passe
+        showErr('err-signup',
+          'Cet email est déjà enregistré. Vérifiez votre mot de passe ou ' +
+          '<a href="#" onclick="showS(\'login\')" style="color:var(--peach-dark);font-weight:800;">connectez-vous ici</a>.'
+        );
+        return;
+      }
+
+      // Connexion réussie
+      currentToken = loginRes.access_token;
+      currentUser = loginRes.user;
+      localStorage.setItem('yomuna_token', currentToken);
+      localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
+
+      // Vérifier si abonnement déjà actif
+      const subs = await sb.select('subscriptions',
+        `user_id=eq.${currentUser.id}&order=created_at.desc&limit=1`, currentToken
+      ).catch(() => []);
+
+      if (subs && subs[0]) {
+        const start = new Date(subs[0].created_at);
+        const days = subs[0].plan === 'ann' ? 365 : 30;
+        const end = new Date(start);
+        end.setDate(end.getDate() + days);
+        if (new Date() < end) {
+          // Abonnement encore actif — aller au dashboard
+          hideLoading();
+          toast('Bienvenue ! Votre abonnement est actif. ✨');
+          await loadDashboard().catch(() => {});
+          showS('dashboard');
+          return;
+        }
+      }
+
+      // Pas d'abonnement actif — reprendre à l'étape enfants ou paiement
+      hideLoading();
+      toast('Compte retrouvé ! Finalisez votre abonnement. 🎉');
+
+      // Charger les enfants déjà enregistrés si existants
+      const children = await sb.select('children',
+        `user_id=eq.${currentUser.id}`, currentToken
+      ).catch(() => []);
+
+      if (children && children.length > 0) {
+        currentChildren = children;
+        // Aller directement au paiement
+        goStep(3);
+      } else {
+        // Aller à l'étape enfants
+        goStep(2);
+      }
+      return;
+    }
+
     if (res.error) { showErr('err-signup', res.error.message || 'Erreur lors de la création du compte.'); return; }
     if (!res.user) { showErr('err-signup', 'Compte non créé. Vérifiez vos informations.'); return; }
+
     currentToken = res.access_token;
     currentUser = res.user;
     localStorage.setItem('yomuna_token', currentToken);
     localStorage.setItem('yomuna_user', JSON.stringify(currentUser));
-    // Sauvegarder profil dans table profiles
+
+    // Sauvegarder profil
     await sb.insert('profiles', {
       id: res.user.id,
       first_name: fn, last_name: ln,
       email: em, whatsapp: wa,
       country: co, language: lg
     }, currentToken).catch(e => console.log('Profile insert:', e));
-    // Envoyer email de bienvenue + notif admin
+
+    // Email de bienvenue
     await fetch('/.netlify/functions/send-confirmation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: em,
-        firstName: fn,
-        lastName: document.getElementById('rln').value.trim(),
-        country: document.getElementById('rco').value,
-        plan: 'welcome',
-        amount: 0,
-        type: 'welcome'
+        email: em, firstName: fn, lastName: ln,
+        country: co, plan: 'welcome', amount: 0, type: 'welcome'
       })
     }).catch(e => console.log('Welcome email error:', e));
 
@@ -1162,22 +1430,21 @@ function selPlan(p, amount) {
 }
 
 function selPay(p) {
-  selectedPay = p;
-  ['mtn','or','wave','card'].forEach(x => document.getElementById('pm-'+x).classList.remove('sel'));
-  document.getElementById('pm-'+p).classList.add('sel');
-  const L = {mtn:'Numéro MTN MoMo',or:'Numéro Orange Money',wave:'Numéro Wave',card:'Numéro de carte bancaire'};
-  document.getElementById('plbl').textContent = L[p];
+  currentPayMethod = p;
+  ['mtn','or'].forEach(x => {
+    const el = document.getElementById('pm-' + x);
+    if (el) el.classList.remove('sel');
+  });
+  const sel = document.getElementById('pm-' + p);
+  if (sel) sel.classList.add('sel');
 }
 
 async function initiatePayment() {
-  const phone = document.getElementById('pnum').value.trim();
-  if (!phone) { toast('Veuillez entrer votre numéro de paiement.'); return; }
-
   showLoading('Initialisation du paiement...');
   try {
     // Sauvegarder les enfants dans Supabase
     for (const child of currentChildren) {
-      await sb.insert('children', child, currentToken);
+      await sb.insert('children', child, currentToken).catch(() => {});
     }
 
     // Lancer paiement NotchPay via Netlify Function
@@ -1187,11 +1454,11 @@ async function initiatePayment() {
       body: JSON.stringify({
         currency: 'XAF',
         amount: parseInt(selectedAmount),
-        phone: phone,
         email: currentUser.email,
         description: `YoMuna - Plan ${selectedPlan}`,
         reference: `yomuna_${currentUser.id}_${Date.now()}`,
-        callback: window.location.origin + '/payment-success'
+        channel: currentPayMethod === 'or' ? 'cm.orange' : 'cm.mtn',
+        callback: window.location.origin + '/'
       })
     });
 
@@ -1460,6 +1727,13 @@ function renderAccountChildren() {
               `<option ${child.age === a ? 'selected' : ''}>${a}</option>`).join('')}
           </select>
         </div>
+        <div class="fg">
+          <label>🌍 Univers culturel des histoires</label>
+          <select id="acc-child-culture-${i}">
+            ${['Cameroun','Côte d\'Ivoire','Gabon','Congo','Sénégal','Mali','Burkina Faso','France','Canada','monde'].map(c =>
+              `<option value="${c}" ${(child.culture||'Cameroun') === c ? 'selected' : ''}>${c}</option>`).join('')}
+          </select>
+        </div>
         <div class="fg"><label>Centres d'intérêt</label><input type="text" id="acc-child-interests-${i}" value="${child.interests||''}" placeholder="danse, foot, dessin..." /></div>
         <div class="fg"><label>Défi parental du moment</label><input type="text" id="acc-child-challenge-${i}" value="${child.challenge||''}" placeholder="caprices, sommeil, devoirs..." /></div>
       </div>`;
@@ -1479,17 +1753,16 @@ async function saveAllChildren() {
     const age = document.getElementById(`acc-child-age-${i}`)?.value || child.age;
     const interests = document.getElementById(`acc-child-interests-${i}`)?.value.trim() || '';
     const challenge = document.getElementById(`acc-child-challenge-${i}`)?.value.trim() || '';
+    const culture = document.getElementById(`acc-child-culture-${i}`)?.value || child.culture || 'Cameroun';
 
     try {
       if (!child.id) {
-        // Pas d'ID — tenter de retrouver l'enfant via user_id + name
         const existing = await sb.select('children', `user_id=eq.${currentUser.id}&name=eq.${encodeURIComponent(child.name)}`, currentToken);
         if (existing && existing[0]) {
           child.id = existing[0].id;
           currentChildren[i] = { ...child, id: existing[0].id };
         } else {
-          // Créer l'enfant si inexistant
-          await sb.insert('children', { user_id: currentUser.id, name, gender, age, interests, challenge }, currentToken);
+          await sb.insert('children', { user_id: currentUser.id, name, gender, age, interests, challenge, culture }, currentToken);
           success++;
           continue;
         }
@@ -1503,11 +1776,11 @@ async function saveAllChildren() {
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
-        body: JSON.stringify({ name, gender, age, interests, challenge })
+        body: JSON.stringify({ name, gender, age, interests, challenge, culture })
       });
 
       if (res.status === 200 || res.status === 204) {
-        currentChildren[i] = { ...child, name, gender, age, interests, challenge };
+        currentChildren[i] = { ...child, name, gender, age, interests, challenge, culture };
         success++;
       } else {
         const err = await res.text();
@@ -1570,6 +1843,8 @@ async function generateContent(childIndex, type, autoLoad = false) {
   const country = profile && profile[0] ? profile[0].country : 'CM';
   const countryNames = {CM:'Cameroun',FR:'France',CA:'Canada',GB:'Royaume-Uni',US:'États-Unis',GA:'Gabon',CG:'Congo',CI:"Côte d'Ivoire",SN:'Sénégal',NG:'Nigeria'};
   const countryName = countryNames[country] || country;
+  // L'univers culturel est celui choisi pour l'enfant, pas nécessairement le pays de résidence
+  const culturalUniverse = child.culture || countryName;
 
   const gender = child.gender === 'garcon' ? 'garçon' : 'fille';
 
@@ -1593,7 +1868,7 @@ async function generateContent(childIndex, type, autoLoad = false) {
 
   let prompt = '';
   if (type === 'story') {
-    prompt = 'Ecris une histoire ' + toneDesc + ' pour ' + childName + ' (' + gender + ', ' + childAge + ', ' + countryName + '). Minimum 400 mots. Debut, milieu, fin. Le prenom ' + childName + ' apparait souvent. Decors de ' + countryName + '. Une valeur morale. Des dialogues. Reponds avec du JSON valide exactement comme ceci: {"title":"le titre","content":"toute l histoire ici","educational_value":"valeur apprise","emotional_question":"question pour l enfant"}';
+    prompt = 'Ecris une histoire ' + toneDesc + ' pour ' + childName + ' (' + gender + ', ' + childAge + ', univers culturel: ' + culturalUniverse + '). Minimum 400 mots. Debut, milieu, fin. Le prenom ' + childName + ' apparait souvent. Decors ancres dans ' + culturalUniverse + '. Une valeur morale. Des dialogues. Reponds avec du JSON valide exactement comme ceci: {"title":"le titre","content":"toute l histoire ici","educational_value":"valeur apprise","emotional_question":"question pour l enfant"}';
   } else if (type === 'activity') {
     prompt = 'Propose une activite creative pour ' + childName + ' (' + gender + ', ' + childAge + '). Faisable a la maison. Materiel simple. 6 etapes minimum. 30 a 60 minutes. Reponds avec du JSON valide exactement comme ceci: {"title":"nom activite","content":"Materiel necessaire:\n- item\n\nEtapes:\n1. etape\n2. etape\n3. etape\n4. etape\n5. etape\n6. etape\n\nCe que l enfant developpe:\ntexte","duration":"30-45 minutes"}';
   } else if (type === 'advice') {
@@ -2310,6 +2585,195 @@ function updateNav(loggedIn) {
 
 
 
+// ===== RENOUVELLEMENT DEPUIS MODAL EXPIRATION =====
+let renewPlan = 'solo';
+let renewAmount = '2500';
+let renewPay = 'mtn';
+
+function selectRenewPlan(plan, amount, el) {
+  renewPlan = plan;
+  renewAmount = amount;
+  document.querySelectorAll('.renew-plan-opt').forEach(e => {
+    e.style.borderColor = 'var(--border)';
+    e.style.background = 'white';
+  });
+  el.style.borderColor = 'var(--peach)';
+  el.style.background = 'rgba(255,140,105,0.05)';
+}
+
+function selectRenewPay(pay, el) {
+  renewPay = pay;
+  document.querySelectorAll('.renew-pay-opt').forEach(e => {
+    e.style.borderColor = 'var(--border)';
+    e.style.background = 'white';
+  });
+  el.style.borderColor = 'var(--peach)';
+  el.style.background = 'rgba(255,140,105,0.05)';
+}
+
+async function processRenewal() {
+  showLoading('Initialisation du paiement...');
+  try {
+    const payRes = await fetch('/.netlify/functions/initiate-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        currency: 'XAF',
+        amount: parseInt(renewAmount),
+        email: currentUser.email,
+        description: `YoMuna Renouvellement - Plan ${renewPlan}`,
+        reference: `yomuna_renew_${currentUser.id}_${Date.now()}`,
+        channel: renewPay === 'or' ? 'cm.orange' : 'cm.mtn',
+        callback: window.location.origin + '/'
+      })
+    });
+
+    const payData = await payRes.json();
+    const authUrl = payData.authorization_url || payData.transaction?.authorization_url;
+
+    if (authUrl) {
+      // Enregistrer le renouvellement en attente
+      await sb.insert('subscriptions', {
+        user_id: currentUser.id,
+        plan: renewPlan,
+        amount: parseInt(renewAmount),
+        status: 'pending',
+        notchpay_ref: payData.transaction?.reference || ''
+      }, currentToken).catch(() => {});
+      window.location.href = authUrl;
+    } else {
+      toast('Erreur lors du paiement. Réessayez.');
+    }
+  } catch(e) {
+    toast('Erreur de connexion. Vérifiez votre internet.');
+  } finally { hideLoading(); }
+}
+
+// ===== TRIAL GRATUIT =====
+function showTrial() {
+  document.getElementById('trial-modal').classList.remove('hidden');
+  document.getElementById('trial-step1').classList.remove('hidden');
+  document.getElementById('trial-step2').classList.add('hidden');
+}
+
+function closeTrial() {
+  document.getElementById('trial-modal').classList.add('hidden');
+}
+
+async function runTrial() {
+  const name = document.getElementById('trial-name').value.trim();
+  const age = document.getElementById('trial-age').value;
+  const gender = document.getElementById('trial-gender').value;
+  const email = document.getElementById('trial-email').value.trim();
+  const country = document.getElementById('trial-country').value;
+
+  if (!name) { showErr('err-trial', 'Entrez le prénom de votre enfant.'); return; }
+  if (!email || !email.includes('@')) { showErr('err-trial', 'Entrez un email valide.'); return; }
+
+  // Passer à l'étape résultats
+  document.getElementById('trial-step1').classList.add('hidden');
+  document.getElementById('trial-step2').classList.remove('hidden');
+  document.getElementById('trial-subtitle').textContent = `Aperçu pour ${name}, ${age}`;
+
+  // Générer les 3 contenus en parallèle
+  const genreLabel = gender === 'garcon' ? 'garçon' : 'fille';
+  const pronoun = gender === 'garcon' ? 'il' : 'elle';
+
+  const prompts = {
+    story: `Ecris une histoire du soir douce et apaisante pour ${name} (${genreLabel}, ${age}, ${country}). Minimum 300 mots. Debut, milieu, fin. Le prenom ${name} apparait souvent. Decors de ${country}. Une valeur morale. Reponds avec du JSON valide: {"title":"le titre","content":"toute l histoire ici"}`,
+    activity: `Propose une activite creative courte pour ${name} (${genreLabel}, ${age}). Faisable a la maison. Reponds avec du JSON valide: {"title":"nom activite","content":"description courte de l activite et du materiel"}`,
+    learning: `Cree un apprentissage court et amusant pour ${name} (${age}). Un animal fascinant ou un fait culturel. 80 mots max. Reponds avec du JSON valide: {"title":"titre","content":"texte court"}`
+  };
+
+  // Lancer les 3 générations en parallèle
+  const [storyRes, activityRes, learningRes] = await Promise.allSettled([
+    fetchTrialContent(prompts.story),
+    fetchTrialContent(prompts.activity),
+    fetchTrialContent(prompts.learning)
+  ]);
+
+  // Afficher histoire
+  if (storyRes.status === 'fulfilled' && storyRes.value) {
+    const s = storyRes.value;
+    document.getElementById('trial-story-title').textContent = s.title || `L'histoire de ${name}`;
+    const words = (s.content || '').split(' ');
+    const preview = words.slice(0, 60).join(' ');
+    const rest = words.slice(60).join(' ');
+    document.getElementById('trial-story-text').textContent = preview + '...';
+    if (rest) {
+      const blurEl = document.getElementById('trial-story-blur');
+      const blurText = document.getElementById('trial-story-blur-text');
+      blurEl.classList.remove('hidden');
+      blurText.textContent = rest;
+    }
+  } else {
+    document.getElementById('trial-story-title').textContent = `Une histoire pour ${name}`;
+    document.getElementById('trial-story-text').textContent = 'Réessayez dans quelques instants.';
+  }
+
+  // Afficher activité (titre visible, contenu flou)
+  if (activityRes.status === 'fulfilled' && activityRes.value) {
+    const a = activityRes.value;
+    document.getElementById('trial-activity-title').textContent = a.title || 'Activité créative';
+    document.getElementById('trial-activity-text').textContent = a.content || '';
+  } else {
+    document.getElementById('trial-activity-title').textContent = 'Activité créative adaptée';
+    document.getElementById('trial-activity-text').textContent = 'Contenu disponible avec l\'abonnement.';
+  }
+
+  // Afficher apprentissage (titre visible, contenu flou)
+  if (learningRes.status === 'fulfilled' && learningRes.value) {
+    const l = learningRes.value;
+    document.getElementById('trial-learning-title').textContent = l.title || 'Apprentissage du jour';
+    document.getElementById('trial-learning-text').textContent = l.content || '';
+  } else {
+    document.getElementById('trial-learning-title').textContent = 'Découverte du jour';
+    document.getElementById('trial-learning-text').textContent = 'Contenu disponible avec l\'abonnement.';
+  }
+
+  // Envoyer email avec le résultat + invitation à s'inscrire
+  sendTrialEmail(email, name, age, country).catch(() => {});
+}
+
+async function fetchTrialContent(prompt) {
+  try {
+    const res = await fetch('/.netlify/functions/generate-content', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, type: 'story' })
+    });
+    const data = await res.json();
+    const text = (data.text || '').replace(/```json/gi,'').replace(/```/g,'').trim();
+    const m = text.match(/\{[\s\S]*\}/);
+    if (m) {
+      try { return JSON.parse(m[0]); } catch(e) {
+        return { title: 'Contenu généré', content: text.replace(/[{}"]/g,' ').trim() };
+      }
+    }
+    return { title: 'Contenu généré', content: text };
+  } catch(e) {
+    return null;
+  }
+}
+
+async function sendTrialEmail(email, name, age, country) {
+  return fetch('/.netlify/functions/send-confirmation', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      firstName: 'Cher parent',
+      lastName: '',
+      country,
+      plan: 'trial',
+      amount: 0,
+      type: 'trial',
+      childName: name,
+      childAge: age
+    })
+  }).catch(() => {});
+}
+
 function showExpiredModal() {
   document.getElementById('expired-modal').classList.remove('hidden');
 }
@@ -2430,6 +2894,9 @@ async function loadWeeklyReport() {
 
 // Vérifier si retour de paiement NotchPay
 window.addEventListener('load', async () => {
+  // Charger la config Supabase en premier
+  await loadConfig();
+
   const urlParams = new URLSearchParams(window.location.search);
   const paymentStatus = urlParams.get('status');
   const reference = urlParams.get('reference');
